@@ -2,9 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
-import { AppSettingsProvider } from './context/AppSettingsContext'
-import { NotificationsProvider } from './context/NotificationsContext'
-import { initScrollbarHoverDetector } from './lib/scrollbarHover'
+import { AppSettingsProvider, NotificationsProvider } from '@/shared/context'
+import { initScrollbarHoverDetector } from '@/shared/lib/scrollbarHover'
 
 // Initialize global scrollbar hover detection
 initScrollbarHoverDetector();

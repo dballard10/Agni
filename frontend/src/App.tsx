@@ -1,17 +1,17 @@
 import { useState, useMemo } from "react";
-import WeeklyView from "./components/weekly/WeeklyView/WeeklyView";
-import CalendarView from "./components/calendar/CalendarView";
-import GoalsPage from "./components/goals/GoalsPage";
-import CompanionsPage from "./components/goals/CompanionsPage";
-import SettingsPage from "./components/settings/SettingsPage";
-import { NotesPage } from "./components/notes/NotesPage";
-import { AppShellLayout } from "./components/layout/AppShellLayout";
+import { WeeklyView } from "@/pages/WeeklyPage";
+import { CalendarView } from "@/pages/CalendarPage";
+import { GoalsPage } from "@/pages/GoalsPage";
+import { CompanionsPage } from "@/pages/CompanionsPage";
+import { SettingsPage } from "@/pages/SettingsPage";
+import { NotesPage } from "@/pages/NotesPage";
+import { AppShellLayout } from "@/app/layout";
 import {
   useWeekState,
   getMostRecentSunday,
   formatDateISO,
-} from "./hooks/useWeekState";
-import { convertWeekToCalendarEvents } from "./lib/calendar/eventAdapters";
+} from "@/features/weekly/useWeekState";
+import { convertWeekToCalendarEvents } from "@/shared/lib/calendar/eventAdapters";
 
 function App() {
   const [activeTab, setActiveTab] = useState("notes");
