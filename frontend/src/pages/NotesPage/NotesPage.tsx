@@ -1,10 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import {
-  IconFilePencil,
-  IconChevronLeft,
-  IconChevronRight,
-} from "@tabler/icons-react";
 import type { EditorMode } from "@/app/shell/types";
 import { LiveMarkdownEditor } from "../../features/notes/editor/LiveMarkdownEditor";
 import { mockNotes, createNewNote, type Note } from "../../mock/mockNotes";
@@ -266,19 +261,6 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     [selectedNoteId]
   );
 
-  const handleUpdateNoteTitle = useCallback(
-    (title: string) => {
-      if (!selectedNoteId) return;
-      setNotes((prev) =>
-        prev.map((note) =>
-          note.id === selectedNoteId
-            ? { ...note, title, updatedAt: new Date().toISOString() }
-            : note
-        )
-      );
-    },
-    [selectedNoteId]
-  );
 
   const handleCreateFolder = useCallback(() => {
     // Gather all existing root-level folder names (from explicit folders + note paths)
@@ -698,95 +680,32 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       )}
 
       <div className="flex flex-col h-full">
-        {/* Header */}
-        <header className="flex items-center justify-between px-6 py-2 border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm">
-        <div className="flex flex-col min-w-0 flex-1">
-          <div className="flex items-center gap-3 min-w-0">
-            <h1 className="text-lg font-semibold text-slate-100 truncate flex-1">
-              {selectedNote ? (
-                <input
-                  type="text"
-                  value={selectedNote.title}
-                  onChange={(e) => handleUpdateNoteTitle(e.target.value)}
-                  className="bg-transparent border-none outline-none text-lg font-semibold text-slate-100 w-full"
-                  placeholder="Untitled Note"
-                />
-              ) : (
-                "Notes"
-              )}
-            </h1>
-          </div>
-          {selectedNote && (
-            <div
-              className="text-[10px] text-slate-500 font-mono truncate -mt-0.5"
-              title={selectedNote.path}
-            >
-              {selectedNote.path}
+        {/* Main content */}
+        <main className="flex-1 overflow-hidden relative">
+          {selectedNote ? (
+            <LiveMarkdownEditor
+              value={selectedNote.content}
+              onChange={handleUpdateNoteContent}
+              placeholder="Start writing..."
+              jumpTo={jumpTo}
+              onOpenBracketLink={openOrCreateNoteByLabel}
+              mode={notesViewMode}
+              autoFocus={false}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-slate-500">
+              <div className="text-center">
+                <p className="mb-4">No note selected</p>
+                <button
+                  onClick={handleCreateNote}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-md text-slate-200 transition-colors"
+                >
+                  Create your first note
+                </button>
+              </div>
             </div>
           )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Back/Forward buttons */}
-          <div className="flex items-center gap-1 mr-1">
-            <button
-              onClick={handleGoBack}
-              disabled={!canGoBack}
-              className="p-2 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
-              title="Back"
-              aria-label="Go back to previous note"
-            >
-              <IconChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={handleGoForward}
-              disabled={!canGoForward}
-              className="p-2 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
-              title="Forward"
-              aria-label="Go forward to next note"
-            >
-              <IconChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* New note */}
-          <button
-            onClick={handleCreateNote}
-            className="p-2 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
-            title="New note"
-            aria-label="Create new note"
-          >
-            <IconFilePencil className="w-5 h-5" />
-          </button>
-        </div>
-      </header>
-
-      {/* Main content */}
-      <main className="flex-1 overflow-hidden relative">
-        {selectedNote ? (
-          <LiveMarkdownEditor
-            value={selectedNote.content}
-            onChange={handleUpdateNoteContent}
-            placeholder="Start writing..."
-            jumpTo={jumpTo}
-            onOpenBracketLink={openOrCreateNoteByLabel}
-            mode={notesViewMode}
-            autoFocus={false}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full text-slate-500">
-            <div className="text-center">
-              <p className="mb-4">No note selected</p>
-              <button
-                onClick={handleCreateNote}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-md text-slate-200 transition-colors"
-              >
-                Create your first note
-              </button>
-            </div>
-          </div>
-        )}
-      </main>
+        </main>
       </div>
     </>
   );
