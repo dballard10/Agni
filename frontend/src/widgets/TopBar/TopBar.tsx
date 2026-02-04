@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {
+  IconChevronLeft,
+  IconChevronRight,
   IconLayoutSidebar,
   IconLayoutSidebarFilled,
   IconLayoutSidebarRightFilled,
@@ -13,10 +15,14 @@ import type { PageId } from "@/app/shell/types";
 interface TopBarProps {
   currentPage: PageId;
   activeTabIndex: number;
+  canGoBack: boolean;
+  canGoForward: boolean;
   leftPanelOpen: boolean;
   rightPanelOpen: boolean;
   onPageChange: (page: PageId) => void;
   onTabChange: (index: number) => void;
+  onGoBack: () => void;
+  onGoForward: () => void;
   onToggleLeftPanel: () => void;
   onToggleRightPanel: () => void;
   onOpenSettings: () => void;
@@ -25,10 +31,14 @@ interface TopBarProps {
 export function TopBar({
   currentPage,
   activeTabIndex,
+  canGoBack,
+  canGoForward,
   leftPanelOpen,
   rightPanelOpen,
   onPageChange,
   onTabChange,
+  onGoBack,
+  onGoForward,
   onToggleLeftPanel,
   onToggleRightPanel,
   onOpenSettings,
@@ -40,26 +50,56 @@ export function TopBar({
 
   return (
     <div className="flex items-center h-12 px-3 bg-slate-900 border-b border-slate-700">
-      {/* Left section: Logo/Menu */}
-      <div className="relative flex items-center">
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-800 transition-colors"
-          aria-label="Open Agni menu"
-          title="Open Agni menu"
-        >
-          <img
-            src="/logos/agni-flame-logo.png"
-            alt="Agni"
-            className="w-5 h-5"
+      {/* Left section: Logo/Menu + History */}
+      <div className="flex items-center gap-1">
+        <div className="relative flex items-center">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-800 transition-colors"
+            aria-label="Open Agni menu"
+            title="Open Agni menu"
+          >
+            <img
+              src="/logos/agni-flame-logo.png"
+              alt="Agni"
+              className="w-5 h-5"
+            />
+          </button>
+          <AgniMenuDropdown
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            onSelectPage={onPageChange}
+            currentPage={currentPage}
           />
-        </button>
-        <AgniMenuDropdown
-          isOpen={isMenuOpen}
-          onClose={() => setIsMenuOpen(false)}
-          onSelectPage={onPageChange}
-          currentPage={currentPage}
-        />
+        </div>
+        <div className="flex items-center gap-0.5">
+          <button
+            onClick={onGoBack}
+            disabled={!canGoBack}
+            className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
+              canGoBack
+                ? "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                : "text-slate-600 cursor-not-allowed"
+            }`}
+            aria-label="Go back"
+            title="Go back"
+          >
+            <IconChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={onGoForward}
+            disabled={!canGoForward}
+            className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
+              canGoForward
+                ? "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                : "text-slate-600 cursor-not-allowed"
+            }`}
+            aria-label="Go forward"
+            title="Go forward"
+          >
+            <IconChevronRight className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Center section: Page tabs */}

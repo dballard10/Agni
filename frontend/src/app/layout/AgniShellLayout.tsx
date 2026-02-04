@@ -122,10 +122,14 @@ export function AgniShellLayout({
       <TopBar
         currentPage={activeTab}
         activeTabIndex={activeTabIndex}
+        canGoBack={canGoBack}
+        canGoForward={canGoForward}
         leftPanelOpen={leftPanelOpen}
         rightPanelOpen={rightPanelOpen}
         onPageChange={handlePageChange}
         onTabChange={handleTabIndexChange}
+        onGoBack={handleGoBack}
+        onGoForward={handleGoForward}
         onToggleLeftPanel={handleToggleLeftPanel}
         onToggleRightPanel={handleToggleRightPanel}
         onOpenSettings={handleOpenSettings}
@@ -152,10 +156,6 @@ export function AgniShellLayout({
           <MainContentHeader
             filePath={filePath}
             editorMode={editorMode}
-            canGoBack={canGoBack}
-            canGoForward={canGoForward}
-            onGoBack={handleGoBack}
-            onGoForward={handleGoForward}
             onToggleEditorMode={handleToggleEditorMode}
             onOpenMenu={handleOpenMenu}
           />
