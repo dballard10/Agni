@@ -4,7 +4,7 @@ import { CalendarView } from "@/pages/CalendarPage";
 import { GoalsPage } from "@/pages/GoalsPage";
 import { CompanionsPage } from "@/pages/CompanionsPage";
 import { SettingsPage } from "@/pages/SettingsPage";
-import { NotesPage, type NotesPageActions } from "@/pages/NotesPage";
+import { NotesPage, type NotesPageActions, type NoteTab } from "@/pages/NotesPage";
 import { AgniShellLayout } from "@/app/layout";
 import {
   useWeekState,
@@ -26,11 +26,15 @@ function App() {
     canGoBack: boolean;
     canGoForward: boolean;
     editorMode: EditorMode;
+    noteTabs: NoteTab[];
+    activeNoteTabIndex: number;
   }>({
     filePath: "Notes",
     canGoBack: false,
     canGoForward: false,
     editorMode: "preview",
+    noteTabs: [],
+    activeNoteTabIndex: -1,
   });
 
   const handleOpenWeeklyTask = (taskId: string) => {
@@ -79,10 +83,28 @@ function App() {
       canGoBack: boolean;
       canGoForward: boolean;
       editorMode: EditorMode;
+      noteTabs: NoteTab[];
+      activeNoteTabIndex: number;
     }) => {
       setNotesShellState(nextState);
     },
     []
+  );
+
+  const handleNoteTabChange = useCallback(
+    (index: number) => {
+      if (activeTab !== "notes") return;
+      notesActionsRef.current?.selectTabIndex(index);
+    },
+    [activeTab]
+  );
+
+  const handleNoteTabClose = useCallback(
+    (index: number) => {
+      if (activeTab !== "notes") return;
+      notesActionsRef.current?.closeTabIndex(index);
+    },
+    [activeTab]
   );
 
   const handleNotesGoBack = useCallback(() => {
@@ -106,8 +128,8 @@ function App() {
   }, [weekState]);
 
   return (
-    <AgniShellLayout 
-      activeTab={activeTab} 
+    <AgniShellLayout
+      activeTab={activeTab}
       onTabChange={handleTabChange}
       onNewItem={handleNewItem}
       onOpenExplorer={handleOpenExplorer}
@@ -121,6 +143,10 @@ function App() {
       onGoBack={handleNotesGoBack}
       onGoForward={handleNotesGoForward}
       onToggleEditorMode={handleNotesToggleEditorMode}
+      noteTabs={activeTab === "notes" ? notesShellState.noteTabs : undefined}
+      activeNoteTabIndex={activeTab === "notes" ? notesShellState.activeNoteTabIndex : undefined}
+      onNoteTabChange={handleNoteTabChange}
+      onNoteTabClose={handleNoteTabClose}
     >
       {activeTab === "weekly" && (
         <WeeklyView

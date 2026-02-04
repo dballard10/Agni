@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import type { EditorMode } from "@/app/shell/types";
 import { LiveMarkdownEditor } from "../../features/notes/editor/LiveMarkdownEditor";
@@ -13,15 +13,24 @@ export type NotesPageActions = {
   goBack: () => void;
   goForward: () => void;
   toggleEditorMode: () => void;
+  selectTabIndex: (index: number) => void;
+  closeTabIndex: (index: number) => void;
 };
 
 type NotesViewMode = "preview" | "edit";
+
+export interface NoteTab {
+  noteId: string;
+  title: string;
+}
 
 interface NotesShellState {
   filePath: string;
   canGoBack: boolean;
   canGoForward: boolean;
   editorMode: EditorMode;
+  noteTabs: NoteTab[];
+  activeNoteTabIndex: number;
 }
 
 interface HistoryState {
@@ -107,16 +116,53 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     setNotesViewMode((prev) => (prev === "preview" ? "edit" : "preview"));
   }, []);
 
+  const handleSelectTabIndex = useCallback((index: number) => {
+    setHistory((prev) => {
+      if (index < 0 || index >= prev.ids.length) return prev;
+      if (prev.index === index) return prev;
+      return { ...prev, index };
+    });
+  }, []);
+
+  const handleCloseTabIndex = useCallback((index: number) => {
+    setHistory((prev) => {
+      if (index < 0 || index >= prev.ids.length) return prev;
+      const nextIds = prev.ids.filter((_, i) => i !== index);
+      if (nextIds.length === 0) {
+        return { ids: [], index: -1 };
+      }
+      let nextIndex = prev.index;
+      if (index < prev.index) {
+        // Closed a tab to the left of active: shift active index left
+        nextIndex = prev.index - 1;
+      } else if (index === prev.index) {
+        // Closed the active tab: prefer right, else left
+        // After removal, index `index` now points to what was the right neighbor
+        if (index < nextIds.length) {
+          // Right neighbor exists (now at same index)
+          nextIndex = index;
+        } else {
+          // No right neighbor, go to new last tab (left neighbor)
+          nextIndex = nextIds.length - 1;
+        }
+      }
+      // If closed a tab to the right of active, nextIndex stays unchanged
+      return { ids: nextIds, index: nextIndex };
+    });
+  }, []);
+
   const selectedNote = notes.find((n) => n.id === selectedNoteId) ?? null;
 
   const handleSelectNote = useCallback((noteId: string) => {
     setHistory((prev) => {
-      // If we're already on this note, do nothing
-      if (prev.index >= 0 && prev.ids[prev.index] === noteId) {
-        return prev;
+      // If note is already open, focus its existing tab
+      const existingIndex = prev.ids.indexOf(noteId);
+      if (existingIndex !== -1) {
+        if (prev.index === existingIndex) return prev;
+        return { ...prev, index: existingIndex };
       }
-      // Truncate forward history and add new note
-      const newIds = [...prev.ids.slice(0, prev.index + 1), noteId];
+      // Append new tab (don't truncate forward - tabs are not back/forward history)
+      const newIds = [...prev.ids, noteId];
       return {
         ids: newIds,
         index: newIds.length - 1,
@@ -127,12 +173,14 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
   // Handle opening a search result with optional jump to match
   const handleOpenSearchResult = useCallback(
     (noteId: string, firstMatchRange: { from: number; to: number } | null) => {
-      // Select the note
+      // Select the note (using tab-based logic: focus existing or append)
       setHistory((prev) => {
-        if (prev.index >= 0 && prev.ids[prev.index] === noteId) {
-          return prev;
+        const existingIndex = prev.ids.indexOf(noteId);
+        if (existingIndex !== -1) {
+          if (prev.index === existingIndex) return prev;
+          return { ...prev, index: existingIndex };
         }
-        const newIds = [...prev.ids.slice(0, prev.index + 1), noteId];
+        const newIds = [...prev.ids, noteId];
         return {
           ids: newIds,
           index: newIds.length - 1,
@@ -155,7 +203,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     const newNote = createNewNote();
     setNotes((prev) => [newNote, ...prev]);
     setHistory((prev) => {
-      const newIds = [...prev.ids.slice(0, prev.index + 1), newNote.id];
+      const newIds = [...prev.ids, newNote.id];
       return {
         ids: newIds,
         index: newIds.length - 1,
@@ -200,12 +248,14 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       });
 
       if (existingNote) {
-        // Open existing note
+        // Open existing note (focus existing tab or append)
         setHistory((prev) => {
-          if (prev.index >= 0 && prev.ids[prev.index] === existingNote.id) {
-            return prev;
+          const existingIndex = prev.ids.indexOf(existingNote.id);
+          if (existingIndex !== -1) {
+            if (prev.index === existingIndex) return prev;
+            return { ...prev, index: existingIndex };
           }
-          const newIds = [...prev.ids.slice(0, prev.index + 1), existingNote.id];
+          const newIds = [...prev.ids, existingNote.id];
           return {
             ids: newIds,
             index: newIds.length - 1,
@@ -236,7 +286,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
 
         setNotes((prev) => [newNote, ...prev]);
         setHistory((prev) => {
-          const newIds = [...prev.ids.slice(0, prev.index + 1), newNote.id];
+          const newIds = [...prev.ids, newNote.id];
           return {
             ids: newIds,
             index: newIds.length - 1,
@@ -294,14 +344,16 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
   // Register actions for external components (e.g., sidebar)
   useEffect(() => {
     if (!actionsRef) return;
-    actionsRef.current = { 
-      createNote: handleCreateNote, 
+    actionsRef.current = {
+      createNote: handleCreateNote,
       createFolder: handleCreateFolder,
       focusSearch: handleFocusSearch,
       focusExplorer: handleFocusExplorer,
       goBack: handleGoBack,
       goForward: handleGoForward,
       toggleEditorMode: handleToggleEditorMode,
+      selectTabIndex: handleSelectTabIndex,
+      closeTabIndex: handleCloseTabIndex,
     };
     return () => {
       if (actionsRef) actionsRef.current = null;
@@ -315,7 +367,17 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     handleGoBack,
     handleGoForward,
     handleToggleEditorMode,
+    handleSelectTabIndex,
+    handleCloseTabIndex,
   ]);
+
+  // Derive noteTabs from history.ids
+  const noteTabs = useMemo<NoteTab[]>(() => {
+    return history.ids.map((id) => {
+      const note = notes.find((n) => n.id === id);
+      return { noteId: id, title: note?.title ?? "Untitled" };
+    });
+  }, [history.ids, notes]);
 
   useEffect(() => {
     if (!onShellStateChange) return;
@@ -324,6 +386,8 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       canGoBack,
       canGoForward,
       editorMode: notesViewMode,
+      noteTabs,
+      activeNoteTabIndex: history.index,
     });
   }, [
     onShellStateChange,
@@ -331,6 +395,8 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     canGoBack,
     canGoForward,
     notesViewMode,
+    noteTabs,
+    history.index,
   ]);
 
   const handleCreateNoteInFolder = useCallback(
@@ -357,7 +423,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
 
       setNotes((prev) => [newNote, ...prev]);
       setHistory((prev) => {
-        const newIds = [...prev.ids.slice(0, prev.index + 1), newNote.id];
+        const newIds = [...prev.ids, newNote.id];
         return {
           ids: newIds,
           index: newIds.length - 1,
@@ -684,29 +750,15 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       <div className="flex flex-col h-full">
         {/* Main content */}
         <main className="flex-1 overflow-hidden relative">
-          {selectedNote ? (
-            <LiveMarkdownEditor
-              value={selectedNote.content}
-              onChange={handleUpdateNoteContent}
-              placeholder="Start writing..."
-              jumpTo={jumpTo}
-              onOpenBracketLink={openOrCreateNoteByLabel}
-              mode={notesViewMode}
-              autoFocus={false}
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-slate-500">
-              <div className="text-center">
-                <p className="mb-4">No note selected</p>
-                <button
-                  onClick={handleCreateNote}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-md text-slate-200 transition-colors"
-                >
-                  Create your first note
-                </button>
-              </div>
-            </div>
-          )}
+          <LiveMarkdownEditor
+            value={selectedNote?.content ?? ""}
+            onChange={handleUpdateNoteContent}
+            placeholder="Start writing..."
+            jumpTo={jumpTo}
+            onOpenBracketLink={openOrCreateNoteByLabel}
+            mode={notesViewMode}
+            autoFocus={false}
+          />
         </main>
       </div>
     </>

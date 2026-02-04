@@ -12,6 +12,11 @@ import { AgniMenuDropdown } from "./AgniMenuDropdown";
 import { PageTabs } from "./PageTabs";
 import type { PageId } from "@/app/shell/types";
 
+interface NoteTab {
+  noteId: string;
+  title: string;
+}
+
 interface TopBarProps {
   currentPage: PageId;
   activeTabIndex: number;
@@ -26,6 +31,11 @@ interface TopBarProps {
   onToggleLeftPanel: () => void;
   onToggleRightPanel: () => void;
   onOpenSettings: () => void;
+  // Notes tabs (only provided when on Notes page)
+  noteTabs?: NoteTab[];
+  activeNoteTabIndex?: number;
+  onNoteTabChange?: (index: number) => void;
+  onNoteTabClose?: (index: number) => void;
 }
 
 export function TopBar({
@@ -42,16 +52,30 @@ export function TopBar({
   onToggleLeftPanel,
   onToggleRightPanel,
   onOpenSettings,
+  noteTabs,
+  activeNoteTabIndex,
+  onNoteTabChange,
+  onNoteTabClose,
 }: TopBarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const LeftPanelIcon = leftPanelOpen ? IconLayoutSidebarFilled : IconLayoutSidebar;
   const RightPanelIcon = rightPanelOpen ? IconLayoutSidebarRightFilled : IconLayoutSidebarRight;
 
+  // Convert noteTabs to PageTabs format
+  const tabs = noteTabs?.map((t) => ({ id: t.noteId, title: t.title }));
+
   return (
-    <div className="flex items-center h-12 px-3 bg-slate-900 border-b border-slate-700">
-      {/* Left section: Logo/Menu + History */}
-      <div className="flex items-center gap-1">
+    <div
+      className="grid items-stretch h-10 bg-slate-900 border-b border-slate-700"
+      style={{
+        gridTemplateColumns: leftPanelOpen
+          ? "var(--agni-left-sidebar-width, 260px) 1fr auto"
+          : "auto 1fr auto",
+      }}
+    >
+      {/* Column 1: Left controls (menu + back/forward) - width matches sidebar */}
+      <div className="flex items-center gap-1 px-3">
         <div className="relative flex items-center">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -102,16 +126,20 @@ export function TopBar({
         </div>
       </div>
 
-      {/* Center section: Page tabs */}
-      <div className="flex-1 flex justify-center">
-        <PageTabs
-          activeTabIndex={activeTabIndex}
-          onTabChange={onTabChange}
-        />
+      {/* Column 2: Tab strip - starts at sidebar boundary, aligned to bottom */}
+      <div className="flex items-end overflow-hidden h-full">
+        {tabs && tabs.length > 0 && onNoteTabChange && (
+          <PageTabs
+            tabs={tabs}
+            activeIndex={activeNoteTabIndex ?? 0}
+            onTabChange={onNoteTabChange}
+            onTabClose={onNoteTabClose}
+          />
+        )}
       </div>
 
-      {/* Right section: Panel toggles and settings */}
-      <div className="flex items-center gap-1">
+      {/* Column 3: Right controls (panel toggles + settings) */}
+      <div className="flex items-center gap-1 px-3">
         <button
           onClick={onToggleLeftPanel}
           className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${

@@ -6,6 +6,11 @@ import { MainContentHeader } from "@/widgets/MainContentHeader";
 import { TopNotificationHost } from "@/widgets/TopNotifications";
 import type { PageId, EditorMode } from "@/app/shell/types";
 
+interface NoteTab {
+  noteId: string;
+  title: string;
+}
+
 interface AgniShellLayoutProps {
   children: React.ReactNode;
   activeTab: PageId;
@@ -29,6 +34,11 @@ interface AgniShellLayoutProps {
   onOpenFileExplorerTab?: () => void;
   onFocusSearch?: () => void;
   onOpenDatePicker?: () => void;
+  // Notes tabs (only provided when on Notes page)
+  noteTabs?: NoteTab[];
+  activeNoteTabIndex?: number;
+  onNoteTabChange?: (index: number) => void;
+  onNoteTabClose?: (index: number) => void;
 }
 
 export function AgniShellLayout({
@@ -49,6 +59,10 @@ export function AgniShellLayout({
   onOpenFileExplorerTab,
   onFocusSearch,
   onOpenDatePicker,
+  noteTabs,
+  activeNoteTabIndex,
+  onNoteTabChange,
+  onNoteTabClose,
 }: AgniShellLayoutProps) {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
@@ -114,8 +128,14 @@ export function AgniShellLayout({
     onOpenDatePicker?.();
   }, [onOpenDatePicker]);
 
+  // CSS variable for sidebar width alignment
+  const sidebarWidth = leftPanelOpen ? 260 : 0;
+
   return (
-    <div className="flex flex-col h-screen w-full bg-slate-950 text-slate-50 overflow-hidden">
+    <div
+      className="flex flex-col h-screen w-full bg-slate-950 text-slate-50 overflow-hidden"
+      style={{ "--agni-left-sidebar-width": `${sidebarWidth}px` } as React.CSSProperties}
+    >
       <TopNotificationHost />
 
       {/* Top Bar */}
@@ -133,6 +153,10 @@ export function AgniShellLayout({
         onToggleLeftPanel={handleToggleLeftPanel}
         onToggleRightPanel={handleToggleRightPanel}
         onOpenSettings={handleOpenSettings}
+        noteTabs={noteTabs}
+        activeNoteTabIndex={activeNoteTabIndex}
+        onNoteTabChange={onNoteTabChange}
+        onNoteTabClose={onNoteTabClose}
       />
 
       {/* Main layout: sidebar + content + optional right panel */}
