@@ -12,6 +12,14 @@ interface MainContentHeaderProps {
   onOpenMenu: () => void;
 }
 
+function formatHeaderFilePath(raw: string): string {
+  if (!raw) return "";
+  const withoutExtension = raw.replace(/\.md$/i, "");
+  const parts = withoutExtension.split(/[\\/]+/).filter(Boolean);
+  if (parts.length === 0) return "";
+  return parts.join(" / ");
+}
+
 export function MainContentHeader({
   filePath,
   editorMode,
@@ -28,7 +36,7 @@ export function MainContentHeader({
       {/* Center section: File path */}
       <div className="flex-1 flex justify-center">
         <span className="text-slate-400 text-sm font-mono truncate max-w-md">
-          {filePath}
+          {formatHeaderFilePath(filePath)}
         </span>
       </div>
 
