@@ -16,7 +16,7 @@ interface NotesFileExplorerPanelProps {
   onCreateFolder?: () => void;
   onMoveNote: (noteId: string, targetFolderPath: string | null) => void;
   onMoveFolder: (folderPath: string, targetFolderPath: string | null) => void;
-  searchInputRef?: React.RefObject<HTMLInputElement>;
+  searchInputRef?: React.RefObject<HTMLInputElement | null>;
   onOpenSearchResult?: (
     noteId: string,
     firstMatchRange: { from: number; to: number } | null

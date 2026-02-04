@@ -34,7 +34,7 @@ interface NotesDrawerProps {
   onMoveNote?: (noteId: string, targetFolderPath: string | null) => void;
   onMoveFolder?: (folderPath: string, targetFolderPath: string | null) => void;
   autoExpandAll?: boolean;
-  searchInputRef?: React.RefObject<HTMLInputElement>;
+  searchInputRef?: React.RefObject<HTMLInputElement | null>;
   onOpenSearchResult?: (
     noteId: string,
     firstMatchRange: { from: number; to: number } | null
