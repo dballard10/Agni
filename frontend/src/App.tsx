@@ -5,16 +5,17 @@ import { GoalsPage } from "@/pages/GoalsPage";
 import { CompanionsPage } from "@/pages/CompanionsPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { NotesPage } from "@/pages/NotesPage";
-import { AppShellLayout } from "@/app/layout";
+import { AgniShellLayout } from "@/app/layout";
 import {
   useWeekState,
   getMostRecentSunday,
   formatDateISO,
 } from "@/features/weekly/useWeekState";
 import { convertWeekToCalendarEvents } from "@/shared/lib/calendar/eventAdapters";
+import type { PageId } from "@/app/shell/types";
 
 function App() {
-  const [activeTab, setActiveTab] = useState("notes");
+  const [activeTab, setActiveTab] = useState<PageId>("notes");
   const { weekState, actions, availableWeekStartsISO } = useWeekState();
   const [pendingWeeklyTaskId, setPendingWeeklyTaskId] = useState<string | null>(
     null
@@ -25,7 +26,7 @@ function App() {
     setActiveTab("weekly");
   };
 
-  const handleTabChange = (nextTab: string) => {
+  const handleTabChange = (nextTab: PageId) => {
     if (nextTab === "weekly" && activeTab !== "weekly") {
       actions.setWeekStart(formatDateISO(getMostRecentSunday()));
       setActiveTab("weekly");
@@ -40,7 +41,7 @@ function App() {
   }, [weekState]);
 
   return (
-    <AppShellLayout activeTab={activeTab} onTabChange={handleTabChange}>
+    <AgniShellLayout activeTab={activeTab} onTabChange={handleTabChange}>
       {activeTab === "weekly" && (
         <WeeklyView
           weekState={weekState}
@@ -71,7 +72,7 @@ function App() {
         <SettingsPage weekState={weekState} actions={actions} />
       )}
       {activeTab === "notes" && <NotesPage />}
-    </AppShellLayout>
+    </AgniShellLayout>
   );
 }
 
