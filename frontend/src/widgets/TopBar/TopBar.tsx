@@ -12,8 +12,8 @@ import { AgniMenuDropdown } from "./AgniMenuDropdown";
 import { PageTabs } from "./PageTabs";
 import type { PageId } from "@/app/shell/types";
 
-interface NoteTab {
-  noteId: string;
+export interface PageTab {
+  id: string;
   title: string;
 }
 
@@ -24,6 +24,7 @@ interface TopBarProps {
   canGoForward: boolean;
   leftPanelOpen: boolean;
   rightPanelOpen: boolean;
+  showRightPanelToggle?: boolean;
   onPageChange: (page: PageId) => void;
   onTabChange: (index: number) => void;
   onGoBack: () => void;
@@ -31,11 +32,11 @@ interface TopBarProps {
   onToggleLeftPanel: () => void;
   onToggleRightPanel: () => void;
   onOpenSettings: () => void;
-  // Notes tabs (only provided when on Notes page)
-  noteTabs?: NoteTab[];
-  activeNoteTabIndex?: number;
-  onNoteTabChange?: (index: number) => void;
-  onNoteTabClose?: (index: number) => void;
+  // Page tabs (generic, used by Notes and Weekly)
+  pageTabs?: PageTab[];
+  activePageTabIndex?: number;
+  onPageTabChange?: (index: number) => void;
+  onPageTabClose?: (index: number) => void;
 }
 
 export function TopBar({
@@ -45,6 +46,7 @@ export function TopBar({
   canGoForward,
   leftPanelOpen,
   rightPanelOpen,
+  showRightPanelToggle = true,
   onPageChange,
   onTabChange: _onTabChange,
   onGoBack,
@@ -52,18 +54,15 @@ export function TopBar({
   onToggleLeftPanel,
   onToggleRightPanel,
   onOpenSettings,
-  noteTabs,
-  activeNoteTabIndex,
-  onNoteTabChange,
-  onNoteTabClose,
+  pageTabs,
+  activePageTabIndex,
+  onPageTabChange,
+  onPageTabClose,
 }: TopBarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const LeftPanelIcon = leftPanelOpen ? IconLayoutSidebarFilled : IconLayoutSidebar;
   const RightPanelIcon = rightPanelOpen ? IconLayoutSidebarRightFilled : IconLayoutSidebarRight;
-
-  // Convert noteTabs to PageTabs format
-  const tabs = noteTabs?.map((t) => ({ id: t.noteId, title: t.title }));
 
   return (
     <div
@@ -128,12 +127,12 @@ export function TopBar({
 
       {/* Column 2: Tab strip - starts at sidebar boundary, aligned to bottom */}
       <div className="flex items-end overflow-hidden h-full">
-        {tabs && tabs.length > 0 && onNoteTabChange && (
+        {pageTabs && pageTabs.length > 0 && onPageTabChange && (
           <PageTabs
-            tabs={tabs}
-            activeIndex={activeNoteTabIndex ?? 0}
-            onTabChange={onNoteTabChange}
-            onTabClose={onNoteTabClose}
+            tabs={pageTabs}
+            activeIndex={activePageTabIndex ?? 0}
+            onTabChange={onPageTabChange}
+            onTabClose={onPageTabClose}
           />
         )}
       </div>
@@ -152,18 +151,20 @@ export function TopBar({
         >
           <LeftPanelIcon className="w-5 h-5" />
         </button>
-        <button
-          onClick={onToggleRightPanel}
-          className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
-            rightPanelOpen
-              ? "text-slate-100 hover:bg-slate-800"
-              : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-          }`}
-          aria-label={rightPanelOpen ? "Hide right panel" : "Show right panel"}
-          title={rightPanelOpen ? "Hide right panel" : "Show right panel"}
-        >
-          <RightPanelIcon className="w-5 h-5" />
-        </button>
+        {showRightPanelToggle && (
+          <button
+            onClick={onToggleRightPanel}
+            className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
+              rightPanelOpen
+                ? "text-slate-100 hover:bg-slate-800"
+                : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            }`}
+            aria-label={rightPanelOpen ? "Hide right panel" : "Show right panel"}
+            title={rightPanelOpen ? "Hide right panel" : "Show right panel"}
+          >
+            <RightPanelIcon className="w-5 h-5" />
+          </button>
+        )}
         <button
           onClick={onOpenSettings}
           className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"

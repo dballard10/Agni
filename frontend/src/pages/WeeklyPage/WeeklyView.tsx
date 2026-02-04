@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { IconFolders, IconPlus, IconTrash, IconSettings, IconCheck } from "@tabler/icons-react";
+import { useCallback, useEffect, useMemo, useRef, useState, useImperativeHandle } from "react";
+import { IconTrash, IconSettings } from "@tabler/icons-react";
 import type {
   WeekState,
   TaskStatus,
@@ -9,25 +9,35 @@ import type {
   Task,
 } from "../../shared/types/weekly";
 import WeekHeader from "../../entities/week/ui/WeekHeader";
-import { RightSidePanel, PanelToggle } from "../../widgets/SidePanel";
 import { PageHeader } from "../../widgets/PageHeader";
 import DayCard from "../../entities/day/ui/DayCard";
-import TaskDetailsContent from "../../features/weekly/edit-task/TaskDetailsContent";
 import { computeWeekStats } from "../../features/weekly/stats";
-import WeeklyStatsPanel from "../../features/weekly/stats/WeeklyStatsPanel";
 import { getDateForDayIndex } from "../../shared/lib/date";
 import { getGroupsForDay, getTasksForDay } from "./selectors";
 import { useWeeklyViewDetails } from "./useWeeklyViewDetails";
-import WeeklyFolderTree from "../../features/weekly/week-picker/WeeklyFolderTree";
 import DeleteRecurrenceModal from "../../features/weekly/recurrence/DeleteRecurrenceModal";
 import { UnsavedChangesModal } from "../../shared/ui/UnsavedChangesModal";
-import CreateWeekPickerButton from "../../features/weekly/week-picker/CreateWeekPickerButton";
 import { useNotifications } from "../../shared/context/NotificationsContext";
 import { useAnchoredMenu } from "../../shared/hooks/useAnchoredMenu";
 import { useClickOutside } from "../../shared/hooks/useClickOutside";
 import { createPortal } from "react-dom";
 import type { DayClipboard, ClipboardTask } from "../../features/weekly/day-settings/dayClipboard";
 import { buildDayClipboard } from "../../features/weekly/day-settings/dayClipboard";
+import { TaskDetailsModal } from "../../features/weekly/edit-task/TaskDetailsModal";
+import { WeeklySidebarPanel } from "../../features/weekly/sidebar/WeeklySidebarPanel";
+
+export interface WeekTab {
+  weekStartISO: string;
+  title: string;
+}
+
+export interface WeeklyPageActions {
+  focusExplorer: () => void;
+  focusSearch: () => void;
+  openOverview: () => void;
+  selectTabIndex: (index: number) => void;
+  closeTabIndex: (index: number) => void;
+}
 
 type WeeklyClipboard = 
   | { kind: "day"; data: DayClipboard }
@@ -89,6 +99,9 @@ interface WeeklyViewProps {
   onSelectWeekStart: (iso: string) => void;
   onCreateCurrentWeek?: () => void;
   onCreateWeekForDate?: (dateISO: string) => void;
+  // Shell integration
+  actionsRef?: React.MutableRefObject<WeeklyPageActions | null>;
+  onShellStateChange?: (state: { weekTabs: WeekTab[]; activeWeekTabIndex: number }) => void;
 }
 
 import { markdownToLinksJson } from "../../features/weekly/edit-task/linksConversion";
@@ -102,20 +115,24 @@ export default function WeeklyView({
   onSelectWeekStart,
   onCreateCurrentWeek,
   onCreateWeekForDate,
+  actionsRef,
+  onShellStateChange,
 }: WeeklyViewProps) {
-  const [panelMode, setPanelMode] = useState<
-    "overview" | "folders" | "taskDetails"
-  >("overview");
+  // Sidebar tab state: "explorer" | "search" | "overview"
+  const [sidebarTab, setSidebarTab] = useState<"explorer" | "search" | "overview">("explorer");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Week tabs state
+  const [weekTabs, setWeekTabs] = useState<WeekTab[]>([]);
+  const [activeWeekTabIndex, setActiveWeekTabIndex] = useState(-1);
 
   // Draft/Dirty state for Task Details (manual save only)
   const [isDirty, setIsDirty] = useState(false);
   const pendingPatchRef = useRef<Record<string, any>>({});
   const lastCommittedTaskIdRef = useRef<string | null>(null);
 
-  // Panel and Modal states
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const isClosingTaskDetailsRef = useRef(false);
-  const closeDetailsTimeoutRef = useRef<number | null>(null);
+  // Task details modal state
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
@@ -137,6 +154,83 @@ export default function WeeklyView({
   const weekStartDateObj = useMemo(
     () => new Date(weekState.weekStart),
     [weekState.weekStart]
+  );
+
+  // Helper to format week title
+  const formatWeekTitle = useCallback((weekStartISO: string) => {
+    const date = new Date(weekStartISO);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }, []);
+
+  // When the current week changes, ensure it's in the tabs
+  useEffect(() => {
+    const currentWeekISO = weekState.weekStart;
+    setWeekTabs((prev) => {
+      const existingIndex = prev.findIndex((t) => t.weekStartISO === currentWeekISO);
+      if (existingIndex >= 0) {
+        // Already in tabs, just select it
+        setActiveWeekTabIndex(existingIndex);
+        return prev;
+      }
+      // Add new tab
+      const newTab: WeekTab = { weekStartISO: currentWeekISO, title: formatWeekTitle(currentWeekISO) };
+      const newTabs = [...prev, newTab];
+      setActiveWeekTabIndex(newTabs.length - 1);
+      return newTabs;
+    });
+  }, [weekState.weekStart, formatWeekTitle]);
+
+  // Sync shell state when tabs change
+  useEffect(() => {
+    onShellStateChange?.({ weekTabs, activeWeekTabIndex });
+  }, [weekTabs, activeWeekTabIndex, onShellStateChange]);
+
+  // Tab management callbacks
+  const handleSelectTabIndex = useCallback((index: number) => {
+    if (index < 0 || index >= weekTabs.length) return;
+    const tab = weekTabs[index];
+    setActiveWeekTabIndex(index);
+    onSelectWeekStart(tab.weekStartISO);
+  }, [weekTabs, onSelectWeekStart]);
+
+  const handleCloseTabIndex = useCallback((index: number) => {
+    if (index < 0 || index >= weekTabs.length) return;
+    setWeekTabs((prev) => {
+      const newTabs = prev.filter((_, i) => i !== index);
+      // If we closed the active tab, select neighbor
+      if (index === activeWeekTabIndex) {
+        const newIndex = Math.min(index, newTabs.length - 1);
+        setActiveWeekTabIndex(newIndex);
+        if (newIndex >= 0 && newTabs[newIndex]) {
+          onSelectWeekStart(newTabs[newIndex].weekStartISO);
+        }
+      } else if (index < activeWeekTabIndex) {
+        // Adjust active index if we removed a tab before it
+        setActiveWeekTabIndex(activeWeekTabIndex - 1);
+      }
+      return newTabs;
+    });
+  }, [weekTabs.length, activeWeekTabIndex, onSelectWeekStart]);
+
+  // Expose actions to parent via ref
+  useImperativeHandle(
+    actionsRef,
+    () => ({
+      focusExplorer: () => {
+        setSidebarTab("explorer");
+      },
+      focusSearch: () => {
+        setSidebarTab("search");
+        // Focus input after state update
+        setTimeout(() => searchInputRef.current?.focus(), 0);
+      },
+      openOverview: () => {
+        setSidebarTab("overview");
+      },
+      selectTabIndex: handleSelectTabIndex,
+      closeTabIndex: handleCloseTabIndex,
+    }),
+    [handleSelectTabIndex, handleCloseTabIndex]
   );
 
   const commitPendingTaskEdits = useCallback(async () => {
@@ -333,7 +427,7 @@ export default function WeeklyView({
       actions.deleteAllForDay(dayIndex);
       // Close any open details if it was for a task in this day
       if (selectedTask && selectedTask.dayIndex === dayIndex) {
-        setIsPanelOpen(false);
+        setIsTaskModalOpen(false);
         closeDetails();
       }
     }
@@ -363,24 +457,13 @@ export default function WeeklyView({
     if (!action) return;
 
     if (action.type === "close") {
-      isClosingTaskDetailsRef.current = true;
       taskSnapshotRef.current = null; // Clear snapshot on close
-      setIsPanelOpen(false);
-      if (closeDetailsTimeoutRef.current) {
-        window.clearTimeout(closeDetailsTimeoutRef.current);
-      }
-      closeDetailsTimeoutRef.current = window.setTimeout(() => {
-        closeDetails();
-        isClosingTaskDetailsRef.current = false;
-        closeDetailsTimeoutRef.current = null;
-      }, 500);
+      setIsTaskModalOpen(false);
+      closeDetails();
     } else if (action.type === "switch") {
       // Clear dirty state first, then switch
       setIsDirty(false);
       pendingPatchRef.current = {};
-      isClosingTaskDetailsRef.current = false;
-      setPanelMode("taskDetails");
-      setIsPanelOpen(true);
       openSidePanel(action.taskId);
       // Note: snapshot will be captured in useEffect when selectedTask changes
     }
@@ -438,9 +521,7 @@ export default function WeeklyView({
       pendingPatchRef.current = {};
     }
 
-    isClosingTaskDetailsRef.current = false;
-    setPanelMode("taskDetails");
-    setIsPanelOpen(true);
+    setIsTaskModalOpen(true);
     openSidePanel(taskId);
   };
 
@@ -468,7 +549,7 @@ export default function WeeklyView({
 
     if (confirmed) {
       actions.clearCurrentWeek();
-      setIsPanelOpen(false);
+      setIsTaskModalOpen(false);
       closeDetails();
     }
   };
@@ -481,7 +562,7 @@ export default function WeeklyView({
       setIsDeleteModalOpen(true);
     } else {
       actions.deleteTask(selectedTaskId);
-      setIsPanelOpen(false);
+      setIsTaskModalOpen(false);
       closeDetails();
     }
   };
@@ -492,7 +573,7 @@ export default function WeeklyView({
     setIsDeleteModalOpen(false);
     setTaskToDelete(null);
     if (selectedTaskId === taskToDelete.id) {
-      setIsPanelOpen(false);
+      setIsTaskModalOpen(false);
       closeDetails();
     }
   };
@@ -503,7 +584,7 @@ export default function WeeklyView({
     setIsDeleteModalOpen(false);
     setTaskToDelete(null);
     if (selectedTaskId === taskToDelete.id) {
-      setIsPanelOpen(false);
+      setIsTaskModalOpen(false);
       closeDetails();
     }
   };
@@ -518,51 +599,12 @@ export default function WeeklyView({
     }
   };
 
-  const toggleOverviewPanel = () => {
-    if (isPanelOpen && panelMode === "overview") {
-      setIsPanelOpen(false);
-      return;
-    }
-    if (detailsMode === "side-panel") {
-      closeDetails();
-    }
-    setPanelMode("overview");
-    setIsPanelOpen(true);
-  };
-
-  const toggleFoldersPanel = () => {
-    if (isPanelOpen && panelMode === "folders") {
-      setIsPanelOpen(false);
-      return;
-    }
-    if (detailsMode === "side-panel") {
-      closeDetails();
-    }
-    setPanelMode("folders");
-    setIsPanelOpen(true);
-  };
-
+  // Sync task modal with detailsMode
   useEffect(() => {
-    if (isClosingTaskDetailsRef.current) return;
-
     if (detailsMode === "side-panel" && selectedTask) {
-      setPanelMode("taskDetails");
-      setIsPanelOpen(true);
-      return;
+      setIsTaskModalOpen(true);
     }
-    if (detailsMode === null && panelMode === "taskDetails" && isPanelOpen) {
-      setIsPanelOpen(false);
-    }
-  }, [detailsMode, selectedTask, panelMode, isPanelOpen]);
-
-  useEffect(() => {
-    return () => {
-      if (closeDetailsTimeoutRef.current) {
-        window.clearTimeout(closeDetailsTimeoutRef.current);
-        closeDetailsTimeoutRef.current = null;
-      }
-    };
-  }, []);
+  }, [detailsMode, selectedTask]);
 
   // Compute stats for the current week
   const weekStats = computeWeekStats(weekState);
@@ -655,33 +697,21 @@ export default function WeeklyView({
         title="Weekly Planner"
         subtitle={<WeekHeader weekStart={weekStartDateObj} />}
         rightContent={
-          <div className="flex items-center gap-2">
-            <button
-              ref={weekActionsRef}
-              onClick={toggleWeekMenu}
-              className={`p-2 rounded-md transition-colors ${
-                isWeekMenuOpen
-                  ? "bg-slate-800 text-slate-100"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
-              }`}
-              title="Week actions"
-              aria-label="Week actions"
-              aria-haspopup="menu"
-              aria-expanded={isWeekMenuOpen}
-            >
-              <IconSettings className="w-5 h-5" />
-            </button>
-            <PanelToggle
-              isOpen={isPanelOpen && panelMode === "folders"}
-              onClick={toggleFoldersPanel}
-              label="Weeks panel"
-              icon={IconFolders}
-            />
-            <PanelToggle
-              isOpen={isPanelOpen && panelMode === "overview"}
-              onClick={toggleOverviewPanel}
-            />
-          </div>
+          <button
+            ref={weekActionsRef}
+            onClick={toggleWeekMenu}
+            className={`p-2 rounded-md transition-colors ${
+              isWeekMenuOpen
+                ? "bg-slate-800 text-slate-100"
+                : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+            }`}
+            title="Week actions"
+            aria-label="Week actions"
+            aria-haspopup="menu"
+            aria-expanded={isWeekMenuOpen}
+          >
+            <IconSettings className="w-5 h-5" />
+          </button>
         }
       />
 
@@ -727,96 +757,36 @@ export default function WeeklyView({
         </div>
       </div>
 
-      <RightSidePanel
-        title={
-          panelMode === "overview"
-            ? "Overview"
-            : panelMode === "folders"
-            ? "Weeks"
-            : panelMode === "taskDetails"
-            ? "Task Details"
-            : "Panel"
-        }
-        headerActions={
-          panelMode === "folders" ? (
-            <div className="flex items-center gap-1">
-              <CreateWeekPickerButton
-                onCreateWeek={(dateISO) => onCreateWeekForDate?.(dateISO)}
-              />
-              <button
-                onClick={onCreateCurrentWeek}
-                className="p-1 text-slate-400 hover:text-slate-100 transition-colors rounded hover:bg-slate-800"
-                title="Create/Select current week"
-                aria-label="Create or select current week"
-              >
-                <IconPlus className="w-5 h-5" />
-              </button>
-            </div>
-          ) : panelMode === "taskDetails" ? (
-            <button
-              type="button"
-              onClick={isDirty ? handleManualSave : undefined}
-              disabled={!isDirty}
-              className={`p-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 ${
-                isDirty
-                  ? "text-indigo-400 hover:text-indigo-300 hover:bg-slate-800"
-                  : "text-slate-500 opacity-40 cursor-default"
-              }`}
-              title={isDirty ? "Save changes" : "No pending changes"}
-              aria-label="Save changes"
-            >
-              <IconCheck size={16} />
-            </button>
-          ) : null
-        }
-        isOpen={isPanelOpen}
-        onClose={() => {
-          if (panelMode === "taskDetails") {
-            // Check if dirty - if so, show unsaved changes modal
-            if (!guardLeaveDetails({ type: "close" })) {
-              return; // Blocked by guard - modal is now open
-            }
-            // Not dirty, proceed with close
-            isClosingTaskDetailsRef.current = true;
-          }
-          setIsPanelOpen(false);
+      {/* Left sidebar panel (portal) */}
+      <WeeklySidebarPanel
+        sidebarTab={sidebarTab}
+        selectedWeekStartISO={weekState.weekStart}
+        availableWeekStartsISO={availableWeekStartsISO}
+        onSelectWeekStart={onSelectWeekStart}
+        onCreateCurrentWeek={onCreateCurrentWeek}
+        onCreateWeekForDate={onCreateWeekForDate}
+        weekStats={weekStats}
+        searchInputRef={searchInputRef}
+      />
 
-          if (panelMode === "taskDetails") {
-            // Keep the title/content during the slide-out animation, then clear selection.
-            if (closeDetailsTimeoutRef.current) {
-              window.clearTimeout(closeDetailsTimeoutRef.current);
+      {/* Task details modal */}
+      {selectedTask && detailsProps && (
+        <TaskDetailsModal
+          isOpen={isTaskModalOpen}
+          task={selectedTask}
+          goals={weekState.goals}
+          companions={weekState.companions}
+          recurrences={weekState.recurrences}
+          onClose={() => {
+            if (!guardLeaveDetails({ type: "close" })) {
+              return;
             }
-            closeDetailsTimeoutRef.current = window.setTimeout(() => {
-              closeDetails();
-              isClosingTaskDetailsRef.current = false;
-              closeDetailsTimeoutRef.current = null;
-            }, 500);
-          }
-        }}
-        persistWidthKey="rightPanelWidth:weekly"
-      >
-        {panelMode === "overview" && <WeeklyStatsPanel stats={weekStats} />}
-        {panelMode === "folders" && (
-          <WeeklyFolderTree
-            selectedWeekStartISO={weekState.weekStart}
-            availableWeekStartsISO={availableWeekStartsISO}
-            onSelectWeekStart={(iso) => {
-              onSelectWeekStart(iso);
-              setPanelMode("folders");
-              setIsPanelOpen(true);
-            }}
-          />
-        )}
-        {panelMode === "taskDetails" && selectedTask && detailsProps && (
-          <TaskDetailsContent
-            task={selectedTask}
-            goals={weekState.goals}
-            companions={weekState.companions}
-            recurrences={weekState.recurrences}
-            {...detailsProps}
-          />
-        )}
-      </RightSidePanel>
+            setIsTaskModalOpen(false);
+            closeDetails();
+          }}
+          {...detailsProps}
+        />
+      )}
 
       <DeleteRecurrenceModal
         isOpen={isDeleteModalOpen}

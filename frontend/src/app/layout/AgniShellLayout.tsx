@@ -1,15 +1,10 @@
 import React, { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { TopBar } from "@/widgets/TopBar";
+import { TopBar, type PageTab } from "@/widgets/TopBar";
 import { ShellSidebar } from "@/widgets/ShellSidebar";
 import { MainContentHeader } from "@/widgets/MainContentHeader";
 import { TopNotificationHost } from "@/widgets/TopNotifications";
 import type { PageId, EditorMode } from "@/app/shell/types";
-
-interface NoteTab {
-  noteId: string;
-  title: string;
-}
 
 interface AgniShellLayoutProps {
   children: React.ReactNode;
@@ -28,17 +23,19 @@ interface AgniShellLayoutProps {
   sidebarContent?: React.ReactNode;
   // Right panel content (passed from page components)
   rightPanelContent?: React.ReactNode;
+  // Right panel toggle visibility
+  showRightPanelToggle?: boolean;
   // Sidebar action callbacks
   onNewItem?: () => void;
   onOpenExplorer?: () => void;
   onOpenFileExplorerTab?: () => void;
   onFocusSearch?: () => void;
-  onOpenDatePicker?: () => void;
-  // Notes tabs (only provided when on Notes page)
-  noteTabs?: NoteTab[];
-  activeNoteTabIndex?: number;
-  onNoteTabChange?: (index: number) => void;
-  onNoteTabClose?: (index: number) => void;
+  onOpenOverview?: () => void;
+  // Page tabs (generic, used by Notes and Weekly)
+  pageTabs?: PageTab[];
+  activePageTabIndex?: number;
+  onPageTabChange?: (index: number) => void;
+  onPageTabClose?: (index: number) => void;
 }
 
 export function AgniShellLayout({
@@ -54,15 +51,16 @@ export function AgniShellLayout({
   onToggleEditorMode,
   sidebarContent,
   rightPanelContent,
+  showRightPanelToggle = true,
   onNewItem,
   onOpenExplorer,
   onOpenFileExplorerTab,
   onFocusSearch,
-  onOpenDatePicker,
-  noteTabs,
-  activeNoteTabIndex,
-  onNoteTabChange,
-  onNoteTabClose,
+  onOpenOverview,
+  pageTabs,
+  activePageTabIndex,
+  onPageTabChange,
+  onPageTabClose,
 }: AgniShellLayoutProps) {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
@@ -124,9 +122,9 @@ export function AgniShellLayout({
     onFocusSearch?.();
   }, [onFocusSearch]);
 
-  const handleOpenDatePicker = useCallback(() => {
-    onOpenDatePicker?.();
-  }, [onOpenDatePicker]);
+  const handleOpenOverview = useCallback(() => {
+    onOpenOverview?.();
+  }, [onOpenOverview]);
 
   // CSS variable for sidebar width alignment
   const sidebarWidth = leftPanelOpen ? 260 : 0;
@@ -146,6 +144,7 @@ export function AgniShellLayout({
         canGoForward={canGoForward}
         leftPanelOpen={leftPanelOpen}
         rightPanelOpen={rightPanelOpen}
+        showRightPanelToggle={showRightPanelToggle}
         onPageChange={handlePageChange}
         onTabChange={handleTabIndexChange}
         onGoBack={handleGoBack}
@@ -153,10 +152,10 @@ export function AgniShellLayout({
         onToggleLeftPanel={handleToggleLeftPanel}
         onToggleRightPanel={handleToggleRightPanel}
         onOpenSettings={handleOpenSettings}
-        noteTabs={noteTabs}
-        activeNoteTabIndex={activeNoteTabIndex}
-        onNoteTabChange={onNoteTabChange}
-        onNoteTabClose={onNoteTabClose}
+        pageTabs={pageTabs}
+        activePageTabIndex={activePageTabIndex}
+        onPageTabChange={onPageTabChange}
+        onPageTabClose={onPageTabClose}
       />
 
       {/* Main layout: sidebar + content + optional right panel */}
@@ -169,7 +168,7 @@ export function AgniShellLayout({
           onOpenExplorer={handleOpenExplorer}
           onOpenFileExplorerTab={handleOpenFileExplorerTab}
           onFocusSearch={handleFocusSearch}
-          onOpenDatePicker={handleOpenDatePicker}
+          onOpenOverview={handleOpenOverview}
         >
           {sidebarContent}
         </ShellSidebar>

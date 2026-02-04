@@ -13,7 +13,7 @@ interface SidebarHeaderIconsProps {
   onOpenExplorer: () => void;
   onOpenFileExplorerTab?: () => void;
   onFocusSearch: () => void;
-  onOpenDatePicker?: () => void;
+  onOpenOverview?: () => void;
 }
 
 export function SidebarHeaderIcons({
@@ -22,12 +22,12 @@ export function SidebarHeaderIcons({
   onOpenExplorer,
   onOpenFileExplorerTab,
   onFocusSearch,
-  onOpenDatePicker,
+  onOpenOverview,
 }: SidebarHeaderIconsProps) {
   const isNotesPage = currentPage === "notes";
   const isWeeklyPage = currentPage === "weekly";
-  const showDatePicker = isWeeklyPage;
-  const showFileExplorerTab = isNotesPage && onOpenFileExplorerTab;
+  const showOverview = isWeeklyPage;
+  const showFileExplorerTab = (isNotesPage || isWeeklyPage) && onOpenFileExplorerTab;
   const showNewItemButton = isNotesPage || isWeeklyPage;
   const showNewFolderButton = isNotesPage;
 
@@ -71,12 +71,12 @@ export function SidebarHeaderIcons({
       >
         <IconSearch className="w-5 h-5" />
       </button>
-      {showDatePicker && onOpenDatePicker && (
+      {showOverview && onOpenOverview && (
         <button
-          onClick={onOpenDatePicker}
+          onClick={onOpenOverview}
           className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
-          aria-label="Open date picker"
-          title="Open date picker"
+          aria-label="Overview"
+          title="Overview"
         >
           <IconCalendarStats className="w-5 h-5" />
         </button>

@@ -9,7 +9,7 @@ interface ShellSidebarProps {
   onOpenExplorer: () => void;
   onOpenFileExplorerTab?: () => void;
   onFocusSearch: () => void;
-  onOpenDatePicker?: () => void;
+  onOpenOverview?: () => void;
   children?: React.ReactNode;
 }
 
@@ -29,7 +29,7 @@ export function ShellSidebar({
   onOpenExplorer,
   onOpenFileExplorerTab,
   onFocusSearch,
-  onOpenDatePicker,
+  onOpenOverview,
   children,
 }: ShellSidebarProps) {
   return (
@@ -45,7 +45,7 @@ export function ShellSidebar({
         onOpenExplorer={onOpenExplorer}
         onOpenFileExplorerTab={onOpenFileExplorerTab}
         onFocusSearch={onFocusSearch}
-        onOpenDatePicker={currentPage === "weekly" ? onOpenDatePicker : undefined}
+        onOpenOverview={currentPage === "weekly" ? onOpenOverview : undefined}
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-3">
         {children ?? (
