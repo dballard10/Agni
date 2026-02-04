@@ -1,25 +1,33 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   IconFilePencil,
-  IconSearch,
   IconChevronLeft,
   IconChevronRight,
-  IconEye,
-  IconPencil,
 } from "@tabler/icons-react";
-import { RightSidePanel, PanelToggle } from "../../widgets/SidePanel";
+import type { EditorMode } from "@/app/shell/types";
 import { LiveMarkdownEditor } from "../../features/notes/editor/LiveMarkdownEditor";
 import { mockNotes, createNewNote, type Note } from "../../mock/mockNotes";
 import { NotesFileExplorerPanel } from "../../features/notes/drawer/NotesFileExplorerPanel";
-import { NotesFileSearchPanel } from "../../features/notes/search/NotesFileSearchPanel";
 
 export type NotesPageActions = {
   createNote: () => void;
   createFolder: () => void;
+  focusSearch: () => void;
+  focusExplorer: () => void;
+  goBack: () => void;
+  goForward: () => void;
+  toggleEditorMode: () => void;
 };
 
 type NotesViewMode = "preview" | "edit";
+
+interface NotesShellState {
+  filePath: string;
+  canGoBack: boolean;
+  canGoForward: boolean;
+  editorMode: EditorMode;
+}
 
 interface HistoryState {
   ids: string[];
@@ -62,9 +70,10 @@ function getAncestorFolderChain(folderPath: string): string[] {
 
 interface NotesPageProps {
   actionsRef?: React.MutableRefObject<NotesPageActions | null>;
+  onShellStateChange?: (state: NotesShellState) => void;
 }
 
-export function NotesPage({ actionsRef }: NotesPageProps = {}) {
+export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {}) {
   const [notes, setNotes] = useState<Note[]>(mockNotes);
   const [folders, setFolders] = useState<string[]>([]);
   const [history, setHistory] = useState<HistoryState>(() => {
@@ -77,11 +86,14 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
 
   const selectedNoteId = history.index >= 0 ? history.ids[history.index] : null;
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [notesViewMode, setNotesViewMode] = useState<NotesViewMode>("preview");
 
   // Jump target for scrolling editor to a match
   const [jumpTo, setJumpTo] = useState<JumpTarget | null>(null);
+
+  // Ref for the sidebar search input
+  const sidebarSearchInputRef = useRef<HTMLInputElement>(null);
+  const [sidebarTab, setSidebarTab] = useState<"explorer" | "search">("explorer");
 
   const canGoBack = history.index > 0;
   const canGoForward = history.index < history.ids.length - 1;
@@ -96,8 +108,8 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
     setHistory((prev) => ({ ...prev, index: prev.index + 1 }));
   }, [canGoForward]);
 
-  const toggleFileSearchPanel = useCallback(() => {
-    setIsDrawerOpen((prev) => !prev);
+  const handleToggleEditorMode = useCallback(() => {
+    setNotesViewMode((prev) => (prev === "preview" ? "edit" : "preview"));
   }, []);
 
   const selectedNote = notes.find((n) => n.id === selectedNoteId) ?? null;
@@ -115,7 +127,6 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
         index: newIds.length - 1,
       };
     });
-    setIsDrawerOpen(false);
   }, []);
 
   // Handle opening a search result with optional jump to match
@@ -141,8 +152,6 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
           nonce: Date.now(),
         });
       }
-
-      setIsDrawerOpen(false);
     },
     []
   );
@@ -157,6 +166,18 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
         index: newIds.length - 1,
       };
     });
+  }, []);
+
+  const handleFocusSearch = useCallback(() => {
+    setSidebarTab("search");
+    requestAnimationFrame(() => {
+      sidebarSearchInputRef.current?.focus();
+    });
+  }, []);
+
+  const handleFocusExplorer = useCallback(() => {
+    setSidebarTab("explorer");
+    sidebarSearchInputRef.current?.blur();
   }, []);
 
   // Open note by label (bracket link) or create if not found
@@ -291,11 +312,44 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
   // Register actions for external components (e.g., sidebar)
   useEffect(() => {
     if (!actionsRef) return;
-    actionsRef.current = { createNote: handleCreateNote, createFolder: handleCreateFolder };
+    actionsRef.current = { 
+      createNote: handleCreateNote, 
+      createFolder: handleCreateFolder,
+      focusSearch: handleFocusSearch,
+      focusExplorer: handleFocusExplorer,
+      goBack: handleGoBack,
+      goForward: handleGoForward,
+      toggleEditorMode: handleToggleEditorMode,
+    };
     return () => {
       if (actionsRef) actionsRef.current = null;
     };
-  }, [actionsRef, handleCreateNote, handleCreateFolder]);
+  }, [
+    actionsRef,
+    handleCreateNote,
+    handleCreateFolder,
+    handleFocusSearch,
+    handleFocusExplorer,
+    handleGoBack,
+    handleGoForward,
+    handleToggleEditorMode,
+  ]);
+
+  useEffect(() => {
+    if (!onShellStateChange) return;
+    onShellStateChange({
+      filePath: selectedNote?.path ?? "Notes",
+      canGoBack,
+      canGoForward,
+      editorMode: notesViewMode,
+    });
+  }, [
+    onShellStateChange,
+    selectedNote?.path,
+    canGoBack,
+    canGoForward,
+    notesViewMode,
+  ]);
 
   const handleCreateNoteInFolder = useCallback(
     (folderPath: string) => {
@@ -634,6 +688,10 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
             onCreateFolderInFolder={handleCreateFolderInFolder}
             onMoveNote={handleMoveNote}
             onMoveFolder={handleMoveFolder}
+            searchInputRef={sidebarSearchInputRef}
+            onOpenSearchResult={handleOpenSearchResult}
+            sidebarTab={sidebarTab}
+            onSidebarTabChange={setSidebarTab}
           />
         </div>,
         sidebarSlot
@@ -691,28 +749,6 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
             </button>
           </div>
 
-          {/* Preview/Edit toggle */}
-          <button
-            onClick={() =>
-              setNotesViewMode((prev) =>
-                prev === "preview" ? "edit" : "preview"
-              )
-            }
-            className={`p-2 rounded-md transition-colors ${
-              notesViewMode === "edit"
-                ? "bg-slate-700 text-slate-100"
-                : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-            }`}
-            title={notesViewMode === "preview" ? "Switch to Edit mode" : "Switch to Preview mode"}
-            aria-label={notesViewMode === "preview" ? "Switch to Edit mode" : "Switch to Preview mode"}
-          >
-            {notesViewMode === "preview" ? (
-              <IconEye className="w-5 h-5" />
-            ) : (
-              <IconPencil className="w-5 h-5" />
-            )}
-          </button>
-
           {/* New note */}
           <button
             onClick={handleCreateNote}
@@ -722,14 +758,6 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
           >
             <IconFilePencil className="w-5 h-5" />
           </button>
-
-          {/* File Search toggle */}
-          <PanelToggle
-            isOpen={isDrawerOpen}
-            onClick={toggleFileSearchPanel}
-            label="File Search"
-            icon={IconSearch}
-          />
         </div>
       </header>
 
@@ -759,30 +787,6 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
           </div>
         )}
       </main>
-
-      {/* Right side drawer - File Search only */}
-      <RightSidePanel
-        title="File Search"
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        persistWidthKey="rightPanelWidth:notes"
-        headerActions={
-          <button
-            onClick={handleCreateNote}
-            className="p-1 text-slate-400 hover:text-slate-100 transition-colors rounded hover:bg-slate-800"
-            aria-label="New note"
-            title="New note"
-          >
-            <IconFilePencil className="w-5 h-5" />
-          </button>
-        }
-      >
-        <NotesFileSearchPanel
-          notes={notes}
-          onOpenResult={handleOpenSearchResult}
-          onRequestClose={() => setIsDrawerOpen(false)}
-        />
-      </RightSidePanel>
       </div>
     </>
   );

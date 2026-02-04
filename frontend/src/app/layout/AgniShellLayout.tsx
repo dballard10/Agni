@@ -26,6 +26,7 @@ interface AgniShellLayoutProps {
   // Sidebar action callbacks
   onNewItem?: () => void;
   onOpenExplorer?: () => void;
+  onOpenFileExplorerTab?: () => void;
   onFocusSearch?: () => void;
   onOpenDatePicker?: () => void;
 }
@@ -45,6 +46,7 @@ export function AgniShellLayout({
   rightPanelContent,
   onNewItem,
   onOpenExplorer,
+  onOpenFileExplorerTab,
   onFocusSearch,
   onOpenDatePicker,
 }: AgniShellLayoutProps) {
@@ -100,6 +102,10 @@ export function AgniShellLayout({
     onOpenExplorer?.();
   }, [onOpenExplorer]);
 
+  const handleOpenFileExplorerTab = useCallback(() => {
+    onOpenFileExplorerTab?.();
+  }, [onOpenFileExplorerTab]);
+
   const handleFocusSearch = useCallback(() => {
     onFocusSearch?.();
   }, [onFocusSearch]);
@@ -133,6 +139,7 @@ export function AgniShellLayout({
           currentPage={activeTab}
           onNewItem={handleNewItem}
           onOpenExplorer={handleOpenExplorer}
+          onOpenFileExplorerTab={handleOpenFileExplorerTab}
           onFocusSearch={handleFocusSearch}
           onOpenDatePicker={handleOpenDatePicker}
         >

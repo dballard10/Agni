@@ -7,6 +7,7 @@ interface ShellSidebarProps {
   currentPage: PageId;
   onNewItem: () => void;
   onOpenExplorer: () => void;
+  onOpenFileExplorerTab?: () => void;
   onFocusSearch: () => void;
   onOpenDatePicker?: () => void;
   children?: React.ReactNode;
@@ -26,6 +27,7 @@ export function ShellSidebar({
   currentPage,
   onNewItem,
   onOpenExplorer,
+  onOpenFileExplorerTab,
   onFocusSearch,
   onOpenDatePicker,
   children,
@@ -41,6 +43,7 @@ export function ShellSidebar({
         currentPage={currentPage}
         onNewItem={onNewItem}
         onOpenExplorer={onOpenExplorer}
+        onOpenFileExplorerTab={onOpenFileExplorerTab}
         onFocusSearch={onFocusSearch}
         onOpenDatePicker={currentPage === "weekly" ? onOpenDatePicker : undefined}
       />

@@ -12,7 +12,7 @@ import {
   formatDateISO,
 } from "@/features/weekly/useWeekState";
 import { convertWeekToCalendarEvents } from "@/shared/lib/calendar/eventAdapters";
-import type { PageId } from "@/app/shell/types";
+import type { PageId, EditorMode } from "@/app/shell/types";
 
 function App() {
   const [activeTab, setActiveTab] = useState<PageId>("notes");
@@ -21,6 +21,17 @@ function App() {
     null
   );
   const notesActionsRef = useRef<NotesPageActions | null>(null);
+  const [notesShellState, setNotesShellState] = useState<{
+    filePath: string;
+    canGoBack: boolean;
+    canGoForward: boolean;
+    editorMode: EditorMode;
+  }>({
+    filePath: "Notes",
+    canGoBack: false,
+    canGoForward: false,
+    editorMode: "preview",
+  });
 
   const handleOpenWeeklyTask = (taskId: string) => {
     setPendingWeeklyTaskId(taskId);
@@ -50,6 +61,45 @@ function App() {
     }
   }, [activeTab]);
 
+  const handleOpenFileExplorerTab = useCallback(() => {
+    if (activeTab === "notes") {
+      notesActionsRef.current?.focusExplorer();
+    }
+  }, [activeTab]);
+
+  const handleFocusSearch = useCallback(() => {
+    if (activeTab === "notes") {
+      notesActionsRef.current?.focusSearch();
+    }
+  }, [activeTab]);
+
+  const handleNotesShellStateChange = useCallback(
+    (nextState: {
+      filePath: string;
+      canGoBack: boolean;
+      canGoForward: boolean;
+      editorMode: EditorMode;
+    }) => {
+      setNotesShellState(nextState);
+    },
+    []
+  );
+
+  const handleNotesGoBack = useCallback(() => {
+    if (activeTab !== "notes") return;
+    notesActionsRef.current?.goBack();
+  }, [activeTab]);
+
+  const handleNotesGoForward = useCallback(() => {
+    if (activeTab !== "notes") return;
+    notesActionsRef.current?.goForward();
+  }, [activeTab]);
+
+  const handleNotesToggleEditorMode = useCallback(() => {
+    if (activeTab !== "notes") return;
+    notesActionsRef.current?.toggleEditorMode();
+  }, [activeTab]);
+
   // Convert weekly tasks to calendar events
   const calendarEvents = useMemo(() => {
     return convertWeekToCalendarEvents(weekState);
@@ -61,7 +111,16 @@ function App() {
       onTabChange={handleTabChange}
       onNewItem={handleNewItem}
       onOpenExplorer={handleOpenExplorer}
+      onOpenFileExplorerTab={handleOpenFileExplorerTab}
+      onFocusSearch={handleFocusSearch}
       sidebarContent={<div id="agni-shell-sidebar-slot" className="h-full" />}
+      filePath={activeTab === "notes" ? notesShellState.filePath : undefined}
+      canGoBack={activeTab === "notes" ? notesShellState.canGoBack : undefined}
+      canGoForward={activeTab === "notes" ? notesShellState.canGoForward : undefined}
+      editorMode={activeTab === "notes" ? notesShellState.editorMode : undefined}
+      onGoBack={handleNotesGoBack}
+      onGoForward={handleNotesGoForward}
+      onToggleEditorMode={handleNotesToggleEditorMode}
     >
       {activeTab === "weekly" && (
         <WeeklyView
@@ -92,7 +151,12 @@ function App() {
       {activeTab === "settings" && (
         <SettingsPage weekState={weekState} actions={actions} />
       )}
-      {activeTab === "notes" && <NotesPage actionsRef={notesActionsRef} />}
+      {activeTab === "notes" && (
+        <NotesPage
+          actionsRef={notesActionsRef}
+          onShellStateChange={handleNotesShellStateChange}
+        />
+      )}
     </AgniShellLayout>
   );
 }

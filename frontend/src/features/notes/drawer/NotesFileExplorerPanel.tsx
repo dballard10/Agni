@@ -14,6 +14,13 @@ interface NotesFileExplorerPanelProps {
   onCreateFolderInFolder: (folderPath: string) => void;
   onMoveNote: (noteId: string, targetFolderPath: string | null) => void;
   onMoveFolder: (folderPath: string, targetFolderPath: string | null) => void;
+  searchInputRef?: React.RefObject<HTMLInputElement>;
+  onOpenSearchResult?: (
+    noteId: string,
+    firstMatchRange: { from: number; to: number } | null
+  ) => void;
+  sidebarTab: "explorer" | "search";
+  onSidebarTabChange: (tab: "explorer" | "search") => void;
 }
 
 export function NotesFileExplorerPanel({
@@ -29,6 +36,10 @@ export function NotesFileExplorerPanel({
   onCreateFolderInFolder,
   onMoveNote,
   onMoveFolder,
+  searchInputRef,
+  onOpenSearchResult,
+  sidebarTab,
+  onSidebarTabChange,
 }: NotesFileExplorerPanelProps) {
   return (
     <NotesDrawer
@@ -44,6 +55,10 @@ export function NotesFileExplorerPanel({
       onCreateFolderInFolder={onCreateFolderInFolder}
       onMoveNote={onMoveNote}
       onMoveFolder={onMoveFolder}
+      searchInputRef={searchInputRef}
+      onOpenSearchResult={onOpenSearchResult}
+      sidebarTab={sidebarTab}
+      onSidebarTabChange={onSidebarTabChange}
     />
   );
 }
