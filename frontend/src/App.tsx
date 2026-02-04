@@ -15,6 +15,26 @@ import {
 import { convertWeekToCalendarEvents } from "@/shared/lib/calendar/eventAdapters";
 import type { PageId, EditorMode } from "@/app/shell/types";
 
+/**
+ * Format a week start ISO date into a display path for the header.
+ * e.g., "2026-01-26" -> "2026/January/Jan 26 to Feb 1"
+ */
+function formatWeeklyHeaderPath(weekStartISO: string): string {
+  const start = new Date(weekStartISO + "T00:00:00");
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+
+  const year = start.getFullYear().toString();
+  const monthLong = start.toLocaleDateString("en-US", { month: "long" });
+
+  const formatShort = (d: Date) =>
+    d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+  const rangeLabel = `${formatShort(start)} to ${formatShort(end)}`;
+
+  return `${year}/${monthLong}/${rangeLabel}`;
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState<PageId>("notes");
   const { weekState, actions, availableWeekStartsISO } = useWeekState();
@@ -219,14 +239,19 @@ function App() {
       onFocusSearch={handleFocusSearch}
       onOpenOverview={handleOpenOverview}
       sidebarContent={<div id="agni-shell-sidebar-slot" className="h-full" />}
-      filePath={activeTab === "notes" ? notesShellState.filePath : undefined}
+      filePath={
+        activeTab === "notes"
+          ? notesShellState.filePath
+          : activeTab === "weekly"
+            ? formatWeeklyHeaderPath(weekState.weekStart)
+            : undefined
+      }
       canGoBack={activeTab === "notes" ? notesShellState.canGoBack : undefined}
       canGoForward={activeTab === "notes" ? notesShellState.canGoForward : undefined}
       editorMode={activeTab === "notes" ? notesShellState.editorMode : undefined}
       onGoBack={handleNotesGoBack}
       onGoForward={handleNotesGoForward}
       onToggleEditorMode={handleNotesToggleEditorMode}
-      showRightPanelToggle={activeTab !== "weekly"}
       pageTabs={pageTabs}
       activePageTabIndex={activePageTabIndex}
       onPageTabChange={handlePageTabChange}
