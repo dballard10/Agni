@@ -44,6 +44,12 @@ function App() {
     }
   }, [activeTab, actions]);
 
+  const handleOpenExplorer = useCallback(() => {
+    if (activeTab === "notes") {
+      notesActionsRef.current?.createFolder();
+    }
+  }, [activeTab]);
+
   // Convert weekly tasks to calendar events
   const calendarEvents = useMemo(() => {
     return convertWeekToCalendarEvents(weekState);
@@ -54,6 +60,7 @@ function App() {
       activeTab={activeTab} 
       onTabChange={handleTabChange}
       onNewItem={handleNewItem}
+      onOpenExplorer={handleOpenExplorer}
       sidebarContent={<div id="agni-shell-sidebar-slot" className="h-full" />}
     >
       {activeTab === "weekly" && (

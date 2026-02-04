@@ -36,8 +36,8 @@ export function SidebarHeaderIcons({
       <button
         onClick={onOpenExplorer}
         className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
-        aria-label="Open explorer"
-        title="Open explorer"
+        aria-label={currentPage === "notes" ? "New folder" : "Open explorer"}
+        title={currentPage === "notes" ? "New folder" : "Open explorer"}
       >
         <IconFolderPlus className="w-5 h-5" />
       </button>

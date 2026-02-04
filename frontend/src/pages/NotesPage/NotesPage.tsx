@@ -16,6 +16,7 @@ import { NotesFileSearchPanel } from "../../features/notes/search/NotesFileSearc
 
 export type NotesPageActions = {
   createNote: () => void;
+  createFolder: () => void;
 };
 
 type NotesViewMode = "preview" | "edit";
@@ -158,15 +159,6 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
     });
   }, []);
 
-  // Register actions for external components (e.g., sidebar)
-  useEffect(() => {
-    if (!actionsRef) return;
-    actionsRef.current = { createNote: handleCreateNote };
-    return () => {
-      if (actionsRef) actionsRef.current = null;
-    };
-  }, [actionsRef, handleCreateNote]);
-
   // Open note by label (bracket link) or create if not found
   const openOrCreateNoteByLabel = useCallback(
     (label: string) => {
@@ -295,6 +287,15 @@ export function NotesPage({ actionsRef }: NotesPageProps = {}) {
 
     setFolders((prev) => [...prev, folderName]);
   }, [folders, notes]);
+
+  // Register actions for external components (e.g., sidebar)
+  useEffect(() => {
+    if (!actionsRef) return;
+    actionsRef.current = { createNote: handleCreateNote, createFolder: handleCreateFolder };
+    return () => {
+      if (actionsRef) actionsRef.current = null;
+    };
+  }, [actionsRef, handleCreateNote, handleCreateFolder]);
 
   const handleCreateNoteInFolder = useCallback(
     (folderPath: string) => {
