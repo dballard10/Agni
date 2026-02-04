@@ -12,6 +12,8 @@ interface NotesFileExplorerPanelProps {
   onDeleteFolder: (folderPath: string) => void;
   onCreateNoteInFolder: (folderPath: string) => void;
   onCreateFolderInFolder: (folderPath: string) => void;
+  onCreateNote?: () => void;
+  onCreateFolder?: () => void;
   onMoveNote: (noteId: string, targetFolderPath: string | null) => void;
   onMoveFolder: (folderPath: string, targetFolderPath: string | null) => void;
   searchInputRef?: React.RefObject<HTMLInputElement>;
@@ -34,6 +36,8 @@ export function NotesFileExplorerPanel({
   onDeleteFolder,
   onCreateNoteInFolder,
   onCreateFolderInFolder,
+  onCreateNote,
+  onCreateFolder,
   onMoveNote,
   onMoveFolder,
   searchInputRef,
@@ -53,6 +57,8 @@ export function NotesFileExplorerPanel({
       onDeleteFolder={onDeleteFolder}
       onCreateNoteInFolder={onCreateNoteInFolder}
       onCreateFolderInFolder={onCreateFolderInFolder}
+      onCreateNote={onCreateNote}
+      onCreateFolder={onCreateFolder}
       onMoveNote={onMoveNote}
       onMoveFolder={onMoveFolder}
       searchInputRef={searchInputRef}

@@ -656,7 +656,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
   return (
     <>
       {sidebarSlot && createPortal(
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col -m-3">
           <NotesFileExplorerPanel
             notes={notes}
             folders={folders}
@@ -668,6 +668,8 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
             onDeleteFolder={handleDeleteFolder}
             onCreateNoteInFolder={handleCreateNoteInFolder}
             onCreateFolderInFolder={handleCreateFolderInFolder}
+            onCreateNote={handleCreateNote}
+            onCreateFolder={handleCreateFolder}
             onMoveNote={handleMoveNote}
             onMoveFolder={handleMoveFolder}
             searchInputRef={sidebarSearchInputRef}
