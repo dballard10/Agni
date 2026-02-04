@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 import {
   IconFilePencil,
@@ -13,6 +13,10 @@ import { LiveMarkdownEditor } from "../../features/notes/editor/LiveMarkdownEdit
 import { mockNotes, createNewNote, type Note } from "../../mock/mockNotes";
 import { NotesFileExplorerPanel } from "../../features/notes/drawer/NotesFileExplorerPanel";
 import { NotesFileSearchPanel } from "../../features/notes/search/NotesFileSearchPanel";
+
+export type NotesPageActions = {
+  createNote: () => void;
+};
 
 type NotesViewMode = "preview" | "edit";
 
@@ -55,7 +59,11 @@ function getAncestorFolderChain(folderPath: string): string[] {
   return chain;
 }
 
-export function NotesPage() {
+interface NotesPageProps {
+  actionsRef?: React.MutableRefObject<NotesPageActions | null>;
+}
+
+export function NotesPage({ actionsRef }: NotesPageProps = {}) {
   const [notes, setNotes] = useState<Note[]>(mockNotes);
   const [folders, setFolders] = useState<string[]>([]);
   const [history, setHistory] = useState<HistoryState>(() => {
@@ -149,6 +157,15 @@ export function NotesPage() {
       };
     });
   }, []);
+
+  // Register actions for external components (e.g., sidebar)
+  useEffect(() => {
+    if (!actionsRef) return;
+    actionsRef.current = { createNote: handleCreateNote };
+    return () => {
+      if (actionsRef) actionsRef.current = null;
+    };
+  }, [actionsRef, handleCreateNote]);
 
   // Open note by label (bracket link) or create if not found
   const openOrCreateNoteByLabel = useCallback(

@@ -1,10 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { WeeklyView } from "@/pages/WeeklyPage";
 import { CalendarView } from "@/pages/CalendarPage";
 import { GoalsPage } from "@/pages/GoalsPage";
 import { CompanionsPage } from "@/pages/CompanionsPage";
 import { SettingsPage } from "@/pages/SettingsPage";
-import { NotesPage } from "@/pages/NotesPage";
+import { NotesPage, type NotesPageActions } from "@/pages/NotesPage";
 import { AgniShellLayout } from "@/app/layout";
 import {
   useWeekState,
@@ -20,6 +20,7 @@ function App() {
   const [pendingWeeklyTaskId, setPendingWeeklyTaskId] = useState<string | null>(
     null
   );
+  const notesActionsRef = useRef<NotesPageActions | null>(null);
 
   const handleOpenWeeklyTask = (taskId: string) => {
     setPendingWeeklyTaskId(taskId);
@@ -35,6 +36,14 @@ function App() {
     setActiveTab(nextTab);
   };
 
+  const handleNewItem = useCallback(() => {
+    if (activeTab === "notes") {
+      notesActionsRef.current?.createNote();
+    } else if (activeTab === "weekly") {
+      actions.createOrSelectCurrentWeek();
+    }
+  }, [activeTab, actions]);
+
   // Convert weekly tasks to calendar events
   const calendarEvents = useMemo(() => {
     return convertWeekToCalendarEvents(weekState);
@@ -44,6 +53,7 @@ function App() {
     <AgniShellLayout 
       activeTab={activeTab} 
       onTabChange={handleTabChange}
+      onNewItem={handleNewItem}
       sidebarContent={<div id="agni-shell-sidebar-slot" className="h-full" />}
     >
       {activeTab === "weekly" && (
@@ -75,7 +85,7 @@ function App() {
       {activeTab === "settings" && (
         <SettingsPage weekState={weekState} actions={actions} />
       )}
-      {activeTab === "notes" && <NotesPage />}
+      {activeTab === "notes" && <NotesPage actionsRef={notesActionsRef} />}
     </AgniShellLayout>
   );
 }
