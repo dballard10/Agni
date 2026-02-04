@@ -1,8 +1,7 @@
 import { useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import {
-  IconFolders,
   IconFilePencil,
-  IconFolderPlus,
   IconSearch,
   IconChevronLeft,
   IconChevronRight,
@@ -15,7 +14,6 @@ import { mockNotes, createNewNote, type Note } from "../../mock/mockNotes";
 import { NotesFileExplorerPanel } from "../../features/notes/drawer/NotesFileExplorerPanel";
 import { NotesFileSearchPanel } from "../../features/notes/search/NotesFileSearchPanel";
 
-type RightPanelMode = "fileExplorer" | "fileSearch";
 type NotesViewMode = "preview" | "edit";
 
 interface HistoryState {
@@ -71,8 +69,6 @@ export function NotesPage() {
   const selectedNoteId = history.index >= 0 ? history.ids[history.index] : null;
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [rightPanelMode, setRightPanelMode] =
-    useState<RightPanelMode>("fileExplorer");
   const [notesViewMode, setNotesViewMode] = useState<NotesViewMode>("preview");
 
   // Jump target for scrolling editor to a match
@@ -91,23 +87,9 @@ export function NotesPage() {
     setHistory((prev) => ({ ...prev, index: prev.index + 1 }));
   }, [canGoForward]);
 
-  const toggleFileExplorerPanel = useCallback(() => {
-    if (isDrawerOpen && rightPanelMode === "fileExplorer") {
-      setIsDrawerOpen(false);
-      return;
-    }
-    setRightPanelMode("fileExplorer");
-    setIsDrawerOpen(true);
-  }, [isDrawerOpen, rightPanelMode]);
-
   const toggleFileSearchPanel = useCallback(() => {
-    if (isDrawerOpen && rightPanelMode === "fileSearch") {
-      setIsDrawerOpen(false);
-      return;
-    }
-    setRightPanelMode("fileSearch");
-    setIsDrawerOpen(true);
-  }, [isDrawerOpen, rightPanelMode]);
+    setIsDrawerOpen((prev) => !prev);
+  }, []);
 
   const selectedNote = notes.find((n) => n.id === selectedNoteId) ?? null;
 
@@ -612,10 +594,36 @@ export function NotesPage() {
     []
   );
 
+  // Portal file explorer to left sidebar
+  const sidebarSlot = typeof document !== "undefined" 
+    ? document.getElementById("agni-shell-sidebar-slot") 
+    : null;
+
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-2 border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm">
+    <>
+      {sidebarSlot && createPortal(
+        <div className="h-full flex flex-col">
+          <NotesFileExplorerPanel
+            notes={notes}
+            folders={folders}
+            selectedNoteId={selectedNoteId}
+            onOpenNote={handleSelectNote}
+            onRenameNote={handleRenameNote}
+            onDeleteNote={handleDeleteNote}
+            onRenameFolder={handleRenameFolder}
+            onDeleteFolder={handleDeleteFolder}
+            onCreateNoteInFolder={handleCreateNoteInFolder}
+            onCreateFolderInFolder={handleCreateFolderInFolder}
+            onMoveNote={handleMoveNote}
+            onMoveFolder={handleMoveFolder}
+          />
+        </div>,
+        sidebarSlot
+      )}
+
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <header className="flex items-center justify-between px-6 py-2 border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm">
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-3 min-w-0">
             <h1 className="text-lg font-semibold text-slate-100 truncate flex-1">
@@ -697,17 +705,9 @@ export function NotesPage() {
             <IconFilePencil className="w-5 h-5" />
           </button>
 
-          {/* File Explorer toggle */}
-          <PanelToggle
-            isOpen={isDrawerOpen && rightPanelMode === "fileExplorer"}
-            onClick={toggleFileExplorerPanel}
-            label="File Explorer"
-            icon={IconFolders}
-          />
-
           {/* File Search toggle */}
           <PanelToggle
-            isOpen={isDrawerOpen && rightPanelMode === "fileSearch"}
+            isOpen={isDrawerOpen}
             onClick={toggleFileSearchPanel}
             label="File Search"
             icon={IconSearch}
@@ -742,70 +742,31 @@ export function NotesPage() {
         )}
       </main>
 
-      {/* Right side drawer */}
+      {/* Right side drawer - File Search only */}
       <RightSidePanel
-        title={
-          rightPanelMode === "fileExplorer" ? "File Explorer" : "File Search"
-        }
+        title="File Search"
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         persistWidthKey="rightPanelWidth:notes"
         headerActions={
-          rightPanelMode === "fileExplorer" ? (
-            <>
-              <button
-                onClick={handleCreateFolder}
-                className="p-1 text-slate-400 hover:text-slate-100 transition-colors rounded hover:bg-slate-800"
-                aria-label="New folder"
-                title="New folder"
-              >
-                <IconFolderPlus className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleCreateNote}
-                className="p-1 text-slate-400 hover:text-slate-100 transition-colors rounded hover:bg-slate-800"
-                aria-label="New note"
-                title="New note"
-              >
-                <IconFilePencil className="w-5 h-5" />
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={handleCreateNote}
-              className="p-1 text-slate-400 hover:text-slate-100 transition-colors rounded hover:bg-slate-800"
-              aria-label="New note"
-              title="New note"
-            >
-              <IconFilePencil className="w-5 h-5" />
-            </button>
-          )
+          <button
+            onClick={handleCreateNote}
+            className="p-1 text-slate-400 hover:text-slate-100 transition-colors rounded hover:bg-slate-800"
+            aria-label="New note"
+            title="New note"
+          >
+            <IconFilePencil className="w-5 h-5" />
+          </button>
         }
       >
-        {rightPanelMode === "fileExplorer" ? (
-          <NotesFileExplorerPanel
-            notes={notes}
-            folders={folders}
-            selectedNoteId={selectedNoteId}
-            onOpenNote={handleSelectNote}
-            onRenameNote={handleRenameNote}
-            onDeleteNote={handleDeleteNote}
-            onRenameFolder={handleRenameFolder}
-            onDeleteFolder={handleDeleteFolder}
-            onCreateNoteInFolder={handleCreateNoteInFolder}
-            onCreateFolderInFolder={handleCreateFolderInFolder}
-            onMoveNote={handleMoveNote}
-            onMoveFolder={handleMoveFolder}
-          />
-        ) : (
-          <NotesFileSearchPanel
-            notes={notes}
-            onOpenResult={handleOpenSearchResult}
-            onRequestClose={() => setIsDrawerOpen(false)}
-          />
-        )}
+        <NotesFileSearchPanel
+          notes={notes}
+          onOpenResult={handleOpenSearchResult}
+          onRequestClose={() => setIsDrawerOpen(false)}
+        />
       </RightSidePanel>
-    </div>
+      </div>
+    </>
   );
 }
 

@@ -41,7 +41,11 @@ function App() {
   }, [weekState]);
 
   return (
-    <AgniShellLayout activeTab={activeTab} onTabChange={handleTabChange}>
+    <AgniShellLayout 
+      activeTab={activeTab} 
+      onTabChange={handleTabChange}
+      sidebarContent={<div id="agni-shell-sidebar-slot" className="h-full" />}
+    >
       {activeTab === "weekly" && (
         <WeeklyView
           weekState={weekState}
