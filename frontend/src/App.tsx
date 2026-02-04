@@ -252,6 +252,7 @@ function App() {
       onGoBack={handleNotesGoBack}
       onGoForward={handleNotesGoForward}
       onToggleEditorMode={handleNotesToggleEditorMode}
+      headerTitle={activeTab === "weekly" ? "Weekly Planner" : undefined}
       pageTabs={pageTabs}
       activePageTabIndex={activePageTabIndex}
       onPageTabChange={handlePageTabChange}

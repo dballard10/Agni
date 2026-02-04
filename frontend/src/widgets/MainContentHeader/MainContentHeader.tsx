@@ -10,6 +10,8 @@ interface MainContentHeaderProps {
   editorMode: EditorMode;
   onToggleEditorMode: () => void;
   onOpenMenu: () => void;
+  /** Optional page title shown at the left of the header */
+  title?: string;
 }
 
 function formatHeaderFilePath(raw: string): string {
@@ -25,23 +27,28 @@ export function MainContentHeader({
   editorMode,
   onToggleEditorMode,
   onOpenMenu,
+  title,
 }: MainContentHeaderProps) {
   const EditorIcon = editorMode === "preview" ? IconBook : IconEdit;
 
   return (
-    <div className="flex items-center h-10 px-3 bg-slate-900 border-b border-slate-700">
-      {/* Left spacer for visual balance */}
-      <div className="w-14" />
-
-      {/* Center section: File path */}
-      <div className="flex-1 flex justify-center">
-        <span className="text-slate-400 text-sm font-mono truncate max-w-md">
-          {formatHeaderFilePath(filePath)}
-        </span>
+    <div className="grid grid-cols-[1fr_auto_1fr] items-center h-10 px-3 bg-slate-900 border-b border-slate-700">
+      {/* Left section: Optional title */}
+      <div className="min-w-0 flex items-center">
+        {title && (
+          <span className="text-slate-400 text-sm font-mono truncate">
+            {title}
+          </span>
+        )}
       </div>
 
+      {/* Center section: File path */}
+      <span className="text-slate-400 text-sm font-mono truncate max-w-md px-4">
+        {formatHeaderFilePath(filePath)}
+      </span>
+
       {/* Right section: Editor mode toggle and menu */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 justify-end">
         <button
           onClick={onToggleEditorMode}
           className="flex items-center justify-center w-7 h-7 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"

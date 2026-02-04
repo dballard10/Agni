@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useImperativeHandle } from "react";
-import { IconTrash, IconSettings } from "@tabler/icons-react";
 import type {
   WeekState,
   TaskStatus,
@@ -8,8 +7,6 @@ import type {
   RecurrenceRule,
   Task,
 } from "../../shared/types/weekly";
-import WeekHeader from "../../entities/week/ui/WeekHeader";
-import { PageHeader } from "../../widgets/PageHeader";
 import DayCard from "../../entities/day/ui/DayCard";
 import { computeWeekStats } from "../../features/weekly/stats";
 import { getDateForDayIndex } from "../../shared/lib/date";
@@ -18,9 +15,6 @@ import { useWeeklyViewDetails } from "./useWeeklyViewDetails";
 import DeleteRecurrenceModal from "../../features/weekly/recurrence/DeleteRecurrenceModal";
 import { UnsavedChangesModal } from "../../shared/ui/UnsavedChangesModal";
 import { useNotifications } from "../../shared/context/NotificationsContext";
-import { useAnchoredMenu } from "../../shared/hooks/useAnchoredMenu";
-import { useClickOutside } from "../../shared/hooks/useClickOutside";
-import { createPortal } from "react-dom";
 import type { DayClipboard, ClipboardTask } from "../../features/weekly/day-settings/dayClipboard";
 import { buildDayClipboard } from "../../features/weekly/day-settings/dayClipboard";
 import { TaskDetailsModal } from "../../features/weekly/edit-task/TaskDetailsModal";
@@ -271,35 +265,6 @@ export default function WeeklyView({
 
   const { confirm, notify } = useNotifications();
 
-  // Week actions menu state
-  const weekActionsRef = useRef<HTMLButtonElement>(null);
-  const weekMenuRef = useRef<HTMLDivElement>(null);
-  const {
-    isOpen: isWeekMenuOpen,
-    position: weekMenuPosition,
-    toggle: toggleWeekMenu,
-    close: closeWeekMenu,
-  } = useAnchoredMenu({
-    resolveAnchor: () => weekActionsRef.current,
-    menuWidth: 180,
-  });
-
-  useClickOutside<HTMLElement>(
-    [weekActionsRef, weekMenuRef],
-    closeWeekMenu,
-    isWeekMenuOpen
-  );
-
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isWeekMenuOpen) {
-        closeWeekMenu();
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [isWeekMenuOpen, closeWeekMenu]);
-
   // Day/Task clipboard state
   const [clipboard, setClipboard] = useState<WeeklyClipboard | null>(null);
 
@@ -537,23 +502,6 @@ export default function WeeklyView({
     });
   };
 
-  const handleClearWeek = async () => {
-    const startStr = weekState.weekStart;
-    const confirmed = await confirm({
-      title: "Clear this week?",
-      message: `Are you sure you want to clear all tasks and groups for the week of ${startStr}? This will also remove recurring tasks for this week only.`,
-      confirmLabel: "Delete all",
-      cancelLabel: "No",
-      tone: "danger",
-    });
-
-    if (confirmed) {
-      actions.clearCurrentWeek();
-      setIsTaskModalOpen(false);
-      closeDetails();
-    }
-  };
-
   const handleDeleteTask = () => {
     if (!selectedTaskId || !selectedTask) return;
 
@@ -693,28 +641,6 @@ export default function WeeklyView({
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      <PageHeader
-        title="Weekly Planner"
-        subtitle={<WeekHeader weekStart={weekStartDateObj} />}
-        rightContent={
-          <button
-            ref={weekActionsRef}
-            onClick={toggleWeekMenu}
-            className={`p-2 rounded-md transition-colors ${
-              isWeekMenuOpen
-                ? "bg-slate-800 text-slate-100"
-                : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
-            }`}
-            title="Week actions"
-            aria-label="Week actions"
-            aria-haspopup="menu"
-            aria-expanded={isWeekMenuOpen}
-          >
-            <IconSettings className="w-5 h-5" />
-          </button>
-        }
-      />
-
       <div className="flex-1 mx-auto max-w-6xl w-full p-4 md:p-6">
         <div className="flex flex-col gap-4 mt-2">
           {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
@@ -801,34 +727,6 @@ export default function WeeklyView({
         onSave={handleUnsavedModalSave}
         onDiscard={handleUnsavedModalDiscard}
       />
-
-      {/* Week Actions Menu */}
-      {isWeekMenuOpen &&
-        weekMenuPosition &&
-        createPortal(
-          <div
-            ref={weekMenuRef}
-            className="fixed z-[60] bg-slate-900 border border-slate-700 rounded-lg shadow-xl py-1 min-w-[180px] overflow-hidden"
-            style={{
-              top: weekMenuPosition.top,
-              left: weekMenuPosition.left,
-            }}
-            role="menu"
-          >
-            <button
-              onClick={() => {
-                closeWeekMenu();
-                handleClearWeek();
-              }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors text-left"
-              role="menuitem"
-            >
-              <IconTrash className="w-4 h-4" />
-              <span>Clear current week</span>
-            </button>
-          </div>,
-          document.body
-        )}
     </div>
   );
 }

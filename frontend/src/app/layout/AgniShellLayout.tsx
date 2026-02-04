@@ -36,6 +36,8 @@ interface AgniShellLayoutProps {
   activePageTabIndex?: number;
   onPageTabChange?: (index: number) => void;
   onPageTabClose?: (index: number) => void;
+  // Optional title shown in the main content header (left side)
+  headerTitle?: string;
 }
 
 export function AgniShellLayout({
@@ -61,6 +63,7 @@ export function AgniShellLayout({
   activePageTabIndex,
   onPageTabChange,
   onPageTabClose,
+  headerTitle,
 }: AgniShellLayoutProps) {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
@@ -181,6 +184,7 @@ export function AgniShellLayout({
             editorMode={editorMode}
             onToggleEditorMode={handleToggleEditorMode}
             onOpenMenu={handleOpenMenu}
+            title={headerTitle}
           />
 
           {/* Main Content Body */}

@@ -9,7 +9,6 @@ import {
   IconCheck,
 } from "@tabler/icons-react";
 import type { WeekState, Companion, Task } from "../../shared/types/weekly";
-import { PageHeader } from "../../widgets/PageHeader";
 import { RightSidePanel } from "../../widgets/SidePanel";
 import { useClickOutside } from "../../shared/hooks/useClickOutside";
 import CompanionAvatar from "../../entities/companion/ui/CompanionAvatar";
@@ -171,20 +170,6 @@ export default function CompanionsPage({
 
   return (
     <div className="flex flex-col min-h-screen pb-12">
-      <PageHeader
-        title="Companions"
-        rightContent={
-          <button
-            onClick={handleOpenAdd}
-            className="p-2 rounded-md transition-colors text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-            aria-label="Add companion"
-            title="Add companion"
-          >
-            <IconUserPlus className="w-5 h-5" />
-          </button>
-        }
-      />
-
       <div className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
         {weekState.companions.length === 0 ? (
           /* Empty State */

@@ -2,8 +2,7 @@ import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { IconPlus, IconUsers } from "@tabler/icons-react";
 import type { WeekState, Goal } from "../../shared/types/weekly";
-import { PageHeader } from "../../widgets/PageHeader";
-import { PanelToggle, RightSidePanel } from "../../widgets/SidePanel";
+import { RightSidePanel } from "../../widgets/SidePanel";
 import { computeWeekStats } from "../../features/weekly/stats";
 import GoalDetailsPanel from "../../features/goals/goal-details/GoalDetailsPanel";
 import GoalCard from "../../entities/goal/ui/GoalCard";
@@ -186,17 +185,6 @@ export default function GoalsPage({
 
   return (
     <div className="flex flex-col min-h-screen pb-12">
-      <PageHeader
-        title="Goals"
-        rightContent={
-          <PanelToggle
-            isOpen={isStatsPanelOpen}
-            onClick={handleToggleStatsPanel}
-            label="Statistics panel"
-          />
-        }
-      />
-
       <div className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
         <div className="space-y-6">
           <div className="grid gap-4">

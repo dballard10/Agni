@@ -54,7 +54,7 @@ entities/
   day/
     ui/         # DayCard, DayCardHeader, AddButton
   week/
-    ui/         # WeekHeader
+    model/      # Week types and domain logic
   group/
     ui/         # GroupCard
   calendar-event/
@@ -96,7 +96,6 @@ Big UI regions that compose features and entities. Keep widgets "dumb" - they re
 ```
 widgets/
   SidePanel/        # RightSidePanel, LeftSidebar, PanelToggle
-  PageHeader/       # PageHeader component
   TopNotifications/ # TopNotificationHost
 ```
 

@@ -10,7 +10,6 @@ import {
   useAppSettings,
   useSetAppSettings,
 } from "../../shared/context/AppSettingsContext";
-import { PageHeader } from "../../widgets/PageHeader";
 import {
   IconPalette,
   IconMapPin,
@@ -39,7 +38,6 @@ export default function SettingsPage({ weekState, actions }: SettingsPageProps) 
   if (activeSubpage === "editing-and-saving") {
     return (
       <div className="flex flex-col min-h-screen pb-12">
-        <PageHeader title="Settings" />
         <div className="flex-1 max-w-4xl w-full mx-auto p-4 md:p-6">
           <EditingAndSavingSettingsPage onBack={() => setActiveSubpage(null)} />
         </div>
@@ -49,8 +47,6 @@ export default function SettingsPage({ weekState, actions }: SettingsPageProps) 
 
   return (
     <div className="flex flex-col min-h-screen pb-12">
-      <PageHeader title="Settings" />
-
       <div className="flex-1 max-w-4xl w-full mx-auto p-4 md:p-6 space-y-8">
         {/* Navigation to Subpages */}
         <section className="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
