@@ -40,13 +40,13 @@ interface TopBarProps {
 
 export function TopBar({
   currentPage,
-  activeTabIndex,
+  activeTabIndex: _activeTabIndex,
   canGoBack,
   canGoForward,
   leftPanelOpen,
   rightPanelOpen,
   onPageChange,
-  onTabChange,
+  onTabChange: _onTabChange,
   onGoBack,
   onGoForward,
   onToggleLeftPanel,
