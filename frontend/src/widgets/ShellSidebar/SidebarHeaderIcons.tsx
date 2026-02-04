@@ -28,7 +28,7 @@ export function SidebarHeaderIcons({
   const isWeeklyPage = currentPage === "weekly";
   const showOverview = isWeeklyPage;
   const showFileExplorerTab = (isNotesPage || isWeeklyPage) && onOpenFileExplorerTab;
-  const showNewItemButton = isNotesPage || isWeeklyPage;
+  const showNewItemButton = isNotesPage;
   const showNewFolderButton = isNotesPage;
 
   return (
@@ -37,8 +37,8 @@ export function SidebarHeaderIcons({
         <button
           onClick={onNewItem}
           className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
-          aria-label={isWeeklyPage ? "Create new week" : "Create new note"}
-          title={isWeeklyPage ? "Create new week" : "Create new note"}
+          aria-label="Create new note"
+          title="Create new note"
         >
           <IconFilePlus className="w-5 h-5" />
         </button>
