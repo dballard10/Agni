@@ -149,17 +149,6 @@ export default function GoalsPage({
     setEditingGoalId(null);
   };
 
-  const handleToggleStatsPanel = () => {
-    if (isStatsPanelOpen) {
-      setIsStatsPanelOpen(false);
-      setReturnToStatsOnClose(false);
-    } else {
-      setIsStatsPanelOpen(true);
-      setSelectedGoalId(null);
-      setReturnToStatsOnClose(false);
-    }
-  };
-
   const handleGoalSelect = (goalId: string) => {
     setReturnToStatsOnClose(isStatsPanelOpen);
     setIsStatsPanelOpen(false);

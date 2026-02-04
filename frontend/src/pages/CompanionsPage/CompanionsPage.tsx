@@ -5,7 +5,6 @@ import {
   IconTrash,
   IconUsers,
   IconMessageCircle,
-  IconUserPlus,
   IconCheck,
 } from "@tabler/icons-react";
 import type { WeekState, Companion, Task } from "../../shared/types/weekly";
