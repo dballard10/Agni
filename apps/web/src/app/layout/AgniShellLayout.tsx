@@ -72,6 +72,7 @@ export function AgniShellLayout({
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [sidebarWidth, setSidebarWidth] = useState(260);
 
   const handleToggleLeftPanel = useCallback(() => {
     setLeftPanelOpen((prev) => !prev);
@@ -118,12 +119,12 @@ export function AgniShellLayout({
   }, [onOpenOverview]);
 
   // CSS variable for sidebar width alignment
-  const sidebarWidth = leftPanelOpen ? 260 : 0;
+  const effectiveSidebarWidth = leftPanelOpen ? sidebarWidth : 0;
 
   return (
     <div
       className="flex flex-col h-screen w-full bg-slate-950 text-slate-50 overflow-hidden"
-      style={{ "--agni-left-sidebar-width": `${sidebarWidth}px` } as React.CSSProperties}
+      style={{ "--agni-left-sidebar-width": `${effectiveSidebarWidth}px` } as React.CSSProperties}
     >
       <TopNotificationHost />
 
@@ -158,6 +159,8 @@ export function AgniShellLayout({
           onOpenFileExplorerTab={handleOpenFileExplorerTab}
           onFocusSearch={handleFocusSearch}
           onOpenOverview={handleOpenOverview}
+          onClose={() => setLeftPanelOpen(false)}
+          onWidthChange={setSidebarWidth}
         >
           {sidebarContent}
         </ShellSidebar>

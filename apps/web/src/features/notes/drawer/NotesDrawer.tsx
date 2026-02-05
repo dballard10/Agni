@@ -211,6 +211,7 @@ export function NotesDrawer({
   } | null>(null);
   const [draftName, setDraftName] = useState("");
   const editInputRef = useRef<HTMLInputElement>(null);
+  const hoverExpandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { isOpen, position, open, close } = useAnchoredMenu({
     resolveAnchor: () => anchorRef.current,
@@ -308,6 +309,22 @@ export function NotesDrawer({
       editInputRef.current.setSelectionRange(len, len);
     }
   }, [editing]);
+
+  // Clean up hover expand timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverExpandTimeoutRef.current) {
+        clearTimeout(hoverExpandTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const clearHoverExpandTimeout = useCallback(() => {
+    if (hoverExpandTimeoutRef.current) {
+      clearTimeout(hoverExpandTimeoutRef.current);
+      hoverExpandTimeoutRef.current = null;
+    }
+  }, []);
 
   const toggleFolder = useCallback((path: string) => {
     setExpandedFolders((prev) => {
@@ -525,19 +542,40 @@ export function NotesDrawer({
   const handleDragOver = (e: React.DragEvent, targetPath: string | null) => {
     e.preventDefault();
     e.stopPropagation();
-    setDragOverPath(targetPath || "root");
+    const newDragOverPath = targetPath || "root";
+
+    // Only process if we're entering a new target
+    if (dragOverPath !== newDragOverPath) {
+      clearHoverExpandTimeout();
+      setDragOverPath(newDragOverPath);
+
+      // If hovering over a collapsed folder, set timeout to expand
+      if (targetPath && !expandedFolders.has(targetPath)) {
+        hoverExpandTimeoutRef.current = setTimeout(() => {
+          setExpandedFolders((prev) => {
+            const next = new Set(prev);
+            next.add(targetPath);
+            return next;
+          });
+          hoverExpandTimeoutRef.current = null;
+        }, 600);
+      }
+    }
+
     e.dataTransfer.dropEffect = "move";
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    clearHoverExpandTimeout();
     setDragOverPath(null);
   };
 
   const handleDrop = (e: React.DragEvent, targetPath: string | null) => {
     e.preventDefault();
     e.stopPropagation();
+    clearHoverExpandTimeout();
     setDragOverPath(null);
 
     const data = e.dataTransfer.getData("application/notes-dnd");
