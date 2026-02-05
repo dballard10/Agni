@@ -6,10 +6,7 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "declaration": true,
-    "declarationMap": true,
-    "composite": true,
-    "outDir": "dist"
+    "noEmit": true
   },
   "include": ["src/**/*"]
 }
