@@ -4,3 +4,4 @@ export { TopBar } from "./TopBar";
 export type { PageTab } from "./TopBar";
 export { PageTabs } from "./PageTabs";
 export { AgniMenuDropdown } from "./AgniMenuDropdown";
+export { LibraryMenuDropdown } from "./LibraryMenuDropdown";

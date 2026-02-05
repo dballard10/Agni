@@ -1,10 +1,10 @@
 {
-  "name": "frontend",
+  "name": "@agni/web",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "preinstall": "node ../scripts/guard-workspace-install.cjs",
+    "preinstall": "node ../../scripts/guard-workspace-install.cjs",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

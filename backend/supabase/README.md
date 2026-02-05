@@ -29,4 +29,4 @@ This folder contains the Supabase configuration, migrations, and seed data for l
 
 ## Connecting from the App
 
-The local API URL and Keys are available via `npm run supabase:status`. Use the `anon` key in your `frontend/.env.development` file.
+The local API URL and Keys are available via `npm run supabase:status`. Use the `anon` key in your `apps/web/.env.development` file.

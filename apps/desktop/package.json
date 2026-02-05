@@ -1,0 +1,43 @@
+{
+  "name": "@agni/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main/index.js",
+  "scripts": {
+    "preinstall": "node ../../scripts/guard-workspace-install.cjs",
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "package": "electron-builder"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^35.1.0",
+    "electron-builder": "^26.0.0",
+    "electron-vite": "^3.1.0",
+    "typescript": "~5.9.3",
+    "vite": "^6.0.0"
+  },
+  "build": {
+    "appId": "com.agni.app",
+    "productName": "Agni",
+    "directories": {
+      "output": "release"
+    },
+    "mac": {
+      "target": ["dmg", "zip"]
+    },
+    "win": {
+      "target": ["nsis", "zip"]
+    },
+    "linux": {
+      "target": ["AppImage", "deb"]
+    }
+  }
+}

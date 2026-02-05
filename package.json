@@ -1,22 +1,33 @@
 {
-  "name": "planner-calendar-goal-app-monorepo",
+  "name": "agni-monorepo",
   "private": true,
   "version": "1.0.0",
   "workspaces": [
-    "frontend"
+    "apps/web",
+    "apps/desktop",
+    "apps/mobile",
+    "packages/shared",
+    "packages/api"
   ],
   "scripts": {
-    "dev": "concurrently -n fe,be -c cyan,magenta \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev": "concurrently -n web,be -c cyan,magenta \"npm run dev:web\" \"npm run dev:backend\"",
+    "dev:web": "npm run dev --workspace=@agni/web",
+    "dev:desktop": "npm run dev --workspace=@agni/desktop",
+    "dev:mobile": "npm run start --workspace=@agni/mobile",
     "dev:backend": "cd backend && uv run python -m uvicorn app.main:app --reload --port 8000",
-    "build": "npm run build --workspace=frontend",
+    "dev:web+backend": "concurrently -n web,be -c cyan,magenta \"npm run dev:web\" \"npm run dev:backend\"",
+    "dev:desktop+backend": "concurrently -n desk,be -c blue,magenta \"npm run dev:desktop\" \"npm run dev:backend\"",
+    "build": "npm run build --workspace=@agni/web",
+    "build:desktop": "npm run build --workspace=@agni/desktop",
+    "package:desktop": "npm run package --workspace=@agni/desktop",
     "lint": "eslint .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "supabase:start": "SUPABASE_WORKDIR=backend supabase start",
     "supabase:stop": "SUPABASE_WORKDIR=backend supabase stop",
     "supabase:status": "SUPABASE_WORKDIR=backend supabase status",
     "supabase:reset": "SUPABASE_WORKDIR=backend supabase db reset",
     "supabase:migration:new": "SUPABASE_WORKDIR=backend supabase migration new",
-    "supabase:gen:types": "SUPABASE_WORKDIR=backend supabase gen types typescript --local > frontend/src/types/supabase.ts"
+    "supabase:gen:types": "SUPABASE_WORKDIR=backend supabase gen types typescript --local > apps/web/src/types/supabase.ts"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

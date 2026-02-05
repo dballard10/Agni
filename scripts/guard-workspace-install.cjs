@@ -11,13 +11,15 @@ const path = require('path');
 const initCwd = process.env.INIT_CWD;
 const currentCwd = process.cwd();
 
-// If someone runs `npm install` inside the frontend folder, initCwd will be that folder.
+// If someone runs `npm install` inside a workspace folder, initCwd will be that folder.
 // If run from the root, initCwd will be the root.
 if (initCwd && path.resolve(initCwd) === path.resolve(currentCwd)) {
   console.error('\n' + '='.repeat(60));
-  console.error('ERROR: Do not run npm commands directly in the "frontend" folder.');
+  console.error('ERROR: Do not run npm commands directly in a workspace folder.');
   console.error('Please run all installs from the project root:');
-  console.error('  npm install <pkg> --workspace=frontend');
+  console.error('  npm install <pkg> --workspace=@agni/web');
+  console.error('  npm install <pkg> --workspace=@agni/desktop');
+  console.error('  npm install <pkg> --workspace=@agni/mobile');
   console.error('='.repeat(60) + '\n');
   process.exit(1);
 }

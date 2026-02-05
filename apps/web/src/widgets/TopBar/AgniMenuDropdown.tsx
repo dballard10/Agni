@@ -3,8 +3,6 @@ import {
   IconFolder,
   IconListCheck,
   IconCalendarWeek,
-  IconUsers,
-  IconTargetArrow,
 } from "@tabler/icons-react";
 import type { PageId } from "@/app/shell/types";
 
@@ -19,8 +17,6 @@ const menuItems: { id: PageId; label: string; icon: React.ComponentType<{ classN
   { id: "notes", label: "Notes", icon: IconFolder },
   { id: "weekly", label: "Weekly Todo", icon: IconListCheck },
   { id: "calendar", label: "Calendar", icon: IconCalendarWeek },
-  { id: "companions", label: "Companions", icon: IconUsers },
-  { id: "goals", label: "Goals", icon: IconTargetArrow },
 ];
 
 export function AgniMenuDropdown({

@@ -13,6 +13,10 @@ export type NotesPageActions = {
   toggleEditorMode: () => void;
   selectTabIndex: (index: number) => void;
   closeTabIndex: (index: number) => void;
+  /** Rename the currently selected note via prompt */
+  renameCurrentNote: () => void;
+  /** Delete the currently selected note */
+  deleteCurrentNote: () => void;
 };
 
 type NotesViewMode = "preview" | "edit";
@@ -339,32 +343,6 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     setFolders((prev) => [...prev, folderName]);
   }, [folders, notes]);
 
-  // Register actions for external components (e.g., sidebar)
-  useEffect(() => {
-    if (!actionsRef) return;
-    actionsRef.current = {
-      focusSearch: handleFocusSearch,
-      focusExplorer: handleFocusExplorer,
-      goBack: handleGoBack,
-      goForward: handleGoForward,
-      toggleEditorMode: handleToggleEditorMode,
-      selectTabIndex: handleSelectTabIndex,
-      closeTabIndex: handleCloseTabIndex,
-    };
-    return () => {
-      if (actionsRef) actionsRef.current = null;
-    };
-  }, [
-    actionsRef,
-    handleFocusSearch,
-    handleFocusExplorer,
-    handleGoBack,
-    handleGoForward,
-    handleToggleEditorMode,
-    handleSelectTabIndex,
-    handleCloseTabIndex,
-  ]);
-
   // Derive noteTabs from history.ids
   const noteTabs = useMemo<NoteTab[]>(() => {
     return history.ids.map((id) => {
@@ -512,6 +490,53 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     },
     []
   );
+
+  // Rename the currently selected note via prompt (for header menu)
+  const handleRenameCurrentNote = useCallback(() => {
+    if (!selectedNoteId) return;
+    const note = notes.find((n) => n.id === selectedNoteId);
+    if (!note) return;
+    const newTitle = window.prompt("Rename note:", note.title);
+    if (newTitle && newTitle.trim() && newTitle.trim() !== note.title) {
+      handleRenameNote(selectedNoteId, newTitle.trim());
+    }
+  }, [selectedNoteId, notes, handleRenameNote]);
+
+  // Delete the currently selected note (for header menu)
+  const handleDeleteCurrentNote = useCallback(() => {
+    if (!selectedNoteId) return;
+    handleDeleteNote(selectedNoteId);
+  }, [selectedNoteId, handleDeleteNote]);
+
+  // Register actions for external components (e.g., sidebar)
+  useEffect(() => {
+    if (!actionsRef) return;
+    actionsRef.current = {
+      focusSearch: handleFocusSearch,
+      focusExplorer: handleFocusExplorer,
+      goBack: handleGoBack,
+      goForward: handleGoForward,
+      toggleEditorMode: handleToggleEditorMode,
+      selectTabIndex: handleSelectTabIndex,
+      closeTabIndex: handleCloseTabIndex,
+      renameCurrentNote: handleRenameCurrentNote,
+      deleteCurrentNote: handleDeleteCurrentNote,
+    };
+    return () => {
+      if (actionsRef) actionsRef.current = null;
+    };
+  }, [
+    actionsRef,
+    handleFocusSearch,
+    handleFocusExplorer,
+    handleGoBack,
+    handleGoForward,
+    handleToggleEditorMode,
+    handleSelectTabIndex,
+    handleCloseTabIndex,
+    handleRenameCurrentNote,
+    handleDeleteCurrentNote,
+  ]);
 
   // Rename a folder: update folder path and all notes under it
   const handleRenameFolder = useCallback(

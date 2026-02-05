@@ -4,6 +4,8 @@ import { useRef, useState, useEffect } from "react";
 interface Tab {
   id: string;
   title: string;
+  variant?: "base" | "utility" | "root";
+  closable?: boolean;
 }
 
 interface PageTabsProps {
@@ -15,6 +17,33 @@ interface PageTabsProps {
 
 const MIN_TAB_WIDTH = 24;
 const MAX_TAB_WIDTH = 144;
+
+// Style variants for different tab types
+function getTabStyles(variant: Tab["variant"], isActive: boolean): string {
+  const baseHeight = "h-[calc(100%-8px)]";
+  
+  if (variant === "utility") {
+    // Utility tabs have an indigo accent
+    if (isActive) {
+      return `${baseHeight} bg-indigo-900/60 text-indigo-100 border border-indigo-500 border-b-transparent rounded-t-md z-10`;
+    }
+    return `${baseHeight} text-indigo-300 hover:text-indigo-100 hover:bg-indigo-900/40 rounded-t-md`;
+  }
+  
+  if (variant === "root") {
+    // Root tabs (like Calendar) have a subtle different look
+    if (isActive) {
+      return `${baseHeight} bg-slate-800/90 text-slate-100 border border-slate-500 border-b-transparent rounded-t-md z-10`;
+    }
+    return `${baseHeight} text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-t-md`;
+  }
+  
+  // Default base tabs
+  if (isActive) {
+    return `${baseHeight} bg-slate-800/90 text-slate-100 border border-slate-500 border-b-transparent rounded-t-md z-10`;
+  }
+  return `${baseHeight} text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-t-md`;
+}
 
 export function PageTabs({ tabs, activeIndex, onTabChange, onTabClose }: PageTabsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -53,6 +82,10 @@ export function PageTabs({ tabs, activeIndex, onTabChange, onTabClose }: PageTab
       {tabs.map((tab, index) => {
         const isActive = index === activeIndex;
         const showSeparator = shouldShowSeparator(index);
+        const tabStyles = getTabStyles(tab.variant, isActive);
+        const isClosable = tab.closable !== false; // Default to true if not specified
+        const isUtility = tab.variant === "utility";
+        
         return (
           <div key={tab.id} className="group flex items-end h-full flex-shrink-0">
             {showSeparator && (
@@ -67,17 +100,13 @@ export function PageTabs({ tabs, activeIndex, onTabChange, onTabClose }: PageTab
                 className={`
                   flex items-center justify-start px-1.5 pr-6 text-sm transition-colors
                   min-w-0 flex-shrink-0 w-full
-                  ${
-                    isActive
-                      ? "h-[calc(100%-8px)] bg-slate-800/90 text-slate-100 border border-slate-500 border-b-transparent rounded-t-md z-10"
-                      : "h-[calc(100%-8px)] text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-t-md"
-                  }
+                  ${tabStyles}
                 `}
                 aria-label={`Switch to ${tab.title}`}
               >
                 <span className="truncate min-w-0">{tab.title}</span>
               </button>
-              {onTabClose && (
+              {onTabClose && isClosable && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -85,7 +114,11 @@ export function PageTabs({ tabs, activeIndex, onTabChange, onTabClose }: PageTab
                   }}
                   aria-label={`Close ${tab.title}`}
                   title={`Close ${tab.title}`}
-                  className={`absolute right-2 top-4 z-20 ${isActive ? "text-slate-200" : "text-slate-400"} hover:text-slate-100 transition-opacity opacity-0 group-hover:opacity-100 group-focus-within:opacity-100`}
+                  className={`absolute right-2 top-4 z-20 ${
+                    isActive 
+                      ? (isUtility ? "text-indigo-200" : "text-slate-200") 
+                      : (isUtility ? "text-indigo-400" : "text-slate-400")
+                  } hover:text-slate-100 transition-opacity opacity-0 group-hover:opacity-100 group-focus-within:opacity-100`}
                   type="button"
                 >
                   <IconX className="w-4 h-4" />

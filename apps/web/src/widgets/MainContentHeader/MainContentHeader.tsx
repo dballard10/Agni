@@ -19,8 +19,9 @@ export interface HeaderMenuItem {
 
 interface MainContentHeaderProps {
   filePath: string;
-  editorMode: EditorMode;
-  onToggleEditorMode: () => void;
+  editorMode?: EditorMode;
+  /** If not provided, the editor mode toggle button is hidden */
+  onToggleEditorMode?: () => void;
   /** Menu items for the three-dots dropdown. If empty/undefined, button is disabled. */
   menuItems?: HeaderMenuItem[];
   /** Optional page title shown at the left of the header */
@@ -99,14 +100,16 @@ export function MainContentHeader({
 
       {/* Right section: Editor mode toggle and menu */}
       <div className="flex items-center gap-1 justify-end">
-        <button
-          onClick={onToggleEditorMode}
-          className="flex items-center justify-center w-7 h-7 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
-          aria-label={editorMode === "preview" ? "Switch to edit mode" : "Switch to preview mode"}
-          title={editorMode === "preview" ? "Switch to edit mode" : "Switch to preview mode"}
-        >
-          <EditorIcon className="w-5 h-5" />
-        </button>
+        {onToggleEditorMode && (
+          <button
+            onClick={onToggleEditorMode}
+            className="flex items-center justify-center w-7 h-7 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+            aria-label={editorMode === "preview" ? "Switch to edit mode" : "Switch to preview mode"}
+            title={editorMode === "preview" ? "Switch to edit mode" : "Switch to preview mode"}
+          >
+            <EditorIcon className="w-5 h-5" />
+          </button>
+        )}
         <button
           ref={menuButtonRef}
           onClick={handleMenuButtonClick}

@@ -22,6 +22,16 @@ venv/
 pip-log.txt
 pip-delete-this-directory.txt
 
+# Electron
+apps/desktop/release/
+apps/desktop/out/
+
+# Expo / React Native
+apps/mobile/.expo/
+apps/mobile/ios/
+apps/mobile/android/
+apps/mobile/web-build/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

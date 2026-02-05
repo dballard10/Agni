@@ -6,6 +6,8 @@ import { MainContentHeader, type HeaderMenuItem } from "@/widgets/MainContentHea
 import { TopNotificationHost } from "@/widgets/TopNotifications";
 import type { PageId, EditorMode } from "@/app/shell/types";
 
+type UtilityTabId = "goals" | "companions" | "settings";
+
 interface AgniShellLayoutProps {
   children: React.ReactNode;
   activeTab: PageId;
@@ -29,6 +31,8 @@ interface AgniShellLayoutProps {
   onOpenFileExplorerTab?: () => void;
   onFocusSearch?: () => void;
   onOpenOverview?: () => void;
+  // Utility tabs (Goals, Companions, Settings)
+  onOpenUtilityTab?: (tab: UtilityTabId) => void;
   // Page tabs (generic, used by Notes and Weekly)
   pageTabs?: PageTab[];
   activePageTabIndex?: number;
@@ -57,6 +61,7 @@ export function AgniShellLayout({
   onOpenFileExplorerTab,
   onFocusSearch,
   onOpenOverview,
+  onOpenUtilityTab,
   pageTabs,
   activePageTabIndex,
   onPageTabChange,
@@ -75,10 +80,6 @@ export function AgniShellLayout({
   const handleToggleRightPanel = useCallback(() => {
     setRightPanelOpen((prev) => !prev);
   }, []);
-
-  const handleOpenSettings = useCallback(() => {
-    onTabChange("settings");
-  }, [onTabChange]);
 
   const handlePageChange = useCallback(
     (page: PageId) => {
@@ -141,7 +142,7 @@ export function AgniShellLayout({
         onGoForward={handleGoForward}
         onToggleLeftPanel={handleToggleLeftPanel}
         onToggleRightPanel={handleToggleRightPanel}
-        onOpenSettings={handleOpenSettings}
+        onOpenUtilityTab={onOpenUtilityTab}
         pageTabs={pageTabs}
         activePageTabIndex={activePageTabIndex}
         onPageTabChange={onPageTabChange}

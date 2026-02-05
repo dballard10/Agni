@@ -7,15 +7,21 @@ import {
   IconLayoutSidebarRightFilled,
   IconLayoutSidebarRight,
   IconSettings,
+  IconBook2,
 } from "@tabler/icons-react";
 import { AgniMenuDropdown } from "./AgniMenuDropdown";
+import { LibraryMenuDropdown } from "./LibraryMenuDropdown";
 import { PageTabs } from "./PageTabs";
 import type { PageId } from "@/app/shell/types";
 
 export interface PageTab {
   id: string;
   title: string;
+  variant?: "base" | "utility" | "root";
+  closable?: boolean;
 }
+
+type UtilityTabId = "goals" | "companions" | "settings";
 
 interface TopBarProps {
   currentPage: PageId;
@@ -31,7 +37,7 @@ interface TopBarProps {
   onGoForward: () => void;
   onToggleLeftPanel: () => void;
   onToggleRightPanel: () => void;
-  onOpenSettings: () => void;
+  onOpenUtilityTab?: (tab: UtilityTabId) => void;
   // Page tabs (generic, used by Notes and Weekly)
   pageTabs?: PageTab[];
   activePageTabIndex?: number;
@@ -53,16 +59,20 @@ export function TopBar({
   onGoForward,
   onToggleLeftPanel,
   onToggleRightPanel,
-  onOpenSettings,
+  onOpenUtilityTab,
   pageTabs,
   activePageTabIndex,
   onPageTabChange,
   onPageTabClose,
 }: TopBarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
 
   const LeftPanelIcon = leftPanelOpen ? IconLayoutSidebarFilled : IconLayoutSidebar;
   const RightPanelIcon = rightPanelOpen ? IconLayoutSidebarRightFilled : IconLayoutSidebarRight;
+  
+  // Check if any utility tab is currently open (from pageTabs)
+  const hasUtilityTabOpen = pageTabs?.some(t => t.variant === "utility") ?? false;
 
   return (
     <div
@@ -165,8 +175,31 @@ export function TopBar({
             <RightPanelIcon className="w-5 h-5" />
           </button>
         )}
+        <div className="relative flex items-center">
+          <button
+            onClick={() => setIsLibraryOpen(!isLibraryOpen)}
+            className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
+              hasUtilityTabOpen
+                ? "text-slate-100 hover:bg-slate-800"
+                : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            }`}
+            aria-label="Open library"
+            title="Library (Goals & Companions)"
+          >
+            <IconBook2 className="w-5 h-5" />
+          </button>
+          <LibraryMenuDropdown
+            isOpen={isLibraryOpen}
+            onClose={() => setIsLibraryOpen(false)}
+            onSelectUtilityTab={(tab) => {
+              onOpenUtilityTab?.(tab);
+              setIsLibraryOpen(false);
+            }}
+            currentPage={currentPage}
+          />
+        </div>
         <button
-          onClick={onOpenSettings}
+          onClick={() => onOpenUtilityTab?.("settings")}
           className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
           aria-label="Open settings"
           title="Open settings"
