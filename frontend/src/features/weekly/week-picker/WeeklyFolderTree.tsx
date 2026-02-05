@@ -157,10 +157,8 @@ export function WeeklyFolderTree({
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto -mx-2 px-2">
-        <ul className="space-y-0.5">
-          {Object.entries(groupedByYear).map(([year, months]) => {
+    <ul className="space-y-0.5">
+      {Object.entries(groupedByYear).map(([year, months]) => {
             const isYearExpanded = expandedYears.has(year);
             return (
               <li key={year}>
@@ -244,9 +242,7 @@ export function WeeklyFolderTree({
               </li>
             );
           })}
-        </ul>
-      </div>
-    </div>
+    </ul>
   );
 }
 

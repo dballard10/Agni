@@ -8,9 +8,11 @@ import { getTodayISO } from "../../../shared/lib/date";
 
 interface CreateWeekPickerButtonProps {
   onCreateWeek: (dateISO: string) => void;
+  /** Optional custom class for the trigger button (overrides default styling) */
+  buttonClassName?: string;
 }
 
-export function CreateWeekPickerButton({ onCreateWeek }: CreateWeekPickerButtonProps) {
+export function CreateWeekPickerButton({ onCreateWeek, buttonClassName }: CreateWeekPickerButtonProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [selectedDate, setSelectedDate] = useState(getTodayISO());
@@ -30,13 +32,18 @@ export function CreateWeekPickerButton({ onCreateWeek }: CreateWeekPickerButtonP
     }
   };
 
+  // Use custom className if provided, otherwise use default styling
+  const triggerClassName = buttonClassName
+    ? buttonClassName
+    : `p-1 transition-colors rounded hover:bg-slate-800 ${
+        isOpen ? "text-slate-100 bg-slate-800" : "text-slate-400 hover:text-slate-100"
+      }`;
+
   return (
     <div ref={containerRef} className="relative flex items-center">
       <button
         onClick={toggle}
-        className={`p-1 transition-colors rounded hover:bg-slate-800 ${
-          isOpen ? "text-slate-100 bg-slate-800" : "text-slate-400 hover:text-slate-100"
-        }`}
+        className={triggerClassName}
         title="Create week for specific date"
         aria-label="Create week for specific date"
       >

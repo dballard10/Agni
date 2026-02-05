@@ -50,92 +50,98 @@ export function WeeklySidebarPanel({
 
   return createPortal(
     <div className="h-full flex flex-col -m-3">
-      {/* Sticky header with actions */}
-      <div className="sticky top-0 z-10 bg-slate-900 border-b border-slate-700 px-3 py-2 flex items-center gap-1">
-        {sidebarTab === "explorer" && (
-          <>
-            <CreateWeekPickerButton onCreateWeek={(dateISO) => onCreateWeekForDate?.(dateISO)} />
-            <button
-              onClick={onCreateCurrentWeek}
-              className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
-              aria-label="Create current week"
-              title="Create current week"
-            >
-              <IconFilePlus className="w-5 h-5" />
-            </button>
-          </>
-        )}
-        {sidebarTab === "search" && (
-          <span className="text-sm text-slate-400">Search weeks</span>
-        )}
-        {sidebarTab === "overview" && (
-          <span className="text-sm text-slate-400">Weekly Overview</span>
-        )}
-      </div>
-
-      {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto -mx-2 px-2">
-        {sidebarTab === "explorer" && (
-          <div className="py-2">
+      {sidebarTab === "explorer" && (
+        // Explorer tab - matches Notes sidebar layout
+        <div className="flex-1 overflow-y-auto -mx-2 px-2">
+          {/* Sticky header with right-aligned actions (matches NotesDrawer) */}
+          <div className="sticky top-0 z-10 mx-3 px-0 py-2 bg-slate-900">
+            <div className="flex items-center gap-1 justify-end">
+              <CreateWeekPickerButton
+                onCreateWeek={(dateISO) => onCreateWeekForDate?.(dateISO)}
+                buttonClassName="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+              />
+              <button
+                onClick={onCreateCurrentWeek}
+                className="flex items-center justify-center w-6 h-6 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+                aria-label="Create current week"
+                title="Create current week"
+              >
+                <IconFilePlus className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+          {availableWeekStartsISO.length === 0 ? (
+            <div className="text-center py-8 text-slate-500 text-sm pointer-events-none">
+              No weeks found
+            </div>
+          ) : (
             <WeeklyFolderTree
               selectedWeekStartISO={selectedWeekStartISO}
               availableWeekStartsISO={availableWeekStartsISO}
               onSelectWeekStart={onSelectWeekStart}
             />
-          </div>
-        )}
+          )}
+        </div>
+      )}
 
-        {sidebarTab === "search" && (
-          <div className="py-2 px-1">
-            <div className="relative mb-3">
-              <IconSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+      {sidebarTab === "search" && (
+        // Search tab - matches Notes search layout
+        <div className="flex-1 overflow-y-auto -mx-2 px-2">
+          {/* Search header */}
+          <div className="flex items-center gap-2 mb-3 px-2 pt-2">
+            <div className="relative flex-1">
+              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
                 ref={inputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search weeks..."
-                className="w-full pl-8 pr-3 py-1.5 text-sm bg-slate-800 border border-slate-700 rounded-md text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500/50"
+                className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-slate-200 text-sm placeholder-slate-500 outline-none focus:border-slate-600 transition-colors"
               />
             </div>
-            <div className="space-y-1">
-              {filteredWeeks.map((iso) => {
-                const date = parseISODateLocal(iso);
-                const label = date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                });
-                const isSelected = iso === selectedWeekStartISO;
-                return (
-                  <button
-                    key={iso}
-                    onClick={() => onSelectWeekStart(iso)}
-                    className={`w-full text-left px-2 py-1.5 text-sm rounded-md transition-colors ${
-                      isSelected
-                        ? "bg-indigo-600/20 text-indigo-300"
-                        : "text-slate-300 hover:bg-slate-800"
-                    }`}
-                  >
-                    Week of {label}
-                  </button>
-                );
-              })}
-              {filteredWeeks.length === 0 && (
-                <p className="text-sm text-slate-500 px-2 py-4 text-center">
-                  No weeks found
-                </p>
-              )}
-            </div>
           </div>
-        )}
+          {/* Search results */}
+          <div className="space-y-1 px-1">
+            {filteredWeeks.map((iso) => {
+              const date = parseISODateLocal(iso);
+              const label = date.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              });
+              const isSelected = iso === selectedWeekStartISO;
+              return (
+                <button
+                  key={iso}
+                  onClick={() => onSelectWeekStart(iso)}
+                  className={`w-full text-left px-2 py-1.5 text-sm rounded-md transition-colors ${
+                    isSelected
+                      ? "bg-slate-700 text-slate-100"
+                      : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                  }`}
+                >
+                  Week of {label}
+                </button>
+              );
+            })}
+            {filteredWeeks.length === 0 && (
+              <p className="text-sm text-slate-500 px-2 py-4 text-center">
+                No weeks found
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
-        {sidebarTab === "overview" && (
+      {sidebarTab === "overview" && (
+        // Overview tab - same scroll container pattern
+        <div className="flex-1 overflow-y-auto -mx-2 px-2">
           <div className="py-2 px-1">
             <WeeklyStatsPanel stats={weekStats} />
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>,
     sidebarSlot
   );
