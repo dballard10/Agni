@@ -86,6 +86,7 @@ export function AppSettingsProvider({ children }: AppSettingsProviderProps) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAppSettings(): AppSettings {
   const context = useContext(AppSettingsContext);
   if (!context) {
@@ -94,6 +95,7 @@ export function useAppSettings(): AppSettings {
   return context.settings;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSetAppSettings() {
   const context = useContext(AppSettingsContext);
   if (!context) {
@@ -105,7 +107,7 @@ export function useSetAppSettings() {
   };
 }
 
-// Helper to get the effective color for a given item type
+// eslint-disable-next-line react-refresh/only-export-components
 export function getItemTypeColor(
   type: WeeklyItemType,
   settings: AppSettings
@@ -114,7 +116,7 @@ export function getItemTypeColor(
 }
 
 // Vite specific hot module replacement - prevent context from being hot reloaded
-// @ts-ignore - import.meta.hot is Vite specific
+// @ts-expect-error - import.meta.hot is Vite specific
 if (import.meta.hot) {
   import.meta.hot.accept();
 }

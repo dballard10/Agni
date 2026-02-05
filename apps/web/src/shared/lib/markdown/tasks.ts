@@ -43,7 +43,7 @@ export const tokenToTaskStatus = (token: string): TaskStatus => {
   }
 };
 
-const TASK_LINE_REGEX = /^(\s*)([-*])\s+\[( |x|>|\-|\?)\]\s+(.*)$/;
+const TASK_LINE_REGEX = /^(\s*)([-*])\s+\[( |x|>|-|\?)\]\s+(.*)$/;
 
 const TYPE_MARKER_REGEX = /^\[(task|event|birthday|holiday)\]\s+/i;
 

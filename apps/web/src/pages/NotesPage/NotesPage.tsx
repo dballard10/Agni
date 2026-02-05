@@ -769,6 +769,21 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       <div className="flex flex-col h-full">
         {/* Main content */}
         <main className="flex-1 overflow-hidden relative">
+          {/* Title Section */}
+          <div className="px-6 pt-6 pb-4">
+            <input
+              type="text"
+              value={selectedNote?.title ?? ""}
+              onChange={(e) => {
+                if (selectedNoteId) {
+                  handleRenameNote(selectedNoteId, e.target.value);
+                }
+              }}
+              className="w-full bg-transparent text-2xl font-bold text-[color:var(--notes-fg-strong)] outline-none border-none placeholder:text-[color:var(--notes-placeholder)]"
+              placeholder="Untitled"
+            />
+          </div>
+
           <LiveMarkdownEditor
             value={selectedNote?.content ?? ""}
             onChange={handleUpdateNoteContent}

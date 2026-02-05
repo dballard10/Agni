@@ -36,7 +36,7 @@ const livePreviewTheme = EditorView.theme(
       outline: "none",
     },
     ".cm-content": {
-      padding: "24px",
+      padding: "0 24px 24px 24px",
       caretColor: "var(--notes-caret)",
       lineHeight: "1.75",
       fontFamily: "inherit",

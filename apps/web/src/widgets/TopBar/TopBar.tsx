@@ -49,14 +49,12 @@ interface TopBarProps {
 
 export function TopBar({
   currentPage,
-  activeTabIndex: _activeTabIndex,
   canGoBack,
   canGoForward,
   leftPanelOpen,
   rightPanelOpen,
   showRightPanelToggle = true,
   onPageChange,
-  onTabChange: _onTabChange,
   onGoBack,
   onGoForward,
   onToggleLeftPanel,
@@ -211,7 +209,6 @@ export function TopBar({
               onOpenUtilityTab?.(tab);
               setIsLibraryOpen(false);
             }}
-            currentPage={currentPage}
           />
         </div>
         <button

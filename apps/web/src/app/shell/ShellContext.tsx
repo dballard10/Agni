@@ -122,6 +122,7 @@ export function ShellProvider({
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useShell(): ShellContextValue {
   const context = useContext(ShellContext);
   if (!context) {
@@ -130,10 +131,12 @@ export function useShell(): ShellContextValue {
   return context;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useShellState(): ShellState {
   return useShell().state;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useShellActions(): ShellActions {
   return useShell().actions;
 }

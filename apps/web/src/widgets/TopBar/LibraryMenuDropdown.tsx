@@ -1,6 +1,5 @@
 import { useRef, useEffect } from "react";
 import { IconTargetArrow, IconUsers } from "@tabler/icons-react";
-import type { PageId } from "@/app/shell/types";
 
 type LibraryTabId = "goals" | "companions";
 
@@ -8,7 +7,6 @@ interface LibraryMenuDropdownProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectUtilityTab: (tab: LibraryTabId) => void;
-  currentPage: PageId;
 }
 
 const libraryItems: { id: LibraryTabId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -20,7 +18,6 @@ export function LibraryMenuDropdown({
   isOpen,
   onClose,
   onSelectUtilityTab,
-  currentPage: _currentPage,
 }: LibraryMenuDropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
