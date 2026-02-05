@@ -1,0 +1,47 @@
+:root {
+  /* Surface */
+  --surface-base: rgb(2, 6, 23);
+  --surface-raised: rgb(15, 23, 42);
+  --surface-overlay: rgb(30, 41, 59);
+
+  /* Text */
+  --text-primary: rgb(248, 250, 252);
+  --text-secondary: rgb(226, 232, 240);
+  --text-muted: rgb(148, 163, 184);
+
+  /* Border */
+  --border-default: rgb(51, 65, 85);
+  --border-focus: rgb(99, 102, 241);
+
+  /* Accent */
+  --accent-primary: rgb(79, 70, 229);
+
+  /* Status */
+  --status-success: rgb(52, 211, 153);
+  --status-warning: rgb(251, 191, 36);
+  --status-error: rgb(251, 113, 133);
+
+  /* Typography */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Icon sizes */
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+
+  /* Scrollbar */
+  --scrollbar-thumb: rgba(148, 163, 184, 0.4);
+  --scrollbar-thumb-hover: rgba(148, 163, 184, 0.6);
+
+  /* Notes editor (migrate existing vars) */
+  --notes-fg: var(--text-secondary);
+  --notes-fg-strong: var(--text-primary);
+  --notes-muted: var(--text-muted);
+  --notes-border: var(--border-default);
+  --notes-code-bg: var(--surface-overlay);
+  --notes-caret: #38bdf8;
+  --notes-link: #2563eb;
+  --notes-checkbox-checked-bg: #0891b2;
+}
