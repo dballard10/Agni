@@ -45,6 +45,7 @@ export function ShellSidebar({
   // Reset width to default when sidebar reopens
   useEffect(() => {
     if (isOpen && !prevIsOpenRef.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional reset on open
       setWidth(DEFAULT_WIDTH);
       onWidthChange?.(DEFAULT_WIDTH);
     }
