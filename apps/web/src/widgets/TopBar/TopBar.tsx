@@ -12,6 +12,8 @@ import {
 import { AgniMenuDropdown } from "./AgniMenuDropdown";
 import { LibraryMenuDropdown } from "./LibraryMenuDropdown";
 import { PageTabs } from "./PageTabs";
+import { WindowControls } from "./WindowControls";
+import { usePlatform } from "@/shared/hooks/usePlatform";
 import type { PageId } from "@/app/shell/types";
 
 export interface PageTab {
@@ -67,24 +69,35 @@ export function TopBar({
 }: TopBarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const { isDesktop, isMac } = usePlatform();
 
   const LeftPanelIcon = leftPanelOpen ? IconLayoutSidebarFilled : IconLayoutSidebar;
   const RightPanelIcon = rightPanelOpen ? IconLayoutSidebarRightFilled : IconLayoutSidebarRight;
-  
+
   // Check if any utility tab is currently open (from pageTabs)
   const hasUtilityTabOpen = pageTabs?.some(t => t.variant === "utility") ?? false;
+
+  // Traffic light padding on macOS desktop
+  const trafficLightPadding = isDesktop && isMac ? 70 : 0;
 
   return (
     <div
       className="grid items-stretch h-10 bg-slate-900 border-b border-slate-700"
       style={{
         gridTemplateColumns: leftPanelOpen
-          ? "var(--agni-left-sidebar-width, 260px) 1fr auto"
+          ? `calc(var(--agni-left-sidebar-width, 260px) + ${trafficLightPadding}px) 1fr auto`
           : "auto 1fr auto",
-      }}
+        WebkitAppRegion: isDesktop ? 'drag' : undefined,
+      } as React.CSSProperties}
     >
       {/* Column 1: Left controls (menu + back/forward) - width matches sidebar */}
-      <div className="flex items-center gap-1 px-3">
+      <div
+        className="flex items-center gap-1 px-3"
+        style={{
+          paddingLeft: trafficLightPadding || 12,
+          WebkitAppRegion: 'no-drag',
+        } as React.CSSProperties}
+      >
         <div className="relative flex items-center">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -147,8 +160,11 @@ export function TopBar({
         )}
       </div>
 
-      {/* Column 3: Right controls (panel toggles + settings) */}
-      <div className="flex items-center gap-1 px-3">
+      {/* Column 3: Right controls (panel toggles + settings + window controls) */}
+      <div
+        className="flex items-center gap-1 px-3"
+        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+      >
         <button
           onClick={onToggleLeftPanel}
           className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
@@ -206,6 +222,9 @@ export function TopBar({
         >
           <IconSettings className="w-5 h-5" />
         </button>
+
+        {/* Windows/Linux window controls */}
+        {isDesktop && !isMac && <WindowControls />}
       </div>
     </div>
   );

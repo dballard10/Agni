@@ -38,6 +38,11 @@ export function usePlatform() {
     return platform.openExternal(url)
   }, [])
 
+  const osPlatform = platform.desktop?.platform ?? null
+  const isMac = osPlatform === 'darwin'
+  const isWindows = osPlatform === 'win32'
+  const isLinux = osPlatform === 'linux'
+
   return {
     isDesktop: platform.isDesktop,
     isBrowser: platform.isBrowser,
@@ -45,6 +50,10 @@ export function usePlatform() {
     desktop: platform.desktop,
     isMaximized,
     openExternal,
+    osPlatform,
+    isMac,
+    isWindows,
+    isLinux,
   }
 }
 

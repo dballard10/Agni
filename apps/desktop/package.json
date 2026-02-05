@@ -15,12 +15,18 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/plugin-transform-arrow-functions": "^7.25.9",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "cac": "^6.7.14",
     "electron": "^35.1.0",
     "electron-builder": "^26.0.0",
     "electron-vite": "^3.1.0",
+    "esbuild": "^0.25.1",
+    "magic-string": "^0.30.17",
+    "picocolors": "^1.1.1",
     "typescript": "~5.9.3",
     "vite": "^6.0.0"
   },
@@ -30,6 +36,13 @@
     "directories": {
       "output": "release"
     },
+    "extraResources": [
+      {
+        "from": "../web/dist",
+        "to": "web/dist",
+        "filter": ["**/*"]
+      }
+    ],
     "mac": {
       "target": ["dmg", "zip"]
     },

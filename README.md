@@ -64,10 +64,22 @@ npm run dev:desktop+backend
 **Individual apps**:
 
 ```bash
-npm run dev:web         # Web only
-npm run dev:desktop     # Desktop only
-npm run dev:mobile      # Mobile only (Expo)
-npm run dev:backend     # Backend only
+npm run dev:web             # Web only (browser)
+npm run dev:desktop         # Desktop wrapper (web + Electron)
+npm run dev:desktop:solo    # Desktop only (electron-vite renderer)
+npm run dev:mobile          # Mobile only (Expo)
+npm run dev:backend         # Backend only
+```
+
+### Desktop Wrapper Mode
+
+By default, `dev:desktop` runs the web app inside Electron:
+- Starts web dev server on `http://localhost:5174`
+- Electron window loads the web app
+
+**Override web URL:**
+```bash
+AGNI_WEB_URL=http://localhost:3000 npm run dev:desktop:solo
 ```
 
 ### 5. Mobile Development
@@ -98,6 +110,15 @@ npm run build
 ```bash
 npm run build:desktop     # Build only
 npm run package:desktop   # Build + package for distribution
+```
+
+### Desktop Wrapper Mode (Production)
+
+Build the web app for Electron's `file://` protocol, then package:
+
+```bash
+npm run build:desktop:wrapper   # Builds web + desktop
+npm run package:desktop         # Package (includes web dist)
 ```
 
 ### Mobile

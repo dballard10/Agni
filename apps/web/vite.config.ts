@@ -4,6 +4,7 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: process.env.VITE_ELECTRON_WRAPPER === '1' ? './' : '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

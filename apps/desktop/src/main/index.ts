@@ -5,10 +5,13 @@
 
 import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import path from 'path'
+import fs from 'fs'
 
 let mainWindow: BrowserWindow | null = null
 
 function createWindow(): void {
+  const isMac = process.platform === 'darwin'
+
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -16,15 +19,18 @@ function createWindow(): void {
     minHeight: 600,
     show: false,
     autoHideMenuBar: true,
+    // Frameless window with platform-appropriate title bar
+    frame: false,
+    titleBarStyle: isMac ? 'hiddenInset' : 'hidden',
+    ...(isMac && {
+      trafficLightPosition: { x: 12, y: 12 },
+    }),
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false,
     },
-    // Uncomment for frameless window with custom title bar:
-    // frame: false,
-    // titleBarStyle: 'hidden',
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -47,18 +53,21 @@ function createWindow(): void {
 
   // Load the renderer
   if (process.env.NODE_ENV === 'development') {
-    // In dev, electron-vite serves the renderer on a local port
-    const rendererUrl = process.env['ELECTRON_RENDERER_URL']
-    if (rendererUrl) {
-      mainWindow.loadURL(rendererUrl)
-    } else {
-      mainWindow.loadURL('http://localhost:5173')
-    }
-    // Open DevTools in development
+    // Wrapper mode by default: load web app URL (can be overridden via AGNI_WEB_URL)
+    const webUrl = process.env.AGNI_WEB_URL ?? 'http://localhost:5174'
+    mainWindow.loadURL(webUrl)
     mainWindow.webContents.openDevTools()
   } else {
-    // In production, load the built HTML file
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
+    // Production: check for bundled web app first, then fall back to electron-vite renderer
+    const webDistPath = path.join(process.resourcesPath, 'web/dist/index.html')
+    const rendererPath = path.join(__dirname, '../renderer/index.html')
+
+    // Use web dist if it exists (wrapper production mode)
+    if (fs.existsSync(webDistPath)) {
+      mainWindow.loadFile(webDistPath)
+    } else {
+      mainWindow.loadFile(rendererPath)
+    }
   }
 }
 

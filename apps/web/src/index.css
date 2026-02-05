@@ -80,4 +80,9 @@
   body {
     @apply bg-slate-900 text-slate-50;
   }
+
+  /* Electron drag regions - ensure interactive elements are always clickable */
+  button, a, input, select, textarea, [role="button"] {
+    -webkit-app-region: no-drag;
+  }
 }
