@@ -4,7 +4,11 @@
     "composite": true,
     "outDir": "dist/main",
     "lib": ["ESNext"],
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@agni/platform": ["../../packages/platform/src"]
+    }
   },
-  "include": ["src/main/**/*"]
+  "include": ["src/main/**/*"],
+  "references": [{ "path": "../../packages/platform" }]
 }

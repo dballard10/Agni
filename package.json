@@ -7,7 +7,8 @@
     "apps/desktop",
     "apps/mobile",
     "packages/shared",
-    "packages/api"
+    "packages/api",
+    "packages/platform"
   ],
   "scripts": {
     "dev": "concurrently -n web,be -c cyan,magenta \"npm run dev:web\" \"npm run dev:backend\"",

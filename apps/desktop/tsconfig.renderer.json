@@ -5,7 +5,11 @@
     "outDir": "dist/renderer",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      "@agni/platform": ["../../packages/platform/src"]
+    }
   },
-  "include": ["src/renderer/**/*"]
+  "include": ["src/renderer/**/*"],
+  "references": [{ "path": "../../packages/platform" }]
 }
