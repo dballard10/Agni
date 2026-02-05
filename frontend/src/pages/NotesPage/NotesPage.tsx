@@ -6,8 +6,6 @@ import { mockNotes, createNewNote, type Note } from "../../mock/mockNotes";
 import { NotesFileExplorerPanel } from "../../features/notes/drawer/NotesFileExplorerPanel";
 
 export type NotesPageActions = {
-  createNote: () => void;
-  createFolder: () => void;
   focusSearch: () => void;
   focusExplorer: () => void;
   goBack: () => void;
@@ -345,8 +343,6 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
   useEffect(() => {
     if (!actionsRef) return;
     actionsRef.current = {
-      createNote: handleCreateNote,
-      createFolder: handleCreateFolder,
       focusSearch: handleFocusSearch,
       focusExplorer: handleFocusExplorer,
       goBack: handleGoBack,
@@ -360,8 +356,6 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     };
   }, [
     actionsRef,
-    handleCreateNote,
-    handleCreateFolder,
     handleFocusSearch,
     handleFocusExplorer,
     handleGoBack,

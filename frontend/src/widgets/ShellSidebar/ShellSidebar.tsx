@@ -5,8 +5,6 @@ import type { PageId } from "@/app/shell/types";
 interface ShellSidebarProps {
   isOpen: boolean;
   currentPage: PageId;
-  onNewItem: () => void;
-  onOpenExplorer: () => void;
   onOpenFileExplorerTab?: () => void;
   onFocusSearch: () => void;
   onOpenOverview?: () => void;
@@ -25,8 +23,6 @@ const sidebarLabels: Record<PageId, string> = {
 export function ShellSidebar({
   isOpen,
   currentPage,
-  onNewItem,
-  onOpenExplorer,
   onOpenFileExplorerTab,
   onFocusSearch,
   onOpenOverview,
@@ -41,8 +37,6 @@ export function ShellSidebar({
     >
       <SidebarHeaderIcons
         currentPage={currentPage}
-        onNewItem={onNewItem}
-        onOpenExplorer={onOpenExplorer}
         onOpenFileExplorerTab={onOpenFileExplorerTab}
         onFocusSearch={onFocusSearch}
         onOpenOverview={currentPage === "weekly" ? onOpenOverview : undefined}

@@ -26,8 +26,6 @@ interface AgniShellLayoutProps {
   // Right panel toggle visibility
   showRightPanelToggle?: boolean;
   // Sidebar action callbacks
-  onNewItem?: () => void;
-  onOpenExplorer?: () => void;
   onOpenFileExplorerTab?: () => void;
   onFocusSearch?: () => void;
   onOpenOverview?: () => void;
@@ -54,8 +52,6 @@ export function AgniShellLayout({
   sidebarContent,
   rightPanelContent,
   showRightPanelToggle = true,
-  onNewItem,
-  onOpenExplorer,
   onOpenFileExplorerTab,
   onFocusSearch,
   onOpenOverview,
@@ -109,14 +105,6 @@ export function AgniShellLayout({
     // Placeholder for menu functionality
   }, []);
 
-  const handleNewItem = useCallback(() => {
-    onNewItem?.();
-  }, [onNewItem]);
-
-  const handleOpenExplorer = useCallback(() => {
-    onOpenExplorer?.();
-  }, [onOpenExplorer]);
-
   const handleOpenFileExplorerTab = useCallback(() => {
     onOpenFileExplorerTab?.();
   }, [onOpenFileExplorerTab]);
@@ -167,8 +155,6 @@ export function AgniShellLayout({
         <ShellSidebar
           isOpen={leftPanelOpen}
           currentPage={activeTab}
-          onNewItem={handleNewItem}
-          onOpenExplorer={handleOpenExplorer}
           onOpenFileExplorerTab={handleOpenFileExplorerTab}
           onFocusSearch={handleFocusSearch}
           onOpenOverview={handleOpenOverview}

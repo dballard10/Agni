@@ -81,20 +81,6 @@ function App() {
     setActiveTab(nextTab);
   };
 
-  const handleNewItem = useCallback(() => {
-    if (activeTab === "notes") {
-      notesActionsRef.current?.createNote();
-    } else if (activeTab === "weekly") {
-      actions.createOrSelectCurrentWeek();
-    }
-  }, [activeTab, actions]);
-
-  const handleOpenExplorer = useCallback(() => {
-    if (activeTab === "notes") {
-      notesActionsRef.current?.createFolder();
-    }
-  }, [activeTab]);
-
   const handleOpenFileExplorerTab = useCallback(() => {
     if (activeTab === "notes") {
       notesActionsRef.current?.focusExplorer();
@@ -233,8 +219,6 @@ function App() {
     <AgniShellLayout
       activeTab={activeTab}
       onTabChange={handleTabChange}
-      onNewItem={handleNewItem}
-      onOpenExplorer={handleOpenExplorer}
       onOpenFileExplorerTab={handleOpenFileExplorerTab}
       onFocusSearch={handleFocusSearch}
       onOpenOverview={handleOpenOverview}
