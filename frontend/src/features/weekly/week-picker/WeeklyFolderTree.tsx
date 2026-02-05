@@ -5,6 +5,7 @@ import {
   IconFileText,
 } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
+import { parseISODateLocal } from "@/shared/lib/date";
 
 interface WeeklyFolderTreeProps {
   selectedWeekStartISO?: string;
@@ -39,7 +40,7 @@ function buildWeekItems(isoDates: string[]): WeekItem[] {
   return [...isoDates]
     .filter(Boolean)
     .map((iso) => {
-      const date = new Date(iso);
+      const date = parseISODateLocal(iso);
       const end = new Date(date);
       end.setDate(end.getDate() + 6);
       return {

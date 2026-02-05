@@ -1,4 +1,5 @@
 import type { Task, TaskStatus, TaskLocation, WeekState, Group, WeeklyItemType } from "../../types/weekly";
+import { parseISODateLocal } from "../date";
 
 export type MarkdownTaskStatusToken = "[ ]" | "[x]" | "[>]" | "[-]" | "[?]";
 
@@ -171,7 +172,7 @@ const formatISODate = (date: Date): string => {
 };
 
 const getDateForDayIndex = (weekStartISO: string, dayIndex: number): Date => {
-  const base = new Date(weekStartISO);
+  const base = parseISODateLocal(weekStartISO);
   const d = new Date(base);
   d.setDate(base.getDate() + dayIndex);
   d.setHours(0, 0, 0, 0);

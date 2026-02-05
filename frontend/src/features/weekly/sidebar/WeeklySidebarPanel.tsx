@@ -5,6 +5,7 @@ import WeeklyFolderTree from "../week-picker/WeeklyFolderTree";
 import WeeklyStatsPanel from "../stats/WeeklyStatsPanel";
 import CreateWeekPickerButton from "../week-picker/CreateWeekPickerButton";
 import type { WeekStats } from "../stats";
+import { parseISODateLocal } from "@/shared/lib/date";
 
 interface WeeklySidebarPanelProps {
   sidebarTab: "explorer" | "search" | "overview";
@@ -34,7 +35,7 @@ export function WeeklySidebarPanel({
   // Filter available weeks by search query
   const filteredWeeks = searchQuery.trim()
     ? availableWeekStartsISO.filter((iso) => {
-        const date = new Date(iso);
+        const date = parseISODateLocal(iso);
         const formatted = date.toLocaleDateString("en-US", {
           year: "numeric",
           month: "long",
@@ -99,7 +100,7 @@ export function WeeklySidebarPanel({
             </div>
             <div className="space-y-1">
               {filteredWeeks.map((iso) => {
-                const date = new Date(iso);
+                const date = parseISODateLocal(iso);
                 const label = date.toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",

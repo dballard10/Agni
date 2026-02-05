@@ -4,6 +4,17 @@ export function getDateForDayIndex(weekStart: Date, dayIndex: number): Date {
   return date;
 }
 
+/**
+ * Parse a YYYY-MM-DD string as a local calendar date (midnight local time).
+ *
+ * Important: `new Date("YYYY-MM-DD")` is parsed as UTC by JS engines, which can
+ * display as the previous day in negative time zones. Appending `T00:00:00`
+ * forces local midnight, matching user expectations for week/day labels.
+ */
+export function parseISODateLocal(dateStr: string): Date {
+  return new Date(dateStr + "T00:00:00");
+}
+
 export function getTodayISO(): string {
   const now = new Date();
   const y = now.getFullYear();

@@ -9,7 +9,7 @@ import type {
 } from "../../shared/types/weekly";
 import DayCard from "../../entities/day/ui/DayCard";
 import { computeWeekStats } from "../../features/weekly/stats";
-import { getDateForDayIndex } from "../../shared/lib/date";
+import { getDateForDayIndex, parseISODateLocal } from "../../shared/lib/date";
 import { getGroupsForDay, getTasksForDay } from "./selectors";
 import { useWeeklyViewDetails } from "./useWeeklyViewDetails";
 import DeleteRecurrenceModal from "../../features/weekly/recurrence/DeleteRecurrenceModal";
@@ -146,13 +146,13 @@ export default function WeeklyView({
   } = useWeeklyViewDetails({ openTaskId, onOpenTaskHandled });
 
   const weekStartDateObj = useMemo(
-    () => new Date(weekState.weekStart),
+    () => parseISODateLocal(weekState.weekStart),
     [weekState.weekStart]
   );
 
   // Helper to format week title
   const formatWeekTitle = useCallback((weekStartISO: string) => {
-    const date = new Date(weekStartISO);
+    const date = parseISODateLocal(weekStartISO);
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   }, []);
 
@@ -288,7 +288,7 @@ export default function WeeklyView({
     }
 
     setClipboard({ kind: "day", data: dayClipboard });
-    const dayDate = getDateForDayIndex(new Date(weekState.weekStart), dayIndex);
+    const dayDate = getDateForDayIndex(weekStartDateObj, dayIndex);
     const dateStr = dayDate.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -342,7 +342,7 @@ export default function WeeklyView({
       actions.addTaskFromClipboard(dayIndex, clipboard.data);
     }
 
-    const dayDate = getDateForDayIndex(new Date(weekState.weekStart), dayIndex);
+    const dayDate = getDateForDayIndex(weekStartDateObj, dayIndex);
     const dateStr = dayDate.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -360,7 +360,7 @@ export default function WeeklyView({
   };
 
   const handleDeleteAllForDay = async (dayIndex: number) => {
-    const dayDate = getDateForDayIndex(new Date(weekState.weekStart), dayIndex);
+    const dayDate = getDateForDayIndex(weekStartDateObj, dayIndex);
     const dateStr = dayDate.toLocaleDateString("en-US", {
       weekday: "long",
       month: "short",

@@ -1,9 +1,10 @@
 import type { WeekState } from "../../types/weekly";
 import type { CalendarEvent } from "../../types/calendar";
 import { ITEM_TYPE_STYLES } from "../../../entities/task/model/itemTypeConfig";
+import { parseISODateLocal } from "../date";
 
 export function getTaskDate(weekStartISO: string, dayIndex: number): Date {
-  const base = new Date(weekStartISO);
+  const base = parseISODateLocal(weekStartISO);
   const d = new Date(base);
   d.setDate(base.getDate() + dayIndex);
   d.setHours(0, 0, 0, 0);
