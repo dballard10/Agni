@@ -55,8 +55,11 @@ export default function DateInputWithPicker({
   useEffect(() => {
     if (!isOpen) return;
     const initialDate = parseValueDate(value);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync on open
     setViewDate(initialDate ?? new Date());
+     
     setDraftDate(initialDate ?? new Date());
+     
     setMode("day");
   }, [isOpen, value]);
 

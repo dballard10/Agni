@@ -116,7 +116,6 @@ export function getItemTypeColor(
 }
 
 // Vite specific hot module replacement - prevent context from being hot reloaded
-// @ts-expect-error - import.meta.hot is Vite specific
 if (import.meta.hot) {
   import.meta.hot.accept();
 }

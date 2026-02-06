@@ -91,7 +91,7 @@ function formatPlaceLabel(place: NominatimPlace): {
   const postcode = addr.postcode || "";
 
   // Primary label: name or street
-  let primary = name || street || locality;
+  const primary = name || street || locality;
 
   // Secondary label: address details
   const secondaryParts: string[] = [];

@@ -70,6 +70,7 @@ function GoalCard({
 
   useEffect(() => {
     if (!isEditing) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync with prop
       setEditName(goal.name);
     }
   }, [goal.name, isEditing]);

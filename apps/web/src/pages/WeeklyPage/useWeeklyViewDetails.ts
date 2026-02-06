@@ -30,8 +30,11 @@ export function useWeeklyViewDetails({
 
   useEffect(() => {
     if (!openTaskId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- handle external open request
     setSelectedTaskId(openTaskId);
+     
     setDetailsMode("side-panel");
+     
     setHighlightedTaskId(openTaskId);
     const selector = `[data-task-id="${openTaskId}"]`;
     const taskNode = document.querySelector<HTMLElement>(selector);

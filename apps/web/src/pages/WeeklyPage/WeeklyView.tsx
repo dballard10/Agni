@@ -86,7 +86,7 @@ interface WeeklyViewProps {
     deleteTaskOccurrence?: (taskId: string) => void;
     deleteRecurrenceSeries?: (recurrenceId: string) => void;
     patchTaskLocal: (id: string, patch: Partial<Task>) => void;
-    commitTaskPatch: (id: string, patch: any) => Promise<void>;
+    commitTaskPatch: (id: string, patch: Record<string, unknown>) => Promise<void>;
     moveTask: (taskId: string, targetDayIndex: number, targetPosition: number) => void;
   };
   openTaskId?: string | null;
@@ -124,7 +124,7 @@ export default function WeeklyView({
 
   // Draft/Dirty state for Task Details (manual save only)
   const [isDirty, setIsDirty] = useState(false);
-  const pendingPatchRef = useRef<Record<string, any>>({});
+  const pendingPatchRef = useRef<Record<string, unknown>>({});
   const lastCommittedTaskIdRef = useRef<string | null>(null);
 
   // Task details modal state
@@ -701,6 +701,7 @@ export default function WeeklyView({
       />
 
       {/* Task details modal */}
+      {/* eslint-disable-next-line react-hooks/refs -- refs accessed in callbacks, not during render */}
       {selectedTask && detailsProps && (
         <TaskDetailsModal
           isOpen={isTaskModalOpen}

@@ -96,6 +96,7 @@ export function WeeklyFolderTree({
       return;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- auto-expand on selection
     setExpandedYears((previous) => {
       if (previous.has(selectedItem.year)) {
         return previous;
@@ -106,6 +107,7 @@ export function WeeklyFolderTree({
     });
 
     const monthKey = `${selectedItem.year}::${selectedItem.month}`;
+     
     setExpandedMonths((previous) => {
       if (previous.has(monthKey)) {
         return previous;

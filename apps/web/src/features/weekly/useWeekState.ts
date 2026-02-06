@@ -207,12 +207,15 @@ export function useWeekState() {
 
   // Initial load
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch on mount
     fetchWeekTasks(weekSpecificState.weekStart);
+     
     fetchAvailableWeekStarts();
   }, [weekSpecificState.weekStart, fetchWeekTasks, fetchAvailableWeekStarts]);
 
   // Save non-task data to localStorage
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- persist to localStorage
     setDataStore((prev) => {
       const updatedStore: UserDataStore = {
         ...prev,
@@ -721,7 +724,7 @@ export function useWeekState() {
     // Actually, let's calculate the changes based on the same logic but find the diffs
     
     try {
-      const updates: Promise<any>[] = [];
+      const updates: Promise<unknown>[] = [];
       
       // The task itself always updates its assigned_date and position
       const newAssignedDate = getAssignedDate(weekSpecificState.weekStart, targetDayIndex);
@@ -847,7 +850,7 @@ export function useWeekState() {
 
   const addTaskFromClipboard = (
     dayIndex: number,
-    ct: any // ClipboardTask
+    ct: { title: string } // ClipboardTask
   ) => {
     addTask(dayIndex, ct.title);
   };

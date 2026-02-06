@@ -23,6 +23,10 @@
   --notes-link: #2563eb; /* blue-600 (navy) */
   --notes-selection-bg: #334155; /* slate-700 */
 
+  /* Find & Replace highlights */
+  --notes-find-match-bg: rgba(245, 158, 11, 0.3); /* amber-500/30 */
+  --notes-find-match-current-bg: rgba(245, 158, 11, 0.6); /* amber-500/60 */
+
   /* Checkbox */
   --notes-checkbox-bg: #1e293b; /* slate-800 */
   --notes-checkbox-border: #475569; /* slate-600 */

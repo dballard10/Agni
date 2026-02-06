@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   IconLayoutSidebarLeftCollapse,
@@ -37,7 +37,10 @@ export function LeftSidebar({
   const didToggleRef = useRef(false);
   const isDraggingRef = useRef(false);
   const isOpenRef = useRef(isOpen);
-  isOpenRef.current = isOpen;
+
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);

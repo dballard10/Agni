@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { TopBar, type PageTab } from "@/widgets/TopBar";
+import { TopBar, type PageTab, type TabGroup, type TabContextMenuCallbacks } from "@/widgets/TopBar";
 import { ShellSidebar } from "@/widgets/ShellSidebar";
 import { MainContentHeader, type HeaderMenuItem } from "@/widgets/MainContentHeader";
 import { TopNotificationHost } from "@/widgets/TopNotifications";
 import type { PageId, EditorMode } from "@/app/shell/types";
+import type { SplitMode } from "@/pages/NotesPage";
 
 type UtilityTabId = "goals" | "companions" | "settings";
 
@@ -33,15 +34,27 @@ interface AgniShellLayoutProps {
   onOpenOverview?: () => void;
   // Utility tabs (Goals, Companions, Settings)
   onOpenUtilityTab?: (tab: UtilityTabId) => void;
-  // Page tabs (generic, used by Notes and Weekly)
+  // Page tabs - single group mode (generic, used by Notes and Weekly)
   pageTabs?: PageTab[];
   activePageTabIndex?: number;
   onPageTabChange?: (index: number) => void;
   onPageTabClose?: (index: number) => void;
+  // Page tabs - multi group mode (for split view)
+  tabGroups?: TabGroup[];
+  onGroupTabChange?: (groupIndex: number, tabIndex: number) => void;
+  onGroupTabClose?: (groupIndex: number, tabIndex: number) => void;
+  onTabMove?: (fromGroup: number, fromIndex: number, toGroup: number, toIndex: number) => void;
   // Optional title shown in the main content header (left side)
   headerTitle?: string;
   // Menu items for the header three-dots dropdown
   headerMenuItems?: HeaderMenuItem[];
+  // Split view mode
+  splitMode?: SplitMode;
+  secondaryFilePath?: string;
+  // Split ratio for resizable panes (0-1)
+  splitRatio?: number;
+  // Tab context menu callbacks
+  tabContextMenu?: TabContextMenuCallbacks;
 }
 
 export function AgniShellLayout({
@@ -66,8 +79,16 @@ export function AgniShellLayout({
   activePageTabIndex,
   onPageTabChange,
   onPageTabClose,
+  tabGroups,
+  onGroupTabChange,
+  onGroupTabClose,
+  onTabMove,
   headerTitle,
   headerMenuItems,
+  splitMode,
+  secondaryFilePath,
+  splitRatio,
+  tabContextMenu,
 }: AgniShellLayoutProps) {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
@@ -148,6 +169,12 @@ export function AgniShellLayout({
         activePageTabIndex={activePageTabIndex}
         onPageTabChange={onPageTabChange}
         onPageTabClose={onPageTabClose}
+        tabGroups={tabGroups}
+        onGroupTabChange={onGroupTabChange}
+        onGroupTabClose={onGroupTabClose}
+        onTabMove={onTabMove}
+        splitRatio={splitRatio}
+        tabContextMenu={tabContextMenu}
       />
 
       {/* Main layout: sidebar + content + optional right panel */}
@@ -166,15 +193,19 @@ export function AgniShellLayout({
         </ShellSidebar>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Main Content Header */}
-          <MainContentHeader
-            filePath={filePath}
-            editorMode={editorMode}
-            onToggleEditorMode={handleToggleEditorMode}
-            menuItems={headerMenuItems}
-            title={headerTitle}
-          />
+        <div className="flex-1 flex flex-col overflow-hidden relative">
+          {/* Main Content Header - hidden for notes page (EditorPane has its own) */}
+          {activeTab !== "notes" && (
+            <MainContentHeader
+              filePath={filePath}
+              editorMode={editorMode}
+              onToggleEditorMode={handleToggleEditorMode}
+              menuItems={headerMenuItems}
+              title={headerTitle}
+              splitMode={splitMode}
+              secondaryFilePath={secondaryFilePath}
+            />
+          )}
 
           {/* Main Content Body */}
           <main className="flex-1 overflow-y-auto overflow-x-hidden">

@@ -323,9 +323,13 @@ function CompanionDetails({
 
   // Sync internal state if companion changes
   useEffect(() => {
+     
     setEditName(companion.name);
+     
     setIsEditingName(false);
+     
     setIsRelationshipDropdownOpen(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only reset on companion.id change
   }, [companion.id]);
 
   useClickOutside(

@@ -467,7 +467,7 @@ function buildDecorations(view: EditorView): RangeSet<Decoration> {
     // Single bracket links [Title] - style on both active and non-active lines
     // Match [text] NOT followed by ( (to avoid markdown links)
     // Skip task checkboxes like - [ ] or - [x] via code check
-    const bracketLinkRegexActive = /\[([^\[\]]+)\](?!\()/g;
+    const bracketLinkRegexActive = /\[([^[\]]+)\](?!\()/g;
     let bracketMatch;
     while ((bracketMatch = bracketLinkRegexActive.exec(lineText)) !== null) {
       const label = bracketMatch[1];
@@ -681,6 +681,10 @@ interface LiveMarkdownEditorProps {
   mode?: "preview" | "edit";
   /** Whether to auto-focus the editor on mount */
   autoFocus?: boolean;
+  /** Additional CodeMirror extensions to include (e.g., find/replace highlighting) */
+  additionalExtensions?: Extension[];
+  /** Callback to expose the EditorView for external operations */
+  onEditorViewReady?: (view: EditorView | undefined) => void;
 }
 
 export function LiveMarkdownEditor({
@@ -691,6 +695,8 @@ export function LiveMarkdownEditor({
   onOpenBracketLink,
   mode = "preview",
   autoFocus = false,
+  additionalExtensions = [],
+  onEditorViewReady,
 }: LiveMarkdownEditorProps) {
   const editorRef = useRef<ReactCodeMirrorRef>(null);
   const lastJumpNonce = useRef<number | null>(null);
@@ -700,6 +706,13 @@ export function LiveMarkdownEditor({
   useEffect(() => {
     onOpenBracketLinkRef.current = onOpenBracketLink;
   }, [onOpenBracketLink]);
+
+  // Expose editor view to parent when ready
+  useEffect(() => {
+    if (!onEditorViewReady) return;
+    const view = editorRef.current?.view;
+    onEditorViewReady(view);
+  }, [onEditorViewReady]);
 
   // Blur editor when mode changes so no cursor/active line shows until user clicks
   useEffect(() => {
@@ -716,6 +729,7 @@ export function LiveMarkdownEditor({
   // Click handler extension for bracket links
   const bracketLinkClickHandler = useMemo(
     () =>
+      // eslint-disable-next-line react-hooks/refs -- ref accessed in event handler, not during render
       EditorView.domEventHandlers({
         click: (event) => {
           const target = event.target as HTMLElement;
@@ -744,7 +758,7 @@ export function LiveMarkdownEditor({
   const taskCheckboxClickHandler = useMemo(
     () =>
       EditorView.domEventHandlers({
-        mousedown: (event, _view) => {
+        mousedown: (event) => {
           const target = event.target as HTMLElement;
           if (target.closest(".lp-checkbox")) {
             // Prevent editor from focusing or moving selection when clicking the checkbox
@@ -812,6 +826,7 @@ export function LiveMarkdownEditor({
     EditorView.lineWrapping,
     bracketLinkClickHandler,
     taskCheckboxClickHandler,
+    ...additionalExtensions,
   ];
 
   // Add placeholder extension

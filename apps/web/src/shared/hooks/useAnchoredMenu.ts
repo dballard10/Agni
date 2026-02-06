@@ -44,6 +44,33 @@ export function useAnchoredMenu({
     setIsOpen(true);
   }, [updatePosition]);
 
+  // Open menu at specific coordinates (for context menus)
+  const openAtPosition = useCallback((x: number, y: number) => {
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let left = x;
+    if (left + menuWidth > viewportWidth - 8) {
+      left = viewportWidth - menuWidth - 8;
+    }
+    if (left < 8) {
+      left = 8;
+    }
+
+    // Estimate menu height (roughly 200px max) and adjust if near bottom
+    let top = y;
+    const estimatedMenuHeight = 200;
+    if (top + estimatedMenuHeight > viewportHeight - 8) {
+      top = viewportHeight - estimatedMenuHeight - 8;
+    }
+    if (top < 8) {
+      top = 8;
+    }
+
+    setPosition({ top, left });
+    setIsOpen(true);
+  }, [menuWidth]);
+
   const close = useCallback(() => {
     setIsOpen(false);
   }, []);
@@ -58,6 +85,7 @@ export function useAnchoredMenu({
 
   useEffect(() => {
     if (!isOpen) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial position sync on open
     updatePosition();
     window.addEventListener("scroll", updatePosition, true);
     window.addEventListener("resize", updatePosition);
@@ -71,6 +99,7 @@ export function useAnchoredMenu({
     isOpen,
     position,
     open,
+    openAtPosition,
     close,
     toggle,
     updatePosition,

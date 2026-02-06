@@ -60,9 +60,13 @@ export default function GoalDetailsPanel({
   ).length;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync with prop changes
     setDescription(goal.description ?? "");
+     
     setColor(getInitialColor(goal.color));
+     
     setDueDate(goal.dueDate ?? "");
+     
     setIsConfirmingDelete(false);
   }, [goal.id, goal.description, goal.color, goal.dueDate]);
 

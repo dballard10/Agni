@@ -30,7 +30,7 @@ export default function DayCardHeader({
   const content = `${dayName} ${formattedDate}`;
 
   const markdownComponents = {
-    p: ({ ...props }: Record<string, unknown>) => (
+    p: (props: React.HTMLAttributes<HTMLSpanElement>) => (
       <span className="font-semibold text-slate-200" {...props} />
     ),
   };

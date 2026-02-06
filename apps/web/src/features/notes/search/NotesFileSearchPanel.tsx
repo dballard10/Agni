@@ -42,8 +42,11 @@ export function NotesFileSearchPanel({
 
   // Reset active index and expanded/showAll state when results change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset on search change
     setActiveIndex(0);
+     
     setExpandedById({});
+     
     setShowAllById({});
   }, [results]);
 
@@ -342,7 +345,7 @@ function MatchLineItem({ match, onClick }: MatchLineItemProps) {
     // Center the match in the display window
     const matchCenter = (matchStart + matchEnd) / 2;
     let start = Math.max(0, Math.floor(matchCenter - maxLen / 2));
-    let end = Math.min(text.length, start + maxLen);
+    const end = Math.min(text.length, start + maxLen);
 
     // Adjust if we hit the end
     if (end === text.length) {

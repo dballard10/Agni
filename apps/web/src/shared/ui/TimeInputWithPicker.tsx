@@ -49,10 +49,13 @@ export default function TimeInputWithPicker({
     if (value) {
       const [hStr, mStr] = value.split(":");
       let h = parseInt(hStr, 10);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync picker with value
       setPeriod(h >= 12 ? "PM" : "AM");
       h = h % 12;
       if (h === 0) h = 12;
+       
       setH12(h);
+       
       setMinutes(mStr);
     }
   }, [value, isOpen]);

@@ -138,10 +138,14 @@ export default function TaskDetailsContent({
 
   // Sync internal state if task changes (e.g. switching selection)
   useEffect(() => {
+     
     setEditTitle(task.title);
+     
     setIsEditingTitle(false);
+     
     setSelectedGoalIds(task.goalIds ?? []);
-  }, [task.id]); // Only reset on task ID change to preserve multi-selection state during updates
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only reset on task.id change
+  }, [task.id]);
 
   const handleGoalsChange = (goalIds: string[]) => {
     setSelectedGoalIds(goalIds);

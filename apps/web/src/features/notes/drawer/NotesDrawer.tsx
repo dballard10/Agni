@@ -13,6 +13,9 @@ import {
   IconFolderPlus,
   IconSearch,
   IconFilePlus,
+  IconCopy,
+  IconClipboard,
+  IconLink,
 } from "@tabler/icons-react";
 import type { Note } from "../../../mock/mockNotes";
 import { useAnchoredMenu } from "../../../shared/hooks/useAnchoredMenu";
@@ -41,6 +44,11 @@ interface NotesDrawerProps {
   ) => void;
   sidebarTab: "explorer" | "search";
   onSidebarTabChange: (tab: "explorer" | "search") => void;
+  onCopyPath: (path: string) => void;
+  onCopyNote: (noteId: string) => void;
+  onCopyFolder: (folderPath: string) => void;
+  onPaste: (targetFolderPath: string | null) => void;
+  canPaste: boolean;
 }
 
 interface TreeFolder {
@@ -66,8 +74,8 @@ interface BuildTreeInput {
 }
 
 interface MenuState {
-  nodeType: "folder" | "note";
-  nodeId: string; // noteId for notes, folderPath for folders
+  nodeType: "folder" | "note" | "root";
+  nodeId: string; // noteId for notes, folderPath for folders, empty for root
   nodeName: string;
   isExpanded?: boolean; // For folders only
 }
@@ -185,6 +193,11 @@ export function NotesDrawer({
   onOpenSearchResult,
   sidebarTab,
   onSidebarTabChange,
+  onCopyPath,
+  onCopyNote,
+  onCopyFolder,
+  onPaste,
+  canPaste,
 }: NotesDrawerProps) {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
     new Set()
@@ -213,7 +226,7 @@ export function NotesDrawer({
   const editInputRef = useRef<HTMLInputElement>(null);
   const hoverExpandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { isOpen, position, open, close } = useAnchoredMenu({
+  const { isOpen, position, open, openAtPosition, close } = useAnchoredMenu({
     resolveAnchor: () => anchorRef.current,
     menuWidth: 170,
   });
@@ -228,8 +241,11 @@ export function NotesDrawer({
 
   // Reset search active index and expanded state when search results change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset on search change
     setSearchActiveIndex(0);
+     
     setSearchExpandedById({});
+     
     setSearchShowAllById({});
   }, [searchResults]);
 
@@ -258,6 +274,7 @@ export function NotesDrawer({
         });
       };
       addFolders(tree);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional expand all
       setExpandedFolders((prev) => {
         const next = new Set(prev);
         foldersToExpand.forEach((f) => next.add(f));
@@ -278,6 +295,7 @@ export function NotesDrawer({
             currentPath = currentPath ? `${currentPath}/${parts[i]}` : parts[i];
             foldersToExpand.add(currentPath);
           }
+          // eslint-disable-next-line react-hooks/set-state-in-effect -- reveal selected note
           setExpandedFolders((prev) => {
             const next = new Set(prev);
             foldersToExpand.forEach((f) => next.add(f));
@@ -358,6 +376,16 @@ export function NotesDrawer({
     setMenuState(null);
   }, [close]);
 
+  const handleOpenRootMenu = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setMenuState({ nodeType: "root", nodeId: "", nodeName: "" });
+      openAtPosition(e.clientX, e.clientY);
+    },
+    [openAtPosition]
+  );
+
   const cancelRename = useCallback(() => {
     setEditing(null);
     setDraftName("");
@@ -427,7 +455,7 @@ export function NotesDrawer({
   }, [menuState, onOpenNote, handleCloseMenu]);
 
   const handleMenuRename = useCallback(() => {
-    if (!menuState) return;
+    if (!menuState || menuState.nodeType === "root") return;
 
     setEditing({
       nodeType: menuState.nodeType,
@@ -657,6 +685,7 @@ export function NotesDrawer({
                   onContextMenu={(e) => {
                     if (isEditing) return;
                     e.preventDefault();
+                    e.stopPropagation();
                     handleOpenMenu(
                       e,
                       "folder",
@@ -715,6 +744,7 @@ export function NotesDrawer({
                   onContextMenu={(e) => {
                     if (isEditing) return;
                     e.preventDefault();
+                    e.stopPropagation();
                     handleOpenMenu(e, "note", node.id, node.name);
                   }}
                   className={`w-full flex items-center gap-2 px-2 py-1 rounded transition-colors ${
@@ -817,6 +847,7 @@ export function NotesDrawer({
           onDragOver={(e) => handleDragOver(e, null)}
           onDragLeave={handleDragLeave}
           onDrop={(e) => handleDrop(e, null)}
+          onContextMenu={handleOpenRootMenu}
           className={`flex-1 overflow-y-auto -mx-2 px-2 transition-colors ${
             dragOverPath === "root" ? "bg-slate-800/30" : ""
           }`}
@@ -863,7 +894,23 @@ export function NotesDrawer({
               onClick={(e) => e.stopPropagation()}
             >
               <div className="py-1">
-                {menuState.nodeType === "folder" ? (
+                {menuState.nodeType === "root" ? (
+                  <button
+                    onClick={() => {
+                      onPaste(null);
+                      handleCloseMenu();
+                    }}
+                    disabled={!canPaste}
+                    className={`flex w-full items-center gap-2 px-3 py-2 text-sm ${
+                      canPaste
+                        ? "text-slate-200 hover:bg-slate-800"
+                        : "text-slate-600 cursor-not-allowed"
+                    }`}
+                  >
+                    <IconClipboard className="w-4 h-4" />
+                    <span>Paste</span>
+                  </button>
+                ) : menuState.nodeType === "folder" ? (
                   <>
                     <button
                       onClick={handleMenuExpandCollapse}
@@ -893,6 +940,42 @@ export function NotesDrawer({
                     </button>
                     <div className="h-px bg-slate-800 my-1" />
                     <button
+                      onClick={() => {
+                        onCopyPath(menuState.nodeId);
+                        handleCloseMenu();
+                      }}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      <IconLink className="w-4 h-4" />
+                      <span>Copy Path</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onCopyFolder(menuState.nodeId);
+                        handleCloseMenu();
+                      }}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      <IconCopy className="w-4 h-4" />
+                      <span>Copy</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onPaste(menuState.nodeId);
+                        handleCloseMenu();
+                      }}
+                      disabled={!canPaste}
+                      className={`flex w-full items-center gap-2 px-3 py-2 text-sm ${
+                        canPaste
+                          ? "text-slate-200 hover:bg-slate-800"
+                          : "text-slate-600 cursor-not-allowed"
+                      }`}
+                    >
+                      <IconClipboard className="w-4 h-4" />
+                      <span>Paste</span>
+                    </button>
+                    <div className="h-px bg-slate-800 my-1" />
+                    <button
                       onClick={handleMenuRename}
                       className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
                     >
@@ -916,6 +999,29 @@ export function NotesDrawer({
                       <IconFile className="w-4 h-4" />
                       <span>Open</span>
                     </button>
+                    <div className="h-px bg-slate-800 my-1" />
+                    <button
+                      onClick={() => {
+                        const note = notes.find((n) => n.id === menuState.nodeId);
+                        if (note) onCopyPath(note.path);
+                        handleCloseMenu();
+                      }}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      <IconLink className="w-4 h-4" />
+                      <span>Copy Path</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onCopyNote(menuState.nodeId);
+                        handleCloseMenu();
+                      }}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      <IconCopy className="w-4 h-4" />
+                      <span>Copy</span>
+                    </button>
+                    <div className="h-px bg-slate-800 my-1" />
                     <button
                       onClick={handleMenuRename}
                       className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
@@ -1110,7 +1216,7 @@ function MatchLineItem({ match, onClick }: MatchLineItemProps) {
     // Center the match in the display window
     const matchCenter = (matchStart + matchEnd) / 2;
     let start = Math.max(0, Math.floor(matchCenter - maxLen / 2));
-    let end = Math.min(text.length, start + maxLen);
+    const end = Math.min(text.length, start + maxLen);
 
     // Adjust if we hit the end
     if (end === text.length) {

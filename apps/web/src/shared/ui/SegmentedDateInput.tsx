@@ -33,6 +33,7 @@ export default function SegmentedDateInput({
     if (isFocused) return;
 
     if (!value) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync display with prop
       setDisplayValue(TEMPLATE_VALUE);
       return;
     }
@@ -45,6 +46,7 @@ export default function SegmentedDateInput({
     const mm = m.padStart(2, "0");
     const dd = d.padStart(2, "0");
     const yyyy = y.padStart(4, "0");
+     
     setDisplayValue(`${mm}/${dd}/${yyyy}`);
   }, [value, isFocused]);
 
@@ -213,7 +215,7 @@ export default function SegmentedDateInput({
     setTimeout(() => selectSegment(0), 0);
   };
 
-  const handleClick = (_e: React.MouseEvent<HTMLInputElement>) => {
+  const handleClick = () => {
     if (!displayValue) setDisplayValue(TEMPLATE_VALUE);
     // On click, snap selection to the clicked segment
     const pos = inputRef.current?.selectionStart ?? 0;

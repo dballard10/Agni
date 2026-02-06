@@ -4,24 +4,13 @@ import {
   IconChevronRight,
   IconLayoutSidebar,
   IconLayoutSidebarFilled,
-  IconLayoutSidebarRightFilled,
-  IconLayoutSidebarRight,
   IconSettings,
-  IconBook2,
 } from "@tabler/icons-react";
 import { AgniMenuDropdown } from "./AgniMenuDropdown";
-import { LibraryMenuDropdown } from "./LibraryMenuDropdown";
-import { PageTabs } from "./PageTabs";
+import { PageTabs, type PageTab, type TabGroup, type TabContextMenuCallbacks } from "./PageTabs";
 import { WindowControls } from "./WindowControls";
 import { usePlatform } from "@/shared/hooks/usePlatform";
 import type { PageId } from "@/app/shell/types";
-
-export interface PageTab {
-  id: string;
-  title: string;
-  variant?: "base" | "utility" | "root";
-  closable?: boolean;
-}
 
 type UtilityTabId = "goals" | "companions" | "settings";
 
@@ -40,11 +29,20 @@ interface TopBarProps {
   onToggleLeftPanel: () => void;
   onToggleRightPanel: () => void;
   onOpenUtilityTab?: (tab: UtilityTabId) => void;
-  // Page tabs (generic, used by Notes and Weekly)
+  // Single-group mode (default)
   pageTabs?: PageTab[];
   activePageTabIndex?: number;
   onPageTabChange?: (index: number) => void;
   onPageTabClose?: (index: number) => void;
+  // Multi-group mode (for split view)
+  tabGroups?: TabGroup[];
+  onGroupTabChange?: (groupIndex: number, tabIndex: number) => void;
+  onGroupTabClose?: (groupIndex: number, tabIndex: number) => void;
+  onTabMove?: (fromGroup: number, fromIndex: number, toGroup: number, toIndex: number) => void;
+  // Split ratio for resizable panes (0-1)
+  splitRatio?: number;
+  // Tab context menu callbacks
+  tabContextMenu?: TabContextMenuCallbacks;
 }
 
 export function TopBar({
@@ -52,28 +50,29 @@ export function TopBar({
   canGoBack,
   canGoForward,
   leftPanelOpen,
-  rightPanelOpen,
-  showRightPanelToggle = true,
   onPageChange,
   onGoBack,
   onGoForward,
   onToggleLeftPanel,
-  onToggleRightPanel,
   onOpenUtilityTab,
   pageTabs,
   activePageTabIndex,
   onPageTabChange,
   onPageTabClose,
+  tabGroups,
+  onGroupTabChange,
+  onGroupTabClose,
+  onTabMove,
+  splitRatio,
+  tabContextMenu,
 }: TopBarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const { isDesktop, isMac } = usePlatform();
 
   const LeftPanelIcon = leftPanelOpen ? IconLayoutSidebarFilled : IconLayoutSidebar;
-  const RightPanelIcon = rightPanelOpen ? IconLayoutSidebarRightFilled : IconLayoutSidebarRight;
 
-  // Check if any utility tab is currently open (from pageTabs)
-  const hasUtilityTabOpen = pageTabs?.some(t => t.variant === "utility") ?? false;
+  // Determine if we're in multi-group mode
+  const isMultiGroup = !!tabGroups && tabGroups.length > 0;
 
   // Traffic light padding on macOS desktop
   const trafficLightPadding = isDesktop && isMac ? 70 : 0;
@@ -144,25 +143,6 @@ export function TopBar({
             <IconChevronRight className="w-5 h-5" />
           </button>
         </div>
-      </div>
-
-      {/* Column 2: Tab strip - starts at sidebar boundary, aligned to bottom */}
-      <div className="flex items-end overflow-hidden h-full">
-        {pageTabs && pageTabs.length > 0 && onPageTabChange && (
-          <PageTabs
-            tabs={pageTabs}
-            activeIndex={activePageTabIndex ?? 0}
-            onTabChange={onPageTabChange}
-            onTabClose={onPageTabClose}
-          />
-        )}
-      </div>
-
-      {/* Column 3: Right controls (panel toggles + settings + window controls) */}
-      <div
-        className="flex items-center gap-1 px-3"
-        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
-      >
         <button
           onClick={onToggleLeftPanel}
           className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
@@ -175,6 +155,44 @@ export function TopBar({
         >
           <LeftPanelIcon className="w-5 h-5" />
         </button>
+        <button
+          onClick={() => onOpenUtilityTab?.("settings")}
+          className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+          aria-label="Open settings"
+          title="Open settings"
+        >
+          <IconSettings className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Column 2: Tab strip - starts at sidebar boundary, aligned to bottom */}
+      <div className="flex items-end overflow-hidden ml-2 h-full relative">
+        {isMultiGroup && onGroupTabChange ? (
+          <PageTabs
+            groups={tabGroups}
+            onGroupTabChange={onGroupTabChange}
+            onGroupTabClose={onGroupTabClose}
+            onTabMove={onTabMove}
+            splitRatio={splitRatio}
+            tabContextMenu={tabContextMenu}
+          />
+        ) : pageTabs && pageTabs.length > 0 && onPageTabChange ? (
+          <PageTabs
+            tabs={pageTabs}
+            activeIndex={activePageTabIndex ?? 0}
+            onTabChange={onPageTabChange}
+            onTabClose={onPageTabClose}
+            tabContextMenu={tabContextMenu}
+          />
+        ) : null}
+      </div>
+
+      {/* Column 3: Right controls (window controls only - panel toggles moved to left) */}
+      <div
+        className="flex items-center gap-1 px-3"
+        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+      >
+        {/* Hidden for now - may use in future
         {showRightPanelToggle && (
           <button
             onClick={onToggleRightPanel}
@@ -211,14 +229,7 @@ export function TopBar({
             }}
           />
         </div>
-        <button
-          onClick={() => onOpenUtilityTab?.("settings")}
-          className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
-          aria-label="Open settings"
-          title="Open settings"
-        >
-          <IconSettings className="w-5 h-5" />
-        </button>
+        */}
 
         {/* Windows/Linux window controls */}
         {isDesktop && !isMac && <WindowControls />}

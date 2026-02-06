@@ -1,3 +1,4 @@
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -6,29 +7,42 @@ interface InlineMarkdownProps {
   className?: string;
 }
 
+type MdComponentProps = { node?: unknown } & React.HTMLAttributes<HTMLElement>;
+
 export function InlineMarkdown({ content, className }: InlineMarkdownProps) {
   const markdownComponents = {
-    p: ({ node, ...props }: any) => <span {...props} />,
-    strong: ({ node, ...props }: any) => (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- node omitted intentionally
+    p: ({ node, ...props }: MdComponentProps) => <span {...props} />,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- node omitted intentionally
+    strong: ({ node, ...props }: MdComponentProps) => (
       <strong className="font-bold" {...props} />
     ),
-    em: ({ node, ...props }: any) => <em className="italic" {...props} />,
-    h1: ({ node, ...props }: any) => (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- node omitted intentionally
+    em: ({ node, ...props }: MdComponentProps) => (
+      <em className="italic" {...props} />
+    ),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- node omitted intentionally
+    h1: ({ node, ...props }: MdComponentProps) => (
       <span className="font-bold text-lg" {...props} />
     ),
-    h2: ({ node, ...props }: any) => (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- node omitted intentionally
+    h2: ({ node, ...props }: MdComponentProps) => (
       <span className="font-bold text-lg" {...props} />
     ),
-    h3: ({ node, ...props }: any) => (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- node omitted intentionally
+    h3: ({ node, ...props }: MdComponentProps) => (
       <span className="font-bold text-lg" {...props} />
     ),
-    h4: ({ node, ...props }: any) => (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- node omitted intentionally
+    h4: ({ node, ...props }: MdComponentProps) => (
       <span className="font-bold text-lg" {...props} />
     ),
-    h5: ({ node, ...props }: any) => (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- node omitted intentionally
+    h5: ({ node, ...props }: MdComponentProps) => (
       <span className="font-bold text-lg" {...props} />
     ),
-    h6: ({ node, ...props }: any) => (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- node omitted intentionally
+    h6: ({ node, ...props }: MdComponentProps) => (
       <span className="font-bold text-lg" {...props} />
     ),
   };

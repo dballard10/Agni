@@ -181,6 +181,7 @@ export default function DayCard({
   // Automatically expand when content is added
   useEffect(() => {
     if (!isEmpty) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional auto-expand
       setIsCollapsed(false);
     }
   }, [isEmpty]);
@@ -195,6 +196,7 @@ export default function DayCard({
   );
 
   // Separate root tasks from group tasks and apply sorting
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- sorting function is stable
   const rootTasks = useMemo(
     () =>
       visibleTasks

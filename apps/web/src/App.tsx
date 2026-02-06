@@ -1,13 +1,13 @@
 import { useState, useMemo, useRef, useCallback } from "react";
-import { IconPencil, IconTrash, IconTrashX } from "@tabler/icons-react";
+import { IconPencil, IconTrash, IconTrashX, IconSearch, IconLayoutColumns, IconLayoutRows, IconX, IconCopy, IconLink } from "@tabler/icons-react";
 import { WeeklyView, type WeeklyPageActions, type WeekTab } from "@/pages/WeeklyPage";
 import { CalendarView } from "@/pages/CalendarPage";
 import { GoalsPage } from "@/pages/GoalsPage";
 import { CompanionsPage } from "@/pages/CompanionsPage";
 import { SettingsPage } from "@/pages/SettingsPage";
-import { NotesPage, type NotesPageActions, type NoteTab } from "@/pages/NotesPage";
+import { NotesPage, type NotesPageActions, type NoteTab, type SplitMode, type EditorPaneState, type FocusedPane } from "@/pages/NotesPage";
 import { AgniShellLayout } from "@/app/layout";
-import type { PageTab } from "@/widgets/TopBar";
+import type { PageTab, TabGroup, TabContextMenuCallbacks } from "@/widgets/TopBar";
 import type { HeaderMenuItem } from "@/widgets/MainContentHeader";
 import {
   useWeekState,
@@ -64,18 +64,30 @@ function App() {
   const notesActionsRef = useRef<NotesPageActions | null>(null);
   const [notesShellState, setNotesShellState] = useState<{
     filePath: string;
+    secondaryFilePath?: string;
     canGoBack: boolean;
     canGoForward: boolean;
     editorMode: EditorMode;
     noteTabs: NoteTab[];
     activeNoteTabIndex: number;
+    splitMode: SplitMode;
+    tabCount: number;
+    primaryPane: EditorPaneState | null;
+    secondaryPane: EditorPaneState | null;
+    splitRatio: number;
   }>({
     filePath: "Notes",
+    secondaryFilePath: undefined,
     canGoBack: false,
     canGoForward: false,
     editorMode: "preview",
     noteTabs: [],
     activeNoteTabIndex: -1,
+    splitMode: "none",
+    tabCount: 0,
+    primaryPane: null,
+    secondaryPane: null,
+    splitRatio: 0.5,
   });
 
   const weeklyActionsRef = useRef<WeeklyPageActions | null>(null);
@@ -190,11 +202,17 @@ function App() {
   const handleNotesShellStateChange = useCallback(
     (nextState: {
       filePath: string;
+      secondaryFilePath?: string;
       canGoBack: boolean;
       canGoForward: boolean;
       editorMode: EditorMode;
       noteTabs: NoteTab[];
       activeNoteTabIndex: number;
+      splitMode: SplitMode;
+      tabCount: number;
+      primaryPane: EditorPaneState | null;
+      secondaryPane: EditorPaneState | null;
+      splitRatio: number;
     }) => {
       setNotesShellState(nextState);
     },
@@ -419,8 +437,73 @@ function App() {
     ]
   );
 
-  // Use combined tabs for display (only when we have tabs)
-  const pageTabs = combinedTabs.length > 0 ? combinedTabs : undefined;
+  // Build tab groups for split mode, or single pageTabs for normal mode
+  const { pageTabs, tabGroups } = useMemo(() => {
+    const isSplit = activeTab === "notes" && notesShellState.splitMode !== "none";
+
+    if (isSplit && notesShellState.primaryPane && notesShellState.secondaryPane) {
+      // Build tab groups from pane data
+      const buildTabsFromPane = (pane: EditorPaneState): PageTab[] => {
+        return pane.noteIds.map((noteId) => {
+          const noteTab = notesShellState.noteTabs.find((t) => t.noteId === noteId);
+          return {
+            id: noteId,
+            title: noteTab?.title ?? "Untitled",
+            variant: "base" as const,
+            closable: true,
+          };
+        });
+      };
+
+      const groups: TabGroup[] = [
+        {
+          tabs: buildTabsFromPane(notesShellState.primaryPane),
+          activeIndex: notesShellState.primaryPane.activeIndex,
+        },
+        {
+          tabs: buildTabsFromPane(notesShellState.secondaryPane),
+          activeIndex: notesShellState.secondaryPane.activeIndex,
+        },
+      ];
+
+      return { pageTabs: undefined, tabGroups: groups };
+    }
+
+    // Normal single-group mode
+    return {
+      pageTabs: combinedTabs.length > 0 ? combinedTabs : undefined,
+      tabGroups: undefined,
+    };
+  }, [activeTab, notesShellState.splitMode, notesShellState.primaryPane, notesShellState.secondaryPane, notesShellState.noteTabs, combinedTabs]);
+
+  // Handlers for grouped tab operations (split mode)
+  const handleGroupTabChange = useCallback(
+    (groupIndex: number, tabIndex: number) => {
+      if (activeTab !== "notes") return;
+      const pane: FocusedPane = groupIndex === 0 ? "primary" : "secondary";
+      notesActionsRef.current?.selectPaneTabIndex(pane, tabIndex);
+    },
+    [activeTab]
+  );
+
+  const handleGroupTabClose = useCallback(
+    (groupIndex: number, tabIndex: number) => {
+      if (activeTab !== "notes") return;
+      const pane: FocusedPane = groupIndex === 0 ? "primary" : "secondary";
+      notesActionsRef.current?.closePaneTabIndex(pane, tabIndex);
+    },
+    [activeTab]
+  );
+
+  const handleTabMove = useCallback(
+    (fromGroup: number, fromIndex: number, toGroup: number, toIndex: number) => {
+      if (activeTab !== "notes") return;
+      const fromPane: FocusedPane = fromGroup === 0 ? "primary" : "secondary";
+      const toPane: FocusedPane = toGroup === 0 ? "primary" : "secondary";
+      notesActionsRef.current?.movePaneTab(fromPane, fromIndex, toPane, toIndex);
+    },
+    [activeTab]
+  );
 
   // Convert weekly tasks to calendar events
   const calendarEvents = useMemo(() => {
@@ -433,7 +516,56 @@ function App() {
     if (activeUtility) return undefined;
 
     if (activeTab === "notes") {
+      const canSplit = notesShellState.tabCount > 1;
+
+      const splitItems: HeaderMenuItem[] = notesShellState.splitMode === "none"
+        ? [
+            {
+              id: "split-right",
+              label: "Split Right",
+              icon: IconLayoutColumns,
+              disabled: !canSplit,
+              onSelect: () => notesActionsRef.current?.splitHorizontal(),
+            },
+            {
+              id: "split-down",
+              label: "Split Down",
+              icon: IconLayoutRows,
+              disabled: !canSplit,
+              onSelect: () => notesActionsRef.current?.splitVertical(),
+            },
+          ]
+        : [
+            {
+              id: "close-split",
+              label: "Close Split",
+              icon: IconX,
+              onSelect: () => notesActionsRef.current?.closeSplit(),
+            },
+          ];
+
       return [
+        ...splitItems,
+        {
+          id: "find-replace",
+          label: "Find & Replace",
+          icon: IconSearch,
+          separatorBefore: true,
+          onSelect: () => notesActionsRef.current?.openFindReplace(),
+        },
+        {
+          id: "copy-path",
+          label: "Copy Path",
+          icon: IconLink,
+          separatorBefore: true,
+          onSelect: () => notesActionsRef.current?.copyCurrentNotePath(),
+        },
+        {
+          id: "copy",
+          label: "Copy",
+          icon: IconCopy,
+          onSelect: () => notesActionsRef.current?.copyCurrentNote(),
+        },
         {
           id: "rename",
           label: "Rename",
@@ -445,6 +577,7 @@ function App() {
           label: "Delete",
           icon: IconTrash,
           danger: true,
+          separatorBefore: true,
           onSelect: () => notesActionsRef.current?.deleteCurrentNote(),
         },
       ];
@@ -461,7 +594,7 @@ function App() {
       ];
     }
     return undefined;
-  }, [activeTab, activeUtility]);
+  }, [activeTab, activeUtility, notesShellState.splitMode, notesShellState.tabCount]);
 
   // Compute filePath for header (utility tab overrides base)
   const headerFilePath = useMemo(() => {
@@ -473,6 +606,19 @@ function App() {
     if (activeTab === "calendar") return "Calendar";
     return undefined;
   }, [activeUtility, activeTab, notesShellState.filePath, weekState.weekStart]);
+
+  // Tab context menu callbacks (only for notes page)
+  const tabContextMenu = useMemo<TabContextMenuCallbacks | undefined>(() => {
+    if (activeTab !== "notes") return undefined;
+    return {
+      onSplitHorizontal: (tabId) => notesActionsRef.current?.splitHorizontalWithNote(tabId),
+      onSplitVertical: (tabId) => notesActionsRef.current?.splitVerticalWithNote(tabId),
+      onCopyPath: (tabId) => notesActionsRef.current?.copyNotePath(tabId),
+      onCopyFile: (tabId) => notesActionsRef.current?.copyNote(tabId),
+      onRename: (tabId) => notesActionsRef.current?.renameNote(tabId),
+      onDelete: (tabId) => notesActionsRef.current?.deleteNote(tabId),
+    };
+  }, [activeTab]);
 
   return (
     <AgniShellLayout
@@ -495,7 +641,15 @@ function App() {
       activePageTabIndex={activePageTabIndex}
       onPageTabChange={handlePageTabChange}
       onPageTabClose={handlePageTabClose}
+      tabGroups={tabGroups}
+      onGroupTabChange={handleGroupTabChange}
+      onGroupTabClose={handleGroupTabClose}
+      onTabMove={handleTabMove}
       headerMenuItems={headerMenuItems}
+      splitMode={activeTab === "notes" ? notesShellState.splitMode : undefined}
+      secondaryFilePath={activeTab === "notes" ? notesShellState.secondaryFilePath : undefined}
+      splitRatio={activeTab === "notes" ? notesShellState.splitRatio : undefined}
+      tabContextMenu={tabContextMenu}
     >
       {/* Base page content - hidden when utility tab is active but kept mounted */}
       {activeTab === "weekly" && (

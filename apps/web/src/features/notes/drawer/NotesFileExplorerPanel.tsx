@@ -23,6 +23,11 @@ interface NotesFileExplorerPanelProps {
   ) => void;
   sidebarTab: "explorer" | "search";
   onSidebarTabChange: (tab: "explorer" | "search") => void;
+  onCopyPath: (path: string) => void;
+  onCopyNote: (noteId: string) => void;
+  onCopyFolder: (folderPath: string) => void;
+  onPaste: (targetFolderPath: string | null) => void;
+  canPaste: boolean;
 }
 
 export function NotesFileExplorerPanel({
@@ -44,6 +49,11 @@ export function NotesFileExplorerPanel({
   onOpenSearchResult,
   sidebarTab,
   onSidebarTabChange,
+  onCopyPath,
+  onCopyNote,
+  onCopyFolder,
+  onPaste,
+  canPaste,
 }: NotesFileExplorerPanelProps) {
   return (
     <NotesDrawer
@@ -65,6 +75,11 @@ export function NotesFileExplorerPanel({
       onOpenSearchResult={onOpenSearchResult}
       sidebarTab={sidebarTab}
       onSidebarTabChange={onSidebarTabChange}
+      onCopyPath={onCopyPath}
+      onCopyNote={onCopyNote}
+      onCopyFolder={onCopyFolder}
+      onPaste={onPaste}
+      canPaste={canPaste}
     />
   );
 }
