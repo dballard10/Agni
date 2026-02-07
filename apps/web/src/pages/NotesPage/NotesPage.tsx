@@ -378,9 +378,9 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
         };
       });
     } else {
-      // Not in split mode - create below split
+      // Not in split mode - create right split
       setSplitState({
-        mode: "below",
+        mode: "right",
         primaryPane: {
           noteIds: history.ids,
           activeIndex: history.index,
