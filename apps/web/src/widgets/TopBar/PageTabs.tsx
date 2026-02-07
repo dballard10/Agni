@@ -1,5 +1,5 @@
-import { IconX, IconLayoutColumns, IconLayoutRows, IconLink, IconCopy, IconPencil, IconTrash } from "@tabler/icons-react";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { IconX, IconLayoutColumns, IconLayoutRows, IconLayoutList, IconLink, IconCopy, IconPencil, IconTrash, IconPlus } from "@tabler/icons-react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useAnchoredMenu } from "../../shared/hooks/useAnchoredMenu";
 
@@ -20,9 +20,16 @@ interface DragState {
   tabIndex: number;
 }
 
+interface DropTarget {
+  groupIndex: number;
+  tabIndex: number;
+  position: 'before' | 'after';
+}
+
 export interface TabContextMenuCallbacks {
-  onSplitHorizontal?: (tabId: string) => void;
-  onSplitVertical?: (tabId: string) => void;
+  onSplitBelow?: (tabId: string) => void;
+  onSplitRight?: (tabId: string) => void;
+  onCloseSplit?: () => void;
   onCopyPath?: (tabId: string) => void;
   onCopyFile?: (tabId: string) => void;
   onRename?: (tabId: string) => void;
@@ -40,11 +47,14 @@ interface SingleGroupProps {
   activeIndex: number;
   onTabChange: (index: number) => void;
   onTabClose?: (index: number) => void;
+  onTabReorder?: (fromIndex: number, toIndex: number) => void;
+  onAddTab?: () => void;
   tabContextMenu?: TabContextMenuCallbacks;
   groups?: never;
   onGroupTabChange?: never;
   onGroupTabClose?: never;
   onTabMove?: never;
+  onGroupAddTab?: never;
 }
 
 // Multi-group mode (for split view)
@@ -53,6 +63,7 @@ interface MultiGroupProps {
   onGroupTabChange: (groupIndex: number, tabIndex: number) => void;
   onGroupTabClose?: (groupIndex: number, tabIndex: number) => void;
   onTabMove?: (fromGroup: number, fromIndex: number, toGroup: number, toIndex: number) => void;
+  onGroupAddTab?: (groupIndex: number) => void;
   // Split ratio for proportional group widths (0-1)
   splitRatio?: number;
   tabContextMenu?: TabContextMenuCallbacks;
@@ -60,13 +71,12 @@ interface MultiGroupProps {
   activeIndex?: never;
   onTabChange?: never;
   onTabClose?: never;
+  onAddTab?: never;
 }
 
 type PageTabsProps = SingleGroupProps | MultiGroupProps;
 
-const MIN_TAB_WIDTH = 24;
 const MAX_TAB_WIDTH = 144;
-const GROUP_DIVIDER_WIDTH = 24;
 
 // Style variants for different tab types
 function getTabStyles(variant: PageTab["variant"], isActive: boolean): string {
@@ -95,9 +105,9 @@ function getTabStyles(variant: PageTab["variant"], isActive: boolean): string {
 
 export function PageTabs(props: PageTabsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [tabWidth, setTabWidth] = useState(MAX_TAB_WIDTH);
+  const groupRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [dragState, setDragState] = useState<DragState | null>(null);
-  const [dropTarget, setDropTarget] = useState<{ groupIndex: number; tabIndex: number } | null>(null);
+  const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
 
   // Context menu state
   const [menuState, setMenuState] = useState<TabMenuState | null>(null);
@@ -136,8 +146,14 @@ export function PageTabs(props: PageTabsProps) {
   }, [handleCloseMenu, isOpen]);
 
   // Normalize to multi-group format
-  const groups: TabGroup[] = props.groups ?? [{ tabs: props.tabs!, activeIndex: props.activeIndex! }];
   const isMultiGroup = !!props.groups;
+  const groups: TabGroup[] = useMemo(
+    () => props.groups ?? [{ tabs: props.tabs!, activeIndex: props.activeIndex! }],
+    [props.groups, props.tabs, props.activeIndex]
+  );
+
+  // Check if single-group reordering is enabled
+  const canReorderSingle = !isMultiGroup && !!(props as SingleGroupProps).onTabReorder;
 
   const handleTabChange = useCallback((groupIndex: number, tabIndex: number) => {
     if (isMultiGroup) {
@@ -161,31 +177,30 @@ export function PageTabs(props: PageTabsProps) {
     }
   }, [isMultiGroup, props]);
 
-  // Calculate total tabs for width calculation
+  // Calculate total tabs
   const totalTabs = groups.reduce((sum, g) => sum + g.tabs.length, 0);
 
-  // Measure available width and compute per-tab width
+  // Extract active indices for dependency tracking
+  const activeIndices = useMemo(() => groups.map(g => g.activeIndex), [groups]);
+
+  // Auto-scroll active tab into view when it changes
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
-      const availableWidth = entry.contentRect.width;
-      if (totalTabs === 0) return;
-
-      // Account for group dividers
-      const dividerSpace = isMultiGroup && groups.length > 1 ? GROUP_DIVIDER_WIDTH * (groups.length - 1) : 0;
-      const tabSpace = availableWidth - dividerSpace;
-      const perTab = Math.floor(tabSpace / totalTabs);
-      const clamped = Math.max(MIN_TAB_WIDTH, Math.min(MAX_TAB_WIDTH, perTab));
-      setTabWidth(clamped);
+    activeIndices.forEach((activeIndex, groupIndex) => {
+      const container = groupRefs.current[groupIndex];
+      if (!container) return;
+      const activeTab = container.children[activeIndex] as HTMLElement;
+      activeTab?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     });
+  }, [activeIndices]);
 
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, [totalTabs, isMultiGroup, groups.length]);
+  // Convert vertical scroll to horizontal
+  const handleWheel = useCallback((e: React.WheelEvent, groupIndex: number) => {
+    const container = groupRefs.current[groupIndex];
+    if (container && e.deltaY !== 0) {
+      e.preventDefault();
+      container.scrollLeft += e.deltaY;
+    }
+  }, []);
 
   if (totalTabs === 0) return null;
 
@@ -199,7 +214,14 @@ export function PageTabs(props: PageTabsProps) {
   const handleDragOver = (e: React.DragEvent, groupIndex: number, tabIndex: number) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    setDropTarget({ groupIndex, tabIndex });
+
+    // Determine if dropping before or after based on mouse position
+    const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const midpoint = rect.left + rect.width / 2;
+    const position: 'before' | 'after' = e.clientX < midpoint ? 'before' : 'after';
+
+    setDropTarget({ groupIndex, tabIndex, position });
   };
 
   const handleDragLeave = () => {
@@ -208,11 +230,24 @@ export function PageTabs(props: PageTabsProps) {
 
   const handleDrop = (e: React.DragEvent, toGroupIndex: number, toTabIndex: number) => {
     e.preventDefault();
-    if (dragState) {
+    if (dragState && dropTarget) {
       const { groupIndex: fromGroup, tabIndex: fromIndex } = dragState;
-      // Only move if target is different
-      if (fromGroup !== toGroupIndex || fromIndex !== toTabIndex) {
-        handleTabMove(fromGroup, fromIndex, toGroupIndex, toTabIndex);
+
+      if (isMultiGroup) {
+        // Multi-group mode: use existing behavior
+        if (fromGroup !== toGroupIndex || fromIndex !== toTabIndex) {
+          handleTabMove(fromGroup, fromIndex, toGroupIndex, toTabIndex);
+        }
+      } else if (canReorderSingle) {
+        // Single-group mode: calculate insertion index based on position
+        let insertIndex = dropTarget.position === 'before' ? toTabIndex : toTabIndex + 1;
+        // Adjust if dragging from before the insertion point
+        if (fromIndex < insertIndex) {
+          insertIndex--;
+        }
+        if (fromIndex !== insertIndex) {
+          (props as SingleGroupProps).onTabReorder!(fromIndex, insertIndex);
+        }
       }
     }
     setDragState(null);
@@ -239,11 +274,13 @@ export function PageTabs(props: PageTabsProps) {
       {groups.map((group, groupIndex) => (
         <div
           key={groupIndex}
-          className="flex items-end h-full"
+          ref={(el) => { groupRefs.current[groupIndex] = el; }}
+          className="flex items-end h-full overflow-x-auto scrollbar-thin-hover"
           style={isMultiGroup ? {
             flex: groupIndex === 0 ? splitRatio : 1 - splitRatio,
             minWidth: 0,
           } : undefined}
+          onWheel={(e) => handleWheel(e, groupIndex)}
         >
 
           {/* Tabs in this group */}
@@ -254,27 +291,33 @@ export function PageTabs(props: PageTabsProps) {
             const isClosable = tab.closable !== false;
             const isUtility = tab.variant === "utility";
             const isDragging = dragState?.groupIndex === groupIndex && dragState?.tabIndex === tabIndex;
-            const isDropTarget = dropTarget?.groupIndex === groupIndex && dropTarget?.tabIndex === tabIndex;
+            const isDropTargetBefore = dropTarget?.groupIndex === groupIndex && dropTarget?.tabIndex === tabIndex && dropTarget?.position === 'before';
+            const isDropTargetAfter = dropTarget?.groupIndex === groupIndex && dropTarget?.tabIndex === tabIndex && dropTarget?.position === 'after';
+            const isLastTab = tabIndex === group.tabs.length - 1;
 
             return (
               <div
                 key={tab.id}
-                className={`group flex items-end h-full flex-shrink-0 ${isDragging ? "opacity-50" : ""}`}
-                draggable={isMultiGroup}
+                className={`group flex items-end h-full flex-shrink-0 relative ${isDragging ? "opacity-50" : ""}`}
+                draggable={isMultiGroup || canReorderSingle}
                 onDragStart={(e) => handleDragStart(e, groupIndex, tabIndex)}
                 onDragOver={(e) => handleDragOver(e, groupIndex, tabIndex)}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, groupIndex, tabIndex)}
                 onDragEnd={handleDragEnd}
               >
+                {/* Drop indicator - before */}
+                {isDropTargetBefore && (
+                  <div className="absolute left-0 top-1 bottom-1 w-0.5 bg-indigo-500 z-30" />
+                )}
                 {showSeparator && (
-                  <span className="self-stretch flex items-center px-1 mt-1 text-slate-600 select-none">
+                  <span className="self-stretch flex items-center mt-1 text-slate-600 select-none">
                     |
                   </span>
                 )}
                 <div
-                  className={`relative flex items-end h-full ${isDropTarget ? "ring-2 ring-indigo-500 ring-inset rounded-t-md" : ""}`}
-                  style={{ width: tabWidth }}
+                  className="relative flex items-end h-full"
+                  style={{ width: MAX_TAB_WIDTH }}
                 >
                   <button
                     onClick={() => handleTabChange(groupIndex, tabIndex)}
@@ -312,9 +355,33 @@ export function PageTabs(props: PageTabsProps) {
                     </button>
                   )}
                 </div>
+                {/* Drop indicator - after (only show on last tab) */}
+                {isDropTargetAfter && isLastTab && (
+                  <div className="absolute right-0 top-1 bottom-1 w-0.5 bg-indigo-500 z-30" />
+                )}
               </div>
             );
           })}
+
+          {/* Add tab button */}
+          {(isMultiGroup ? (props as MultiGroupProps).onGroupAddTab : (props as SingleGroupProps).onAddTab) && (
+            <button
+              onClick={() => {
+                if (isMultiGroup) {
+                  (props as MultiGroupProps).onGroupAddTab?.(groupIndex);
+                } else {
+                  (props as SingleGroupProps).onAddTab?.();
+                }
+              }}
+              className="flex-shrink-0 flex items-center justify-center w-7 h-[calc(100%-8px)]
+                         text-slate-400 hover:text-slate-200 hover:bg-slate-800/50
+                         rounded-t-md transition-colors ml-0.5"
+              aria-label="New tab"
+              title="New tab"
+            >
+              <IconPlus className="w-4 h-4" />
+            </button>
+          )}
         </div>
       ))}
 
@@ -328,27 +395,44 @@ export function PageTabs(props: PageTabsProps) {
           >
             <div className="py-1">
               {/* Split options - only show if there are 2+ tabs */}
-              {totalTabs > 1 && (
+              {totalTabs > 1 && !isMultiGroup && (
                 <>
                   <button
                     onClick={() => {
-                      props.tabContextMenu?.onSplitHorizontal?.(menuState.tabId);
+                      props.tabContextMenu?.onSplitRight?.(menuState.tabId);
                       handleCloseMenu();
                     }}
                     className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
                   >
                     <IconLayoutColumns className="w-4 h-4" />
-                    <span>Split Horizontally</span>
+                    <span>Split Right</span>
                   </button>
                   <button
                     onClick={() => {
-                      props.tabContextMenu?.onSplitVertical?.(menuState.tabId);
+                      props.tabContextMenu?.onSplitBelow?.(menuState.tabId);
                       handleCloseMenu();
                     }}
                     className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
                   >
                     <IconLayoutRows className="w-4 h-4" />
-                    <span>Split Vertically</span>
+                    <span>Split Below</span>
+                  </button>
+                  <div className="h-px bg-slate-800 my-1" />
+                </>
+              )}
+
+              {/* Close split option - only show when in split mode */}
+              {isMultiGroup && (
+                <>
+                  <button
+                    onClick={() => {
+                      props.tabContextMenu?.onCloseSplit?.();
+                      handleCloseMenu();
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                  >
+                    <IconLayoutList className="w-4 h-4" />
+                    <span>Close Split</span>
                   </button>
                   <div className="h-px bg-slate-800 my-1" />
                 </>

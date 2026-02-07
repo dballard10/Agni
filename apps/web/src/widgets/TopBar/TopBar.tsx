@@ -34,11 +34,14 @@ interface TopBarProps {
   activePageTabIndex?: number;
   onPageTabChange?: (index: number) => void;
   onPageTabClose?: (index: number) => void;
+  onTabReorder?: (fromIndex: number, toIndex: number) => void;
+  onAddTab?: () => void;
   // Multi-group mode (for split view)
   tabGroups?: TabGroup[];
   onGroupTabChange?: (groupIndex: number, tabIndex: number) => void;
   onGroupTabClose?: (groupIndex: number, tabIndex: number) => void;
   onTabMove?: (fromGroup: number, fromIndex: number, toGroup: number, toIndex: number) => void;
+  onGroupAddTab?: (groupIndex: number) => void;
   // Split ratio for resizable panes (0-1)
   splitRatio?: number;
   // Tab context menu callbacks
@@ -59,10 +62,13 @@ export function TopBar({
   activePageTabIndex,
   onPageTabChange,
   onPageTabClose,
+  onTabReorder,
+  onAddTab,
   tabGroups,
   onGroupTabChange,
   onGroupTabClose,
   onTabMove,
+  onGroupAddTab,
   splitRatio,
   tabContextMenu,
 }: TopBarProps) {
@@ -173,6 +179,7 @@ export function TopBar({
             onGroupTabChange={onGroupTabChange}
             onGroupTabClose={onGroupTabClose}
             onTabMove={onTabMove}
+            onGroupAddTab={onGroupAddTab}
             splitRatio={splitRatio}
             tabContextMenu={tabContextMenu}
           />
@@ -182,6 +189,8 @@ export function TopBar({
             activeIndex={activePageTabIndex ?? 0}
             onTabChange={onPageTabChange}
             onTabClose={onPageTabClose}
+            onTabReorder={onTabReorder}
+            onAddTab={onAddTab}
             tabContextMenu={tabContextMenu}
           />
         ) : null}

@@ -20,6 +20,8 @@ export type NotesPageActions = {
   toggleEditorMode: () => void;
   selectTabIndex: (index: number) => void;
   closeTabIndex: (index: number) => void;
+  /** Reorder tabs by moving from one index to another */
+  reorderTab: (fromIndex: number, toIndex: number) => void;
   /** Rename the currently selected note via prompt */
   renameCurrentNote: () => void;
   /** Delete the currently selected note */
@@ -27,9 +29,9 @@ export type NotesPageActions = {
   /** Open the find and replace bar */
   openFindReplace: () => void;
   /** Split editor horizontally (side by side) */
-  splitHorizontal: () => void;
+  splitBelow: () => void;
   /** Split editor vertically (top and bottom) */
-  splitVertical: () => void;
+  splitRight: () => void;
   /** Close split view */
   closeSplit: () => void;
   /** Copy the current note's path to system clipboard */
@@ -42,10 +44,10 @@ export type NotesPageActions = {
   closePaneTabIndex: (pane: FocusedPane, index: number) => void;
   /** Move tab between panes (for split view) */
   movePaneTab: (fromPane: FocusedPane, fromIndex: number, toPane: FocusedPane, toIndex: number) => void;
-  /** Tab context menu: split horizontal with specific note */
-  splitHorizontalWithNote: (noteId: string) => void;
-  /** Tab context menu: split vertical with specific note */
-  splitVerticalWithNote: (noteId: string) => void;
+  /** Tab context menu: split below with specific note */
+  splitBelowWithNote: (noteId: string) => void;
+  /** Tab context menu: split right with specific note */
+  splitRightWithNote: (noteId: string) => void;
   /** Tab context menu: copy note path to clipboard */
   copyNotePath: (noteId: string) => void;
   /** Tab context menu: copy note to internal clipboard */
@@ -54,6 +56,10 @@ export type NotesPageActions = {
   renameNote: (noteId: string) => void;
   /** Tab context menu: delete note */
   deleteNote: (noteId: string) => void;
+  /** Add a new tab (single-pane mode) */
+  addTab: () => void;
+  /** Add a new tab in specific pane (split mode) */
+  addPaneTab: (pane: FocusedPane) => void;
 };
 
 interface ClipboardNote {
@@ -82,7 +88,7 @@ interface PasteConflict {
 
 type NotesViewMode = "preview" | "edit";
 
-export type SplitMode = "none" | "horizontal" | "vertical";
+export type SplitMode = "none" | "below" | "right";
 
 export interface EditorPaneState {
   noteIds: string[];
@@ -271,6 +277,25 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     });
   }, []);
 
+
+  const handleReorderTab = useCallback((fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    setHistory((prev) => {
+      const ids = [...prev.ids];
+      const [moved] = ids.splice(fromIndex, 1);
+      ids.splice(toIndex, 0, moved);
+      let newIndex = prev.index;
+      if (fromIndex === prev.index) {
+        newIndex = toIndex;
+      } else if (fromIndex < prev.index && toIndex >= prev.index) {
+        newIndex = prev.index - 1;
+      } else if (fromIndex > prev.index && toIndex <= prev.index) {
+        newIndex = prev.index + 1;
+      }
+      return { ids, index: newIndex };
+    });
+  }, []);
+
   const selectedNote = notes.find((n) => n.id === selectedNoteId) ?? null;
 
   // Editor view ref for find/replace operations
@@ -327,6 +352,47 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       };
     });
   }, [splitState.mode]);
+
+  // Handle opening a note in the right split pane
+  const handleOpenNoteToRight = useCallback((noteId: string) => {
+    if (splitState.mode !== "none" && splitState.secondaryPane) {
+      // Already in split mode - add to secondary pane
+      setSplitState((prev) => {
+        if (!prev.secondaryPane) return prev;
+        const existingIndex = prev.secondaryPane.noteIds.indexOf(noteId);
+        if (existingIndex !== -1) {
+          // Already open, just focus it
+          return {
+            ...prev,
+            secondaryPane: { ...prev.secondaryPane, activeIndex: existingIndex },
+            focusedPane: "secondary",
+          };
+        }
+        return {
+          ...prev,
+          secondaryPane: {
+            noteIds: [...prev.secondaryPane.noteIds, noteId],
+            activeIndex: prev.secondaryPane.noteIds.length,
+          },
+          focusedPane: "secondary",
+        };
+      });
+    } else {
+      // Not in split mode - create below split
+      setSplitState({
+        mode: "below",
+        primaryPane: {
+          noteIds: history.ids,
+          activeIndex: history.index,
+        },
+        secondaryPane: {
+          noteIds: [noteId],
+          activeIndex: 0,
+        },
+        focusedPane: "secondary",
+      });
+    }
+  }, [splitState, history]);
 
   // Handle opening a search result with optional jump to match
   const handleOpenSearchResult = useCallback(
@@ -947,7 +1013,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
   }, [selectedNoteId, handleCopyNote]);
 
   // Split view handlers
-  const handleSplitHorizontal = useCallback(() => {
+  const handleSplitRight = useCallback(() => {
     if (history.ids.length <= 1) return; // Can't split with only 1 tab
 
     // Move active tab to secondary pane, keep rest in primary
@@ -955,7 +1021,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     const remainingIds = history.ids.filter((_, i) => i !== history.index);
 
     setSplitState({
-      mode: "horizontal",
+      mode: "right",
       primaryPane: {
         noteIds: remainingIds,
         activeIndex: Math.min(history.index, remainingIds.length - 1),
@@ -968,14 +1034,14 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     });
   }, [history.ids, history.index]);
 
-  const handleSplitVertical = useCallback(() => {
+  const handleSplitBelow = useCallback(() => {
     if (history.ids.length <= 1) return; // Can't split with only 1 tab
 
     const activeId = history.ids[history.index];
     const remainingIds = history.ids.filter((_, i) => i !== history.index);
 
     setSplitState({
-      mode: "vertical",
+      mode: "below",
       primaryPane: {
         noteIds: remainingIds,
         activeIndex: Math.min(history.index, remainingIds.length - 1),
@@ -1020,12 +1086,12 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     if (!container) return;
 
     const containerRect = container.getBoundingClientRect();
-    const isHorizontal = splitState.mode === "horizontal";
-    const containerSize = isHorizontal ? containerRect.width : containerRect.height;
-    const containerStart = isHorizontal ? containerRect.left : containerRect.top;
+    const isBelow = splitState.mode === "below";
+    const containerSize = isBelow ? containerRect.height : containerRect.width;
+    const containerStart = isBelow ? containerRect.top : containerRect.left;
 
     const handlePointerMove = (moveEvent: PointerEvent) => {
-      const position = isHorizontal ? moveEvent.clientX : moveEvent.clientY;
+      const position = isBelow ? moveEvent.clientY : moveEvent.clientX;
       const relativePosition = position - containerStart;
       const newRatio = relativePosition / containerSize;
       const clampedRatio = Math.max(MIN_SPLIT_RATIO, Math.min(MAX_SPLIT_RATIO, newRatio));
@@ -1212,11 +1278,12 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       toggleEditorMode: handleToggleEditorMode,
       selectTabIndex: handleSelectTabIndex,
       closeTabIndex: handleCloseTabIndex,
+      reorderTab: handleReorderTab,
       renameCurrentNote: handleRenameCurrentNote,
       deleteCurrentNote: handleDeleteCurrentNote,
       openFindReplace: findReplaceActions.open,
-      splitHorizontal: handleSplitHorizontal,
-      splitVertical: handleSplitVertical,
+      splitRight: handleSplitRight,
+      splitBelow: handleSplitBelow,
       closeSplit: handleCloseSplit,
       copyCurrentNotePath: handleCopyCurrentNotePath,
       copyCurrentNote: handleCopyCurrentNote,
@@ -1224,12 +1291,12 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       closePaneTabIndex: handleClosePaneTabIndex,
       movePaneTab: handleMovePaneTab,
       // Tab context menu actions
-      splitHorizontalWithNote: (noteId: string) => {
+      splitRightWithNote: (noteId: string) => {
         if (history.ids.length <= 1) return;
         const remainingIds = history.ids.filter((id) => id !== noteId);
         if (remainingIds.length === 0) return;
         setSplitState({
-          mode: "horizontal",
+          mode: "right",
           primaryPane: {
             noteIds: remainingIds,
             activeIndex: 0,
@@ -1241,12 +1308,12 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
           focusedPane: "secondary",
         });
       },
-      splitVerticalWithNote: (noteId: string) => {
+      splitBelowWithNote: (noteId: string) => {
         if (history.ids.length <= 1) return;
         const remainingIds = history.ids.filter((id) => id !== noteId);
         if (remainingIds.length === 0) return;
         setSplitState({
-          mode: "vertical",
+          mode: "below",
           primaryPane: {
             noteIds: remainingIds,
             activeIndex: 0,
@@ -1272,6 +1339,32 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
         }
       },
       deleteNote: handleDeleteNote,
+      addTab: handleCreateNote,
+      addPaneTab: (pane: FocusedPane) => {
+        const newNote = createNewNote();
+        setNotes((prev) => [newNote, ...prev]);
+        if (splitState.mode === "none") {
+          // Fallback to single-pane behavior
+          setHistory((prev) => ({
+            ids: [...prev.ids, newNote.id],
+            index: prev.ids.length,
+          }));
+        } else {
+          const targetPane = pane === "primary" ? "primaryPane" : "secondaryPane";
+          setSplitState((prev) => {
+            const paneState = prev[targetPane];
+            if (!paneState) return prev;
+            return {
+              ...prev,
+              [targetPane]: {
+                noteIds: [...paneState.noteIds, newNote.id],
+                activeIndex: paneState.noteIds.length,
+              },
+              focusedPane: pane,
+            };
+          });
+        }
+      },
     };
     return () => {
       if (actionsRef) actionsRef.current = null;
@@ -1285,11 +1378,12 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     handleToggleEditorMode,
     handleSelectTabIndex,
     handleCloseTabIndex,
+    handleReorderTab,
     handleRenameCurrentNote,
     handleDeleteCurrentNote,
     findReplaceActions.open,
-    handleSplitHorizontal,
-    handleSplitVertical,
+    handleSplitRight,
+    handleSplitBelow,
     handleCloseSplit,
     handleCopyCurrentNotePath,
     handleCopyCurrentNote,
@@ -1302,6 +1396,8 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     handleCopyNote,
     handleRenameNote,
     handleDeleteNote,
+    handleCreateNote,
+    splitState.mode,
   ]);
 
   // Rename a folder: update folder path and all notes under it
@@ -1513,6 +1609,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
             folders={folders}
             selectedNoteId={selectedNoteId}
             onOpenNote={handleSelectNote}
+            onOpenNoteToRight={handleOpenNoteToRight}
             onRenameNote={handleRenameNote}
             onDeleteNote={handleDeleteNote}
             onRenameFolder={handleRenameFolder}
@@ -1560,13 +1657,14 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
             <div
               ref={splitContainerRef}
               className={`h-full flex ${
-                splitState.mode === "horizontal" ? "flex-row" : "flex-col"
+                splitState.mode === "below" ? "flex-col" : "flex-row"
               } ${isResizingSplit ? "select-none" : ""}`}
             >
               {/* Primary pane */}
               <div
+                className="overflow-hidden"
                 style={{
-                  [splitState.mode === "horizontal" ? "width" : "height"]: `${splitRatio * 100}%`,
+                  [splitState.mode === "below" ? "height" : "width"]: `${splitRatio * 100}%`,
                   flexShrink: 0,
                 }}
               >
@@ -1578,8 +1676,8 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
                     { id: "rename", label: "Rename", onSelect: handleRenameCurrentNote },
                     { id: "copy-path", label: "Copy Path", onSelect: handleCopyCurrentNotePath },
                     { id: "find", label: "Find & Replace", onSelect: findReplaceActions.open },
-                    { id: "split-h", label: "Split Horizontal", onSelect: handleSplitHorizontal, disabled: tabCount <= 1 },
-                    { id: "split-v", label: "Split Vertical", onSelect: handleSplitVertical, disabled: tabCount <= 1 },
+                    { id: "split-h", label: "Split Right", onSelect: handleSplitRight, disabled: tabCount <= 1 },
+                    { id: "split-v", label: "Split Below", onSelect: handleSplitBelow, disabled: tabCount <= 1 },
                     { id: "close-split", label: "Close Split", onSelect: handleCloseSplit, separatorBefore: true },
                     { id: "delete", label: "Delete", danger: true, onSelect: handleDeleteCurrentNote, separatorBefore: true },
                   ];
@@ -1608,13 +1706,13 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
                 className={`
                   relative z-20 flex-shrink-0 transition-all duration-150
 
-                  ${splitState.mode === "horizontal"
-                    ? "w-px hover:w-1.5 cursor-col-resize"
-                    : "h-px hover:h-1.5 cursor-row-resize"
+                  ${splitState.mode === "below"
+                    ? "h-px hover:h-1.5 cursor-row-resize"
+                    : "w-px hover:w-1.5 cursor-col-resize"
                   }
 
                   ${isResizingSplit
-                    ? `bg-indigo-500/50 ${splitState.mode === "horizontal" ? "w-1.5" : "h-1.5"}`
+                    ? `bg-indigo-500/50 ${splitState.mode === "below" ? "h-1.5" : "w-1.5"}`
                     : "bg-slate-600 hover:bg-indigo-500/30"
                   }
 
@@ -1629,8 +1727,9 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
 
               {/* Secondary pane */}
               <div
+                className="overflow-hidden"
                 style={{
-                  [splitState.mode === "horizontal" ? "width" : "height"]: `${(1 - splitRatio) * 100}%`,
+                  [splitState.mode === "below" ? "height" : "width"]: `${(1 - splitRatio) * 100}%`,
                   flexShrink: 0,
                 }}
               >
@@ -1657,7 +1756,6 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
                       menuItems={menuItems}
                       isFocused={splitState.focusedPane === "secondary"}
                       onFocus={() => handlePaneFocus("secondary")}
-                      onClosePane={handleCloseSplit}
                       onOpenBracketLink={openOrCreateNoteByLabel}
                     />
                   );
@@ -1671,8 +1769,8 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
                 { id: "rename", label: "Rename", onSelect: handleRenameCurrentNote },
                 { id: "copy-path", label: "Copy Path", onSelect: handleCopyCurrentNotePath },
                 { id: "find", label: "Find & Replace", onSelect: findReplaceActions.open },
-                { id: "split-h", label: "Split Horizontal", onSelect: handleSplitHorizontal, disabled: history.ids.length <= 1 },
-                { id: "split-v", label: "Split Vertical", onSelect: handleSplitVertical, disabled: history.ids.length <= 1 },
+                { id: "split-h", label: "Split Right", onSelect: handleSplitRight, disabled: history.ids.length <= 1 },
+                { id: "split-v", label: "Split Below", onSelect: handleSplitBelow, disabled: history.ids.length <= 1 },
                 { id: "delete", label: "Delete", danger: true, onSelect: handleDeleteCurrentNote, separatorBefore: true },
               ];
               return (

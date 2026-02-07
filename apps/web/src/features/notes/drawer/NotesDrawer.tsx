@@ -16,6 +16,7 @@ import {
   IconCopy,
   IconClipboard,
   IconLink,
+  IconLayoutSidebarRight,
 } from "@tabler/icons-react";
 import type { Note } from "../../../mock/mockNotes";
 import { useAnchoredMenu } from "../../../shared/hooks/useAnchoredMenu";
@@ -26,6 +27,7 @@ interface NotesDrawerProps {
   folders?: string[];
   selectedNoteId: string | null;
   onOpenNote: (noteId: string) => void;
+  onOpenNoteToRight?: (noteId: string) => void;
   onRenameNote: (noteId: string, nextTitle: string) => void;
   onDeleteNote: (noteId: string) => void;
   onRenameFolder: (folderPath: string, nextFolderName: string) => void;
@@ -178,6 +180,7 @@ export function NotesDrawer({
   folders = [],
   selectedNoteId,
   onOpenNote,
+  onOpenNoteToRight,
   onRenameNote,
   onDeleteNote,
   onRenameFolder,
@@ -999,6 +1002,18 @@ export function NotesDrawer({
                       <IconFile className="w-4 h-4" />
                       <span>Open</span>
                     </button>
+                    {onOpenNoteToRight && (
+                      <button
+                        onClick={() => {
+                          onOpenNoteToRight(menuState.nodeId);
+                          handleCloseMenu();
+                        }}
+                        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      >
+                        <IconLayoutSidebarRight className="w-4 h-4" />
+                        <span>Open to Right</span>
+                      </button>
+                    )}
                     <div className="h-px bg-slate-800 my-1" />
                     <button
                       onClick={() => {

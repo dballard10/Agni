@@ -235,6 +235,28 @@ function App() {
     [activeTab]
   );
 
+  const handleTabReorder = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      if (activeTab !== "notes") return;
+      notesActionsRef.current?.reorderTab(fromIndex, toIndex);
+    },
+    [activeTab]
+  );
+
+  const handleAddTab = useCallback(() => {
+    if (activeTab !== "notes") return;
+    notesActionsRef.current?.addTab();
+  }, [activeTab]);
+
+  const handleGroupAddTab = useCallback(
+    (groupIndex: number) => {
+      if (activeTab !== "notes") return;
+      const pane = groupIndex === 0 ? "primary" : "secondary";
+      notesActionsRef.current?.addPaneTab(pane);
+    },
+    [activeTab]
+  );
+
   const handleNotesGoBack = useCallback(() => {
     if (activeTab !== "notes") return;
     notesActionsRef.current?.goBack();
@@ -525,14 +547,14 @@ function App() {
               label: "Split Right",
               icon: IconLayoutColumns,
               disabled: !canSplit,
-              onSelect: () => notesActionsRef.current?.splitHorizontal(),
+              onSelect: () => notesActionsRef.current?.splitRight(),
             },
             {
               id: "split-down",
               label: "Split Down",
               icon: IconLayoutRows,
               disabled: !canSplit,
-              onSelect: () => notesActionsRef.current?.splitVertical(),
+              onSelect: () => notesActionsRef.current?.splitBelow(),
             },
           ]
         : [
@@ -611,8 +633,9 @@ function App() {
   const tabContextMenu = useMemo<TabContextMenuCallbacks | undefined>(() => {
     if (activeTab !== "notes") return undefined;
     return {
-      onSplitHorizontal: (tabId) => notesActionsRef.current?.splitHorizontalWithNote(tabId),
-      onSplitVertical: (tabId) => notesActionsRef.current?.splitVerticalWithNote(tabId),
+      onSplitBelow: (tabId) => notesActionsRef.current?.splitBelowWithNote(tabId),
+      onSplitRight: (tabId) => notesActionsRef.current?.splitRightWithNote(tabId),
+      onCloseSplit: () => notesActionsRef.current?.closeSplit(),
       onCopyPath: (tabId) => notesActionsRef.current?.copyNotePath(tabId),
       onCopyFile: (tabId) => notesActionsRef.current?.copyNote(tabId),
       onRename: (tabId) => notesActionsRef.current?.renameNote(tabId),
@@ -641,10 +664,13 @@ function App() {
       activePageTabIndex={activePageTabIndex}
       onPageTabChange={handlePageTabChange}
       onPageTabClose={handlePageTabClose}
+      onTabReorder={handleTabReorder}
+      onAddTab={handleAddTab}
       tabGroups={tabGroups}
       onGroupTabChange={handleGroupTabChange}
       onGroupTabClose={handleGroupTabClose}
       onTabMove={handleTabMove}
+      onGroupAddTab={handleGroupAddTab}
       headerMenuItems={headerMenuItems}
       splitMode={activeTab === "notes" ? notesShellState.splitMode : undefined}
       secondaryFilePath={activeTab === "notes" ? notesShellState.secondaryFilePath : undefined}

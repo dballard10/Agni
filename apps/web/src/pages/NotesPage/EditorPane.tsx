@@ -6,7 +6,6 @@ import {
   IconBook,
   IconEdit,
   IconDots,
-  IconX,
 } from "@tabler/icons-react";
 import { LiveMarkdownEditor } from "../../features/notes/editor/LiveMarkdownEditor";
 import { useAnchoredMenu } from "@/shared/hooks/useAnchoredMenu";
@@ -48,7 +47,6 @@ interface EditorPaneProps {
   paneId: string;
   isFocused?: boolean;
   onFocus?: () => void;
-  onClosePane?: () => void;
 
   // Optional
   onOpenBracketLink?: (label: string) => void;
@@ -59,11 +57,14 @@ interface EditorPaneProps {
   onEditorViewReady?: (view: EditorView | undefined) => void;
 }
 
-function formatHeaderFilePath(raw: string): string {
+function formatHeaderFilePath(raw: string, title?: string): string {
   if (!raw) return "";
   const withoutExtension = raw.replace(/\.md$/i, "");
   const parts = withoutExtension.split(/[\\/]+/).filter(Boolean);
   if (parts.length === 0) return "";
+  if (title && parts.length > 0) {
+    parts[parts.length - 1] = title;
+  }
   return parts.join(" / ");
 }
 
@@ -78,7 +79,6 @@ export function EditorPane({
   paneId, // Reserved for future use
   isFocused,
   onFocus,
-  onClosePane,
   onOpenBracketLink,
   jumpTo,
   additionalExtensions,
@@ -136,7 +136,7 @@ export function EditorPane({
         {/* File path - centered */}
         <div className="flex-1 flex justify-center min-w-0">
           <span className="text-slate-500 text-xs font-mono truncate">
-            {formatHeaderFilePath(filePath)}
+            {formatHeaderFilePath(filePath, activeNote?.title)}
           </span>
         </div>
 
@@ -172,19 +172,6 @@ export function EditorPane({
           >
             <IconDots className="w-4 h-4" />
           </button>
-          {onClosePane && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onClosePane();
-              }}
-              className="flex items-center justify-center w-6 h-6 rounded text-slate-500 hover:bg-slate-700 hover:text-slate-300 transition-colors ml-1"
-              aria-label="Close split pane"
-              title="Close split pane"
-            >
-              <IconX className="w-4 h-4" />
-            </button>
-          )}
         </div>
       </div>
 

@@ -6,6 +6,7 @@ interface NotesFileExplorerPanelProps {
   folders: string[];
   selectedNoteId: string | null;
   onOpenNote: (noteId: string) => void;
+  onOpenNoteToRight?: (noteId: string) => void;
   onRenameNote: (noteId: string, nextTitle: string) => void;
   onDeleteNote: (noteId: string) => void;
   onRenameFolder: (folderPath: string, nextFolderName: string) => void;
@@ -35,6 +36,7 @@ export function NotesFileExplorerPanel({
   folders,
   selectedNoteId,
   onOpenNote,
+  onOpenNoteToRight,
   onRenameNote,
   onDeleteNote,
   onRenameFolder,
@@ -61,6 +63,7 @@ export function NotesFileExplorerPanel({
       folders={folders}
       selectedNoteId={selectedNoteId}
       onOpenNote={onOpenNote}
+      onOpenNoteToRight={onOpenNoteToRight}
       onRenameNote={onRenameNote}
       onDeleteNote={onDeleteNote}
       onRenameFolder={onRenameFolder}

@@ -39,11 +39,14 @@ interface AgniShellLayoutProps {
   activePageTabIndex?: number;
   onPageTabChange?: (index: number) => void;
   onPageTabClose?: (index: number) => void;
+  onTabReorder?: (fromIndex: number, toIndex: number) => void;
+  onAddTab?: () => void;
   // Page tabs - multi group mode (for split view)
   tabGroups?: TabGroup[];
   onGroupTabChange?: (groupIndex: number, tabIndex: number) => void;
   onGroupTabClose?: (groupIndex: number, tabIndex: number) => void;
   onTabMove?: (fromGroup: number, fromIndex: number, toGroup: number, toIndex: number) => void;
+  onGroupAddTab?: (groupIndex: number) => void;
   // Optional title shown in the main content header (left side)
   headerTitle?: string;
   // Menu items for the header three-dots dropdown
@@ -79,10 +82,13 @@ export function AgniShellLayout({
   activePageTabIndex,
   onPageTabChange,
   onPageTabClose,
+  onTabReorder,
+  onAddTab,
   tabGroups,
   onGroupTabChange,
   onGroupTabClose,
   onTabMove,
+  onGroupAddTab,
   headerTitle,
   headerMenuItems,
   splitMode,
@@ -169,10 +175,13 @@ export function AgniShellLayout({
         activePageTabIndex={activePageTabIndex}
         onPageTabChange={onPageTabChange}
         onPageTabClose={onPageTabClose}
+        onTabReorder={onTabReorder}
+        onAddTab={onAddTab}
         tabGroups={tabGroups}
         onGroupTabChange={onGroupTabChange}
         onGroupTabClose={onGroupTabClose}
         onTabMove={onTabMove}
+        onGroupAddTab={onGroupAddTab}
         splitRatio={splitRatio}
         tabContextMenu={tabContextMenu}
       />
