@@ -75,7 +75,7 @@ export default function BigCalendarShell({
   };
 
   return (
-    <div className="h-full w-full bg-slate-900 text-slate-200 p-2 rounded-lg">
+    <div className="h-full w-full bg-bg-panel text-text-secondary p-2 rounded-lg">
       <Calendar
         localizer={localizer}
         events={rbcEvents}

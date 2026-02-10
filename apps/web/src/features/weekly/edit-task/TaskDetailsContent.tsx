@@ -223,7 +223,7 @@ export default function TaskDetailsContent({
         {/* Type Selector */}
         <div className={TASK_TYPE_SELECTOR_WRAPPER}>
           <div className={TASK_TYPE_SELECTOR_LABEL}>
-            <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">
+            <span className="text-xs text-text-muted font-medium uppercase tracking-wider">
               Type
             </span>
             <div className={TASK_TYPE_SELECTOR_BUTTONS}>
@@ -263,7 +263,7 @@ export default function TaskDetailsContent({
           </div>
 
           {task.groupId && (
-            <div className="bg-slate-800 px-2 py-0.5 rounded text-slate-300 w-fit text-xs border border-slate-700">
+            <div className="bg-bg-elevated px-2 py-0.5 rounded text-text-secondary w-fit text-xs border border-border">
               Group ID: {task.groupId.slice(0, 8)}...
             </div>
           )}
@@ -290,7 +290,7 @@ export default function TaskDetailsContent({
               <div className={TASK_LINKS_GRID}>
                 {/* Row 1, Col 1: Goals Selector */}
                 <div className="flex flex-col gap-1.5">
-                  <div className="flex items-center gap-2 text-slate-100 font-medium mb-1.5">
+                  <div className="flex items-center gap-2 text-text-primary font-medium mb-1.5">
                     <IconTarget size={18} className="text-emerald-400" />
                     <h3>Goals</h3>
                   </div>
@@ -304,7 +304,7 @@ export default function TaskDetailsContent({
 
                 {/* Row 1, Col 2: Added Goals */}
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">
+                  <span className="text-xs text-text-muted font-medium uppercase tracking-wider">
                     Added Goals
                   </span>
                   <div className={TASK_GOAL_PILLS_WRAP}>
@@ -319,7 +319,7 @@ export default function TaskDetailsContent({
                           <div className="relative w-5 h-5">
                             <div
                               className={TASK_GOAL_PILL_AVATAR_BORDER}
-                              style={{ backgroundColor: g.color ?? "#475569" }}
+                              style={{ backgroundColor: g.color ?? "var(--bg-elevated)" }}
                             >
                               <span className="text-[11px] leading-none">{g.emoji}</span>
                             </div>
@@ -331,14 +331,14 @@ export default function TaskDetailsContent({
                         </button>
                       ))
                     ) : (
-                      <span className="text-sm text-slate-600 italic">None linked</span>
+                      <span className="text-sm text-text-disabled italic">None linked</span>
                     )}
                   </div>
                 </div>
 
                 {/* Row 2, Col 1: Companions Selector */}
                 <div className="flex flex-col gap-1.5">
-                  <div className="flex items-center gap-2 text-slate-100 font-medium mb-1.5">
+                  <div className="flex items-center gap-2 text-text-primary font-medium mb-1.5">
                     <IconUsers size={18} className="text-orange-400" />
                     <h3>Companions</h3>
                   </div>
@@ -352,7 +352,7 @@ export default function TaskDetailsContent({
 
                 {/* Row 2, Col 2: Added Companions */}
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">
+                  <span className="text-xs text-text-muted font-medium uppercase tracking-wider">
                     Added Companions
                   </span>
                   <div className={TASK_COMPANION_SELECTED_LIST}>
@@ -370,7 +370,7 @@ export default function TaskDetailsContent({
                               <div className="relative w-4 h-4 flex items-center justify-center">
                                 <Avatar
                                   content={getInitials(c.name)}
-                                  bgColor={c.color || "#64748b"}
+                                  bgColor={c.color || "var(--text-muted)"}
                                   size={16}
                                   className="absolute inset-0 transition-opacity group-hover:opacity-0"
                                 />
@@ -394,7 +394,7 @@ export default function TaskDetailsContent({
                         )}
                       </>
                     ) : (
-                      <span className="text-sm text-slate-600 italic">None added</span>
+                      <span className="text-sm text-text-disabled italic">None added</span>
                     )}
                   </div>
                 </div>

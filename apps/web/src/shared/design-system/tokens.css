@@ -1,47 +1,97 @@
 :root {
-  /* Surface */
-  --surface-base: rgb(2, 6, 23);
-  --surface-raised: rgb(15, 23, 42);
-  --surface-overlay: rgb(30, 41, 59);
+  /* ============================================
+   * PALETTE TOKENS (Raw colors - ONLY source)
+   * ============================================ */
+  --agni-black: #000000;
+  --agni-white: #FFFFFF;
+  --agni-silver: #C7C7C7;
+  --agni-teal: #09E5EC;
+  --agni-navy: #171DB1;
 
-  /* Text */
-  --text-primary: rgb(248, 250, 252);
-  --text-secondary: rgb(226, 232, 240);
-  --text-muted: rgb(148, 163, 184);
+  /* ============================================
+   * SEMANTIC SURFACE TOKENS
+   * ============================================ */
+  --bg-app: var(--agni-black);
+  --bg-panel: var(--agni-black);
+  --bg-editor: var(--agni-black);
+  --bg-elevated: rgba(199, 199, 199, 0.06);
+  --bg-hover: rgba(199, 199, 199, 0.08);
+  --bg-selected: rgba(9, 229, 236, 0.12);
+  --bg-active: rgba(9, 229, 236, 0.18);
 
-  /* Border */
-  --border-default: rgb(51, 65, 85);
-  --border-focus: rgb(99, 102, 241);
+  /* ============================================
+   * SEMANTIC TEXT TOKENS
+   * ============================================ */
+  --text-primary: var(--agni-white);
+  --text-secondary: rgba(255, 255, 255, 0.78);
+  --text-muted: rgba(199, 199, 199, 0.85);
+  --text-disabled: rgba(199, 199, 199, 0.45);
 
-  /* Accent */
-  --accent-primary: rgb(79, 70, 229);
+  /* ============================================
+   * SEMANTIC BORDER TOKENS
+   * ============================================ */
+  --border-default: rgba(199, 199, 199, 0.22);
+  --border-subtle: rgba(199, 199, 199, 0.12);
+  --divider: rgba(199, 199, 199, 0.10);
 
-  /* Status */
-  --status-success: rgb(52, 211, 153);
-  --status-warning: rgb(251, 191, 36);
-  --status-error: rgb(251, 113, 133);
+  /* ============================================
+   * ACCENT & INTERACTIVE TOKENS
+   * ============================================ */
+  --accent: var(--agni-teal);
+  --accent-2: var(--agni-navy);
+  --accent-contrast: var(--agni-black);
+  --focus-ring: rgba(9, 229, 236, 0.50);
 
-  /* Typography */
+  /* ============================================
+   * STATUS TOKENS
+   * ============================================ */
+  --status-success: #22c55e;
+  --status-warning: #f59e0b;
+  --status-error: #ef4444;
+  --status-info: var(--agni-teal);
+
+  /* ============================================
+   * SCROLLBAR TOKENS
+   * ============================================ */
+  --scrollbar-thumb: rgba(199, 199, 199, 0.25);
+  --scrollbar-thumb-hover: rgba(199, 199, 199, 0.40);
+
+  /* ============================================
+   * NOTES EDITOR TOKENS
+   * ============================================ */
+  --notes-fg: var(--text-secondary);
+  --notes-fg-strong: var(--text-primary);
+  --notes-fg-heading-3: var(--text-secondary);
+  --notes-muted: var(--text-muted);
+  --notes-border: var(--border-default);
+  --notes-border-soft: var(--border-subtle);
+  --notes-code-bg: var(--bg-elevated);
+  --notes-code-inline: var(--accent);
+  --notes-caret: var(--accent);
+  --notes-link: var(--accent-2);
+  --notes-selection-bg: var(--bg-selected);
+  --notes-find-match-bg: rgba(9, 229, 236, 0.20);
+  --notes-find-match-current-bg: rgba(9, 229, 236, 0.40);
+  --notes-checkbox-bg: var(--bg-app);
+  --notes-checkbox-border: var(--border-default);
+  --notes-checkbox-checked-bg: var(--accent);
+  --notes-list-bullet: var(--text-muted);
+  --notes-list-number: var(--text-muted);
+  --notes-placeholder: var(--text-muted);
+  --notes-editor-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* ============================================
+   * TYPOGRAPHY
+   * ============================================ */
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Icon sizes */
+  /* ============================================
+   * ICON SIZES
+   * ============================================ */
   --icon-sm: 16px;
   --icon-md: 20px;
   --icon-lg: 24px;
-
-  /* Scrollbar */
-  --scrollbar-thumb: rgba(148, 163, 184, 0.4);
-  --scrollbar-thumb-hover: rgba(148, 163, 184, 0.6);
-
-  /* Notes editor (migrate existing vars) */
-  --notes-fg: var(--text-secondary);
-  --notes-fg-strong: var(--text-primary);
-  --notes-muted: var(--text-muted);
-  --notes-border: var(--border-default);
-  --notes-code-bg: var(--surface-overlay);
-  --notes-caret: #38bdf8;
-  --notes-link: #2563eb;
-  --notes-checkbox-checked-bg: #0891b2;
 }

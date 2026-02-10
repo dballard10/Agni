@@ -14,21 +14,21 @@ export function WindowControls() {
     >
       <button
         onClick={minimize}
-        className="flex items-center justify-center w-12 h-full text-slate-400 hover:bg-slate-700"
+        className="flex items-center justify-center w-12 h-full text-text-muted hover:bg-bg-hover"
         aria-label="Minimize"
       >
         <IconMinus className="w-4 h-4" />
       </button>
       <button
         onClick={maximize}
-        className="flex items-center justify-center w-12 h-full text-slate-400 hover:bg-slate-700"
+        className="flex items-center justify-center w-12 h-full text-text-muted hover:bg-bg-hover"
         aria-label={isMaximized ? "Restore" : "Maximize"}
       >
         {isMaximized ? <IconCopy className="w-4 h-4" /> : <IconSquare className="w-4 h-4" />}
       </button>
       <button
         onClick={close}
-        className="flex items-center justify-center w-12 h-full text-slate-400 hover:bg-red-600 hover:text-white"
+        className="flex items-center justify-center w-12 h-full text-text-muted hover:bg-status-error hover:text-white"
         aria-label="Close"
       >
         <IconX className="w-4 h-4" />

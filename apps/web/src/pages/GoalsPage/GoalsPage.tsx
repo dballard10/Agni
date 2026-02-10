@@ -193,7 +193,7 @@ export default function GoalsPage({
               <motion.form
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`${TASK_CARD_CONTAINER} bg-slate-800 p-4 rounded-xl flex flex-col gap-3 border border-slate-700`}
+                className={`${TASK_CARD_CONTAINER} bg-bg-elevated p-4 rounded-xl flex flex-col gap-3 border border-border`}
                 onSubmit={handleCreateGoal}
               >
                 <div className="flex gap-2">
@@ -201,14 +201,14 @@ export default function GoalsPage({
                     type="text"
                     value={newGoalEmoji}
                     onChange={(e) => setNewGoalEmoji(e.target.value)}
-                    className="w-12 p-2 bg-slate-900 border border-slate-700 rounded text-center text-xl focus:border-indigo-500 outline-none"
+                    className="w-12 p-2 bg-bg-panel border border-border rounded text-center text-xl focus:border-accent outline-none"
                     placeholder="Emoji"
                   />
                   <input
                     type="text"
                     value={newGoalName}
                     onChange={(e) => setNewGoalName(e.target.value)}
-                    className="flex-1 p-2 bg-slate-900 border border-slate-700 rounded text-slate-100 focus:border-indigo-500 outline-none"
+                    className="flex-1 p-2 bg-bg-panel border border-border rounded text-text-primary focus:border-accent outline-none"
                     placeholder="Goal name (e.g. Learn French)"
                     autoFocus
                   />
@@ -217,13 +217,13 @@ export default function GoalsPage({
                   <button
                     type="button"
                     onClick={() => setIsAddGoalOpen(false)}
-                    className="px-3 py-1.5 text-sm text-slate-400 hover:text-slate-200"
+                    className="px-3 py-1.5 text-sm text-text-muted hover:text-text-secondary"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-3 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded"
+                    className="px-3 py-1.5 text-sm bg-accent hover:bg-accent/90 text-white rounded"
                   >
                     Save
                   </button>
@@ -232,7 +232,7 @@ export default function GoalsPage({
             )}
 
             <div
-              className={`${TASK_CARD_CONTAINER} border border-slate-600 bg-slate-900/20 hover:border-slate-400 hover:bg-slate-900/35 shadow-sm transition-all`}
+              className={`${TASK_CARD_CONTAINER} border border-border bg-bg-panel/20 hover:border-border hover:bg-bg-panel/35 shadow-sm transition-all`}
             >
               <button
                 type="button"
@@ -241,11 +241,11 @@ export default function GoalsPage({
                 className="group flex items-center gap-4 w-full px-4 py-3 text-left disabled:cursor-not-allowed disabled:opacity-80"
                 aria-label="Add goal"
               >
-                <span className="flex items-center justify-center w-12 h-12 rounded-full border border-slate-600 bg-slate-900 text-slate-200 shadow-sm transition-shadow group-hover:shadow-lg">
+                <span className="flex items-center justify-center w-12 h-12 rounded-full border border-border bg-bg-panel text-text-secondary shadow-sm transition-shadow group-hover:shadow-lg">
                   <IconPlus className="w-5 h-5" />
                 </span>
                 <div className="flex-1">
-                  <p className="text-lg font-semibold text-slate-100">
+                  <p className="text-lg font-semibold text-text-primary">
                     {goalStats.length === 0
                       ? "Add your first goal"
                       : "Add Goal"}
@@ -266,17 +266,17 @@ export default function GoalsPage({
         }}
         persistWidthKey="rightPanelWidth:goals:stats"
       >
-        <div className="space-y-6 text-slate-300">
+        <div className="space-y-6 text-text-secondary">
           <div className="flex items-center justify-between">
-            <div className="flex bg-slate-800 rounded-lg p-1 border border-slate-700">
+            <div className="flex bg-bg-elevated rounded-lg p-1 border border-border">
               {(["week", "month", "year"] as const).map((range) => (
                 <button
                   key={range}
                   onClick={() => setDateRange(range)}
                   className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
                     dateRange === range
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-200"
+                      ? "bg-accent text-white shadow-sm"
+                      : "text-text-muted hover:text-text-secondary"
                   }`}
                 >
                   {range === "week"
@@ -290,7 +290,7 @@ export default function GoalsPage({
           </div>
 
           {dateRange !== "week" ? (
-            <div className="p-8 bg-slate-900/50 border border-slate-800 rounded-lg text-center text-slate-500">
+            <div className="p-8 bg-bg-panel/50 border border-border rounded-lg text-center text-text-muted">
               Historical data coming soon...
             </div>
           ) : (
@@ -300,12 +300,12 @@ export default function GoalsPage({
                 <MetricCard
                   label="Completed"
                   value={weekStats.total.completed}
-                  color="text-emerald-400"
+                  color="text-status-success"
                 />
                 <MetricCard
                   label="Failed"
                   value={weekStats.total.failed}
-                  color="text-rose-400"
+                  color="text-status-error"
                 />
                 <MetricCard
                   label="Completion"
@@ -317,12 +317,12 @@ export default function GoalsPage({
                         )
                       : 0
                   }%`}
-                  color="text-indigo-400"
+                  color="text-accent"
                 />
               </div>
 
-              <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-800">
-                <h3 className="text-sm font-medium text-slate-400 mb-4 uppercase tracking-wider">
+              <div className="bg-bg-elevated/50 p-4 rounded-lg border border-border">
+                <h3 className="text-sm font-medium text-text-muted mb-4 uppercase tracking-wider">
                   Activity by Day
                 </h3>
                 <div className="space-y-2">
@@ -336,15 +336,15 @@ export default function GoalsPage({
                         key={day.label}
                         className="flex items-center gap-3 text-sm"
                       >
-                        <span className="w-24 text-slate-400">{day.label}</span>
-                        <div className="flex-1 h-4 bg-slate-700/50 rounded-full overflow-hidden">
+                        <span className="w-24 text-text-muted">{day.label}</span>
+                        <div className="flex-1 h-4 bg-bg-elevated/50 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${percent}%` }}
-                            className="h-full bg-indigo-500/80"
+                            className="h-full bg-accent/80"
                           />
                         </div>
-                        <span className="w-8 text-right text-slate-300">
+                        <span className="w-8 text-right text-text-secondary">
                           {day.total}
                         </span>
                       </div>
@@ -353,38 +353,38 @@ export default function GoalsPage({
                 </div>
               </div>
 
-              <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-800">
-                <h3 className="text-sm font-medium text-slate-400 mb-4 uppercase tracking-wider">
+              <div className="bg-bg-elevated/50 p-4 rounded-lg border border-border">
+                <h3 className="text-sm font-medium text-text-muted mb-4 uppercase tracking-wider">
                   Goal Progress
                 </h3>
                 <div className="space-y-3">
                   {goalStats.map((goal) => (
                     <div key={goal.id}>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="text-slate-200">
+                        <span className="text-text-secondary">
                           {goal.emoji} {goal.name}
                         </span>
-                        <span className="text-slate-400">
+                        <span className="text-text-muted">
                           {goal.stats.completed} / {goal.stats.total}
                         </span>
                       </div>
-                      <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                      <div className="h-2 bg-bg-elevated rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${goal.stats.completionRate}%` }}
                           className={`h-full rounded-full ${
                             goal.stats.completionRate >= 80
-                              ? "bg-emerald-500"
+                              ? "bg-status-success"
                               : goal.stats.completionRate >= 50
-                              ? "bg-amber-500"
-                              : "bg-slate-500"
+                              ? "bg-status-warning"
+                              : "bg-bg-elevated"
                           }`}
                         />
                       </div>
                     </div>
                   ))}
                   {goalStats.length === 0 && (
-                    <div className="text-slate-500 text-sm">
+                    <div className="text-text-muted text-sm">
                       No goals linked yet.
                     </div>
                   )}
@@ -394,16 +394,16 @@ export default function GoalsPage({
           )}
 
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-100 flex items-center gap-2">
+            <h2 className="text-xl font-semibold text-text-primary flex items-center gap-2">
               <IconUsers className="w-5 h-5 text-pink-400" />
               Shared Experiences
             </h2>
-            <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-indigo-500/20 p-6 rounded-xl relative overflow-hidden">
+            <div className="bg-gradient-to-br from-accent/20 to-accent-2/20 border border-accent/20 p-6 rounded-xl relative overflow-hidden">
               <div className="relative z-10">
-                <h3 className="text-lg font-medium text-indigo-200 mb-2">
+                <h3 className="text-lg font-medium text-text-primary mb-2">
                   Weekly Summary
                 </h3>
-                <p className="text-indigo-100/80 leading-relaxed text-sm">
+                <p className="text-text-secondary leading-relaxed text-sm">
                   {companionStats.total > 0
                     ? `You've been active socially this week! You completed ${companionStats.completed} shared activities. ` +
                       (companionStats.topCompanionName
@@ -417,7 +417,7 @@ export default function GoalsPage({
                   </span>
                 </p>
               </div>
-              <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
             </div>
           </div>
         </div>
@@ -446,16 +446,16 @@ export default function GoalsPage({
 function MetricCard({
   label,
   value,
-  color = "text-slate-100",
+  color = "text-text-primary",
 }: {
   label: string;
   value: string | number;
   color?: string;
 }) {
   return (
-    <div className="bg-slate-800 p-3 rounded-lg border border-slate-700 flex flex-col items-center justify-center text-center">
+    <div className="bg-bg-elevated p-3 rounded-lg border border-border flex flex-col items-center justify-center text-center">
       <span className={`text-2xl font-bold ${color}`}>{value}</span>
-      <span className="text-xs text-slate-400 uppercase tracking-wide mt-1">
+      <span className="text-xs text-text-muted uppercase tracking-wide mt-1">
         {label}
       </span>
     </div>

@@ -54,11 +54,11 @@ const STATUS_ICON_MAP: Record<
   TaskStatus,
   { icon: typeof IconCircle; className: string }
 > = {
-  open: { icon: IconCircle, className: "text-slate-200" },
-  completed: { icon: IconCircleCheck, className: "text-emerald-400" },
-  cancelled: { icon: IconCircleMinus, className: "text-yellow-400" },
-  failed: { icon: IconCircleX, className: "text-red-400" },
-  moved: { icon: IconCircle, className: "text-amber-400" },
+  open: { icon: IconCircle, className: "text-text-secondary" },
+  completed: { icon: IconCircleCheck, className: "text-status-success" },
+  cancelled: { icon: IconCircleMinus, className: "text-status-warning" },
+  failed: { icon: IconCircleX, className: "text-status-error" },
+  moved: { icon: IconCircle, className: "text-status-warning" },
 };
 
 const SORT_OPTIONS: Array<{ value: DaySortMode; label: string }> = [
@@ -69,8 +69,8 @@ const SORT_OPTIONS: Array<{ value: DaySortMode; label: string }> = [
 
 const BUTTON_BASE =
   "flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium transition-colors select-none";
-const BUTTON_ACTIVE = "text-slate-100";
-const BUTTON_INACTIVE = "text-slate-400 hover:text-slate-100";
+const BUTTON_ACTIVE = "text-text-primary";
+const BUTTON_INACTIVE = "text-text-muted hover:text-text-primary";
 
 export default function DayCardSettings({
   taskFilters,
@@ -149,7 +149,7 @@ export default function DayCardSettings({
       {/* Base Icon Button */}
       <button
         type="button"
-        className="p-1 text-slate-200 hover:text-slate-100 rounded transition-colors z-30"
+        className="p-1 text-text-secondary hover:text-text-primary rounded transition-colors z-30"
         aria-label="Day settings"
       >
         <IconAdjustmentsHorizontal className="w-5 h-5" />
@@ -157,7 +157,7 @@ export default function DayCardSettings({
 
       {/* Expandable Menu Container */}
       <div
-        className={`absolute left-0 flex items-center bg-slate-800 rounded-lg border border-slate-700 shadow-xl pl-8 pr-2 py-1 gap-1 transition-all duration-300 ease-out origin-left ${
+        className={`absolute left-0 flex items-center bg-bg-elevated rounded-lg border border-border shadow-xl pl-8 pr-2 py-1 gap-1 transition-all duration-300 ease-out origin-left ${
           openMenu
             ? "opacity-100 translate-x-0 pointer-events-auto"
             : "opacity-0 -translate-x-4 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto"
@@ -224,7 +224,7 @@ export default function DayCardSettings({
         createPortal(
           <div className="fixed inset-0 z-50 pointer-events-none">
             <div
-              className={`absolute rounded bg-slate-900 border border-slate-700 shadow-lg overflow-hidden pointer-events-auto ${
+              className={`absolute rounded bg-bg-panel border border-border shadow-lg overflow-hidden pointer-events-auto ${
                 openMenu === "settings" ? "w-40" : "w-32"
               }`}
               style={{ top: position.top, left: position.left }}
@@ -254,8 +254,8 @@ export default function DayCardSettings({
                         }}
                         className={`w-full text-left px-3 py-2 text-xs ${
                           isSelected
-                            ? "bg-slate-800 text-slate-100"
-                            : "text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+                            ? "bg-bg-elevated text-text-primary"
+                            : "text-text-muted hover:bg-bg-elevated hover:text-text-primary"
                         }`}
                       >
                         {option.label}
@@ -282,8 +282,8 @@ export default function DayCardSettings({
                         }}
                         className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors ${
                           isSelected
-                            ? "bg-slate-800 text-slate-100"
-                            : "text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+                            ? "bg-bg-elevated text-text-primary"
+                            : "text-text-muted hover:bg-bg-elevated hover:text-text-primary"
                         }`}
                       >
                         <span className="flex items-center gap-2">
@@ -295,7 +295,7 @@ export default function DayCardSettings({
                           <span>{option.label}</span>
                         </span>
                         {isSelected && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                         )}
                       </button>
                     );
@@ -308,7 +308,7 @@ export default function DayCardSettings({
                         onToggleCollapsed();
                         setOpenMenu(null);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-800 hover:text-slate-100 flex items-center gap-2"
+                      className="w-full text-left px-3 py-2 text-xs text-text-muted hover:bg-bg-elevated hover:text-text-primary flex items-center gap-2"
                     >
                       {isCollapsed ? (
                         <IconChevronDown className="w-3.5 h-3.5" />
@@ -323,7 +323,7 @@ export default function DayCardSettings({
                         onCopyDay();
                         setOpenMenu(null);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-800 hover:text-slate-100 flex items-center gap-2"
+                      className="w-full text-left px-3 py-2 text-xs text-text-muted hover:bg-bg-elevated hover:text-text-primary flex items-center gap-2"
                     >
                       <IconCopy className="w-3.5 h-3.5" />
                       Copy Day
@@ -337,21 +337,21 @@ export default function DayCardSettings({
                       }}
                       className={`w-full text-left px-3 py-2 text-xs flex items-center gap-2 ${
                         canPaste
-                          ? "text-slate-300 hover:bg-slate-800 hover:text-slate-100"
-                          : "text-slate-600 cursor-not-allowed"
+                          ? "text-text-muted hover:bg-bg-elevated hover:text-text-primary"
+                          : "text-text-disabled cursor-not-allowed"
                       }`}
                     >
                       <IconClipboard className="w-3.5 h-3.5" />
                       Paste Day
                     </button>
-                    <div className="h-[2px] bg-slate-700/80 my-1" />
+                    <div className="h-[2px] bg-border/80 my-1" />
                     <button
                       type="button"
                       onClick={() => {
                         onDeleteAll();
                         setOpenMenu(null);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs text-rose-400 hover:bg-rose-900/30 hover:text-rose-300 flex items-center gap-2"
+                      className="w-full text-left px-3 py-2 text-xs text-status-error hover:bg-status-error/10 hover:opacity-90 flex items-center gap-2"
                     >
                       <IconTrash className="w-3.5 h-3.5" />
                       Delete All

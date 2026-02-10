@@ -22,7 +22,7 @@ export interface AvatarProps {
 export default function Avatar({
   content,
   label,
-  bgColor = "#475569",
+  bgColor = "var(--bg-elevated)",
   size = 24,
   className = "",
   style,

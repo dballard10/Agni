@@ -84,23 +84,23 @@ function getTabStyles(variant: PageTab["variant"], isActive: boolean): string {
 
   if (variant === "utility") {
     if (isActive) {
-      return `${baseHeight} bg-indigo-900/60 text-indigo-100 border border-indigo-500 border-b-transparent rounded-t-md z-10`;
+      return `${baseHeight} bg-accent/60 text-accent-2 border border-accent border-b-transparent rounded-t-md z-10`;
     }
-    return `${baseHeight} text-indigo-300 hover:text-indigo-100 hover:bg-indigo-900/40 rounded-t-md`;
+    return `${baseHeight} text-accent-2 hover:text-accent-2 hover:bg-accent/40 rounded-t-md`;
   }
 
   if (variant === "root") {
     if (isActive) {
-      return `${baseHeight} bg-slate-800/90 text-slate-100 border border-slate-500 border-b-transparent rounded-t-md z-10`;
+      return `${baseHeight} bg-bg-elevated/90 text-text-primary border border-border border-b-transparent rounded-t-md z-10`;
     }
-    return `${baseHeight} text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-t-md`;
+    return `${baseHeight} text-text-muted hover:text-text-secondary hover:bg-bg-elevated/50 rounded-t-md`;
   }
 
   // Default base tabs
   if (isActive) {
-    return `${baseHeight} bg-slate-800/90 text-slate-100 border border-slate-500 border-b-transparent rounded-t-md z-10`;
+    return `${baseHeight} bg-bg-elevated/90 text-text-primary border border-border border-b-transparent rounded-t-md z-10`;
   }
-  return `${baseHeight} text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-t-md`;
+  return `${baseHeight} text-text-muted hover:text-text-secondary hover:bg-bg-elevated/50 rounded-t-md`;
 }
 
 export function PageTabs(props: PageTabsProps) {
@@ -308,10 +308,10 @@ export function PageTabs(props: PageTabsProps) {
               >
                 {/* Drop indicator - before */}
                 {isDropTargetBefore && (
-                  <div className="absolute left-0 top-1 bottom-1 w-0.5 bg-indigo-500 z-30" />
+                  <div className="absolute left-0 top-1 bottom-1 w-0.5 bg-accent z-30" />
                 )}
                 {showSeparator && (
-                  <span className="self-stretch flex items-center mt-1 text-slate-600 select-none">
+                  <span className="self-stretch flex items-center mt-1 text-text-disabled select-none">
                     |
                   </span>
                 )}
@@ -346,9 +346,9 @@ export function PageTabs(props: PageTabsProps) {
                       title={`Close ${tab.title}`}
                       className={`absolute right-2 top-4 z-20 ${
                         isActive
-                          ? (isUtility ? "text-indigo-200" : "text-slate-200")
-                          : (isUtility ? "text-indigo-400" : "text-slate-400")
-                      } hover:text-slate-100 transition-opacity opacity-0 group-hover:opacity-100 group-focus-within:opacity-100`}
+                          ? (isUtility ? "text-accent-2" : "text-text-secondary")
+                          : (isUtility ? "text-accent-2" : "text-text-muted")
+                      } hover:text-text-primary transition-opacity opacity-0 group-hover:opacity-100 group-focus-within:opacity-100`}
                       type="button"
                     >
                       <IconX className="w-4 h-4" />
@@ -357,7 +357,7 @@ export function PageTabs(props: PageTabsProps) {
                 </div>
                 {/* Drop indicator - after (only show on last tab) */}
                 {isDropTargetAfter && isLastTab && (
-                  <div className="absolute right-0 top-1 bottom-1 w-0.5 bg-indigo-500 z-30" />
+                  <div className="absolute right-0 top-1 bottom-1 w-0.5 bg-accent z-30" />
                 )}
               </div>
             );
@@ -374,7 +374,7 @@ export function PageTabs(props: PageTabsProps) {
                 }
               }}
               className="flex-shrink-0 flex items-center justify-center w-7 h-[calc(100%-8px)]
-                         text-slate-400 hover:text-slate-200 hover:bg-slate-800/50
+                         text-text-muted hover:text-text-secondary hover:bg-bg-elevated/50
                          rounded-t-md transition-colors ml-0.5"
               aria-label="New tab"
               title="New tab"
@@ -389,7 +389,7 @@ export function PageTabs(props: PageTabsProps) {
       {isOpen && position && menuState && props.tabContextMenu && createPortal(
         <div className="fixed inset-0 z-50" onClick={handleCloseMenu}>
           <div
-            className="absolute w-44 rounded bg-slate-900 border border-slate-700 shadow-lg overflow-hidden"
+            className="absolute w-44 rounded bg-bg-panel border border-border shadow-lg overflow-hidden"
             style={{ top: position.top, left: position.left }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -402,7 +402,7 @@ export function PageTabs(props: PageTabsProps) {
                       props.tabContextMenu?.onSplitRight?.(menuState.tabId);
                       handleCloseMenu();
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                   >
                     <IconLayoutColumns className="w-4 h-4" />
                     <span>Split Right</span>
@@ -412,12 +412,12 @@ export function PageTabs(props: PageTabsProps) {
                       props.tabContextMenu?.onSplitBelow?.(menuState.tabId);
                       handleCloseMenu();
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                   >
                     <IconLayoutRows className="w-4 h-4" />
                     <span>Split Below</span>
                   </button>
-                  <div className="h-px bg-slate-800 my-1" />
+                  <div className="h-px bg-bg-elevated my-1" />
                 </>
               )}
 
@@ -429,12 +429,12 @@ export function PageTabs(props: PageTabsProps) {
                       props.tabContextMenu?.onCloseSplit?.();
                       handleCloseMenu();
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                   >
                     <IconLayoutList className="w-4 h-4" />
                     <span>Close Split</span>
                   </button>
-                  <div className="h-px bg-slate-800 my-1" />
+                  <div className="h-px bg-bg-elevated my-1" />
                 </>
               )}
 
@@ -444,7 +444,7 @@ export function PageTabs(props: PageTabsProps) {
                   props.tabContextMenu?.onCopyFile?.(menuState.tabId);
                   handleCloseMenu();
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
               >
                 <IconCopy className="w-4 h-4" />
                 <span>Copy File</span>
@@ -454,12 +454,12 @@ export function PageTabs(props: PageTabsProps) {
                   props.tabContextMenu?.onCopyPath?.(menuState.tabId);
                   handleCloseMenu();
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
               >
                 <IconLink className="w-4 h-4" />
                 <span>Copy Path</span>
               </button>
-              <div className="h-px bg-slate-800 my-1" />
+              <div className="h-px bg-bg-elevated my-1" />
 
               {/* Rename */}
               <button
@@ -467,7 +467,7 @@ export function PageTabs(props: PageTabsProps) {
                   props.tabContextMenu?.onRename?.(menuState.tabId);
                   handleCloseMenu();
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
               >
                 <IconPencil className="w-4 h-4" />
                 <span>Rename</span>
@@ -476,13 +476,13 @@ export function PageTabs(props: PageTabsProps) {
               {/* Delete - only if closable */}
               {menuState.isClosable && (
                 <>
-                  <div className="h-px bg-slate-800 my-1" />
+                  <div className="h-px bg-bg-elevated my-1" />
                   <button
                     onClick={() => {
                       props.tabContextMenu?.onDelete?.(menuState.tabId);
                       handleCloseMenu();
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-slate-800"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-status-error hover:bg-bg-elevated"
                   >
                     <IconTrash className="w-4 h-4" />
                     <span>Delete</span>

@@ -154,7 +154,7 @@ export default function DateInputWithPicker({
         ref={triggerRef}
         type="button"
         onClick={toggle}
-        className="absolute right-2 p-1 text-slate-400 hover:text-slate-200 transition-colors"
+        className="absolute right-2 p-1 text-text-muted hover:text-text-secondary transition-colors"
         aria-label="Open calendar"
       >
         <IconCalendar size={18} />
@@ -165,11 +165,11 @@ export default function DateInputWithPicker({
         createPortal(
           <div
             ref={menuRef}
-            className="fixed z-[100] bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-[300px] overflow-hidden"
+            className="fixed z-[100] bg-bg-panel border border-border rounded-lg shadow-2xl w-[300px] overflow-hidden"
             style={{ top: position.top, left: position.left }}
           >
             {/* Header */}
-            <div className="bg-indigo-600 px-4 py-3 text-white">
+            <div className="bg-accent px-4 py-3 text-accent-contrast">
               <div className="text-[10px] uppercase tracking-widest text-white/70">
                 Select date
               </div>
@@ -187,7 +187,7 @@ export default function DateInputWithPicker({
               {mode === "year" ? (
                 <div
                   ref={yearListRef}
-                  className="max-h-64 overflow-y-auto rounded border border-slate-800"
+                  className="max-h-64 overflow-y-auto rounded border border-border-subtle"
                 >
                   <div className="grid grid-cols-3 gap-2 p-2">
                     {years.map((year) => {
@@ -200,8 +200,8 @@ export default function DateInputWithPicker({
                           onClick={() => handleYearSelect(year)}
                           className={`rounded px-2 py-2 text-xs font-semibold transition-colors ${
                             isSelected
-                              ? "bg-indigo-500 text-white"
-                              : "text-slate-300 hover:bg-slate-800"
+                              ? "bg-accent text-accent-contrast"
+                              : "text-text-secondary hover:bg-bg-hover"
                           }`}
                         >
                           {year}
@@ -215,16 +215,16 @@ export default function DateInputWithPicker({
                   <div className="flex items-center justify-between">
                     <button
                       onClick={handlePrevMonth}
-                      className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-slate-100 transition-colors"
+                      className="p-1 hover:bg-bg-hover rounded text-text-muted hover:text-text-primary transition-colors"
                     >
                       <IconChevronLeft size={18} />
                     </button>
-                    <h4 className="font-semibold text-slate-200">
+                    <h4 className="font-semibold text-text-secondary">
                       {format(viewDate, "MMMM yyyy")}
                     </h4>
                     <button
                       onClick={handleNextMonth}
-                      className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-slate-100 transition-colors"
+                      className="p-1 hover:bg-bg-hover rounded text-text-muted hover:text-text-primary transition-colors"
                     >
                       <IconChevronRight size={18} />
                     </button>
@@ -235,7 +235,7 @@ export default function DateInputWithPicker({
                     {weekDays.map((d, i) => (
                       <div
                         key={i}
-                        className="text-center text-[10px] text-slate-500 font-bold uppercase"
+                        className="text-center text-[10px] text-text-muted font-bold uppercase"
                       >
                         {d}
                       </div>
@@ -255,15 +255,15 @@ export default function DateInputWithPicker({
                           onClick={() => handleDateSelect(day)}
                           className={`
                             h-8 w-8 flex items-center justify-center text-xs rounded-full transition-colors
-                            ${!isCurrentMonth ? "text-slate-700" : "text-slate-300"}
+                            ${!isCurrentMonth ? "text-text-disabled" : "text-text-secondary"}
                             ${
                               isSelected
-                                ? "bg-indigo-500 text-white font-bold"
-                                : "hover:bg-slate-800"
+                                ? "bg-accent text-accent-contrast font-bold"
+                                : "hover:bg-bg-hover"
                             }
                             ${
                               isToday && !isSelected
-                                ? "ring-1 ring-indigo-400 text-indigo-300 font-bold"
+                                ? "ring-1 ring-accent text-accent font-bold"
                                 : ""
                             }
                             ${isToday && isSelected ? "font-bold" : ""}
@@ -277,11 +277,11 @@ export default function DateInputWithPicker({
                 </>
               )}
 
-              <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+              <div className="flex items-center justify-between pt-2 border-t border-border-subtle">
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="text-xs font-semibold text-slate-500 hover:text-slate-200 transition-colors"
+                  className="text-xs font-semibold text-text-muted hover:text-text-secondary transition-colors"
                 >
                   Clear
                 </button>
@@ -289,14 +289,14 @@ export default function DateInputWithPicker({
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition-colors"
+                    className="px-3 py-1.5 text-xs font-semibold text-text-muted hover:text-text-secondary hover:bg-bg-hover rounded transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleConfirm}
-                    className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded transition-colors"
+                    className="px-3 py-1.5 text-xs font-semibold bg-accent hover:bg-accent/80 text-accent-contrast rounded transition-colors"
                   >
                     OK
                   </button>

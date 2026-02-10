@@ -150,7 +150,7 @@ export function AgniShellLayout({
 
   return (
     <div
-      className="flex flex-col h-screen w-full bg-slate-950 text-slate-50 overflow-hidden"
+      className="flex flex-col h-screen w-full bg-bg-app text-text-primary overflow-hidden"
       style={{ "--agni-left-sidebar-width": `${effectiveSidebarWidth}px` } as React.CSSProperties}
     >
       <TopNotificationHost />
@@ -227,11 +227,11 @@ export function AgniShellLayout({
           initial={false}
           animate={{ width: rightPanelOpen ? 320 : 0, opacity: rightPanelOpen ? 1 : 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="flex flex-col h-full bg-slate-900 border-l border-slate-700 overflow-hidden flex-shrink-0"
+          className="flex flex-col h-full bg-bg-panel border-l border-border overflow-hidden flex-shrink-0"
         >
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-3">
             {rightPanelContent ?? (
-              <div className="text-slate-500 text-sm">
+              <div className="text-text-muted text-sm">
                 RIGHT PANEL GOES HERE
               </div>
             )}

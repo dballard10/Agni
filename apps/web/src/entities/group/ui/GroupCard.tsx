@@ -71,12 +71,12 @@ export default function GroupCard({
   };
 
   return (
-    <div className="group border border-slate-800 rounded-md bg-slate-900/20 p-2 mb-2">
+    <div className="group border border-border rounded-md bg-bg-panel/20 p-2 mb-2">
       {/* Group Header */}
       <div className="flex mt-1 items-center gap-2 pb-2">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="text-slate-400 hover:text-slate-200 transition-colors"
+          className="text-text-muted hover:text-text-secondary transition-colors"
         >
           {isCollapsed ? (
             <svg
@@ -115,12 +115,12 @@ export default function GroupCard({
             onChange={(e) => setTitle(e.target.value)}
             onBlur={handleTitleSubmit}
             onKeyDown={handleKeyDown}
-            className="bg-slate-800 text-slate-200 px-1 py-0.5 rounded text-sm font-semibold border border-slate-600 focus:outline-none focus:border-slate-400"
+            className="bg-bg-elevated text-text-secondary px-1 py-0.5 rounded text-sm font-semibold border border-border focus:outline-none focus:border-border"
           />
         ) : (
           <h4
             onClick={() => setIsEditingTitle(true)}
-            className="text-sm font-semibold text-slate-300 cursor-pointer hover:text-slate-100"
+            className="text-sm font-semibold text-text-secondary cursor-pointer hover:text-text-primary"
           >
             {group.title}
           </h4>
@@ -131,7 +131,7 @@ export default function GroupCard({
           <button
             type="button"
             onClick={() => onAddTask(group.id, "New task...")}
-            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity p-0.5 text-slate-400 hover:text-slate-200 rounded pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto"
+            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity p-0.5 text-text-muted hover:text-text-secondary rounded pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto"
             aria-label="Add task to group"
           >
             <IconPlus className="w-3.5 h-3.5" />
@@ -145,7 +145,7 @@ export default function GroupCard({
                 onDeleteGroup(group.id);
               }
             }}
-            className="opacity-0 group-hover:opacity-90 group-focus-within:opacity-90 transition-opacity p-0.5 text-slate-500 hover:text-red-400 rounded pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto"
+            className="opacity-0 group-hover:opacity-90 group-focus-within:opacity-90 transition-opacity p-0.5 text-text-muted hover:text-status-error rounded pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto"
             aria-label="Delete group"
           >
             <svg
@@ -171,7 +171,7 @@ export default function GroupCard({
 
       {/* Group Tasks */}
       {!isCollapsed && (
-        <div className="pl-4 border-l-2 border-slate-800 space-y-2 ml-2">
+        <div className="pl-4 border-l-2 border-border space-y-2 ml-2">
           {tasks.map((task) => (
             <div key={task.id}>
               <TaskCard
@@ -188,7 +188,7 @@ export default function GroupCard({
             </div>
           ))}
           {tasks.length === 0 && (
-            <div className="text-xs text-slate-500 italic py-1">
+            <div className="text-xs text-text-muted italic py-1">
               No tasks in this group
             </div>
           )}

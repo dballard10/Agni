@@ -73,30 +73,30 @@ export default function CalendarView({ events }: CalendarViewProps) {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-slate-950 text-slate-100">
+    <div className="flex flex-col h-full w-full bg-bg-app text-text-primary">
       {/* Top Bar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold">Calendar</h1>
           
           {/* Navigation */}
-          <div className="flex items-center bg-slate-900 rounded-lg p-1 border border-slate-800">
+          <div className="flex items-center bg-bg-panel rounded-lg p-1 border border-border">
             <button
               onClick={handlePrevious}
-              className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-slate-100 transition-colors"
+              className="p-1 hover:bg-bg-hover rounded text-text-muted hover:text-text-primary transition-colors"
               title="Previous"
             >
               <IconChevronLeft size={20} />
             </button>
             <button
               onClick={handleToday}
-              className="px-3 py-1 text-sm font-medium text-slate-300 hover:text-slate-100 transition-colors"
+              className="px-3 py-1 text-sm font-medium text-text-muted hover:text-text-primary transition-colors"
             >
               Today
             </button>
             <button
               onClick={handleNext}
-              className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-slate-100 transition-colors"
+              className="p-1 hover:bg-bg-hover rounded text-text-muted hover:text-text-primary transition-colors"
               title="Next"
             >
               <IconChevronRight size={20} />
@@ -109,15 +109,15 @@ export default function CalendarView({ events }: CalendarViewProps) {
         </div>
 
         {/* View Switcher */}
-        <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-800">
+        <div className="flex bg-bg-panel rounded-lg p-1 border border-border">
           {(["year", "month", "week", "day"] as CalendarViewMode[]).map((mode) => (
             <button
               key={mode}
               onClick={() => setViewMode(mode)}
               className={`px-3 py-1 text-sm font-medium rounded capitalize transition-colors ${
                 viewMode === mode
-                  ? "bg-slate-800 text-slate-100 shadow-sm"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                  ? "bg-bg-elevated text-text-primary shadow-sm"
+                  : "text-text-muted hover:text-text-secondary hover:bg-bg-hover/50"
               }`}
             >
               {mode}

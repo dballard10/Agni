@@ -49,21 +49,21 @@ export default function SettingsPage({ weekState, actions }: SettingsPageProps) 
     <div className="flex flex-col min-h-screen pb-12">
       <div className="flex-1 max-w-4xl w-full mx-auto p-4 md:p-6 space-y-8">
         {/* Navigation to Subpages */}
-        <section className="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
+        <section className="bg-bg-panel/50 border border-border rounded-xl overflow-hidden">
           <button
             onClick={() => setActiveSubpage("editing-and-saving")}
-            className="w-full flex items-center justify-between p-5 hover:bg-slate-800/50 transition-colors group"
+            className="w-full flex items-center justify-between p-5 hover:bg-bg-hover/50 transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-slate-800 text-slate-400 group-hover:text-blue-400 transition-colors">
+              <div className="p-2 rounded-lg bg-bg-elevated text-text-muted group-hover:text-blue-400 transition-colors">
                 <IconAdjustments className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <h2 className="text-lg font-semibold text-slate-100">Editing and Saving</h2>
-                <p className="text-sm text-slate-400">Configure how you edit tasks and how they are saved.</p>
+                <h2 className="text-lg font-semibold text-text-primary">Editing and Saving</h2>
+                <p className="text-sm text-text-muted">Configure how you edit tasks and how they are saved.</p>
               </div>
             </div>
-            <IconChevronRight className="w-5 h-5 text-slate-600 group-hover:text-slate-400 transition-colors" />
+            <IconChevronRight className="w-5 h-5 text-text-disabled group-hover:text-text-muted transition-colors" />
           </button>
         </section>
 
@@ -74,7 +74,7 @@ export default function SettingsPage({ weekState, actions }: SettingsPageProps) 
           description="Allow the app to access your location for place search suggestions."
         >
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-300">Enable location access</span>
+            <span className="text-sm text-text-secondary">Enable location access</span>
             <ToggleSwitch
               checked={settings.locationEnabled}
               onChange={setLocationEnabled}
@@ -84,7 +84,7 @@ export default function SettingsPage({ weekState, actions }: SettingsPageProps) 
 
         {/* Event Subtype Colors */}
         <SettingsSection
-          icon={<IconPalette className="w-5 h-5 text-indigo-400" />}
+          icon={<IconPalette className="w-5 h-5 text-accent" />}
           title="Event Subtype Colors"
           description="Customize colors for different task and event types."
         >
@@ -107,14 +107,14 @@ export default function SettingsPage({ weekState, actions }: SettingsPageProps) 
           description="Change colors for your existing goals."
         >
           {weekState.goals.length === 0 ? (
-            <p className="text-sm text-slate-500 italic">No goals created yet.</p>
+            <p className="text-sm text-text-muted italic">No goals created yet.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {weekState.goals.map((goal) => (
                 <ColorPickerRow
                   key={goal.id}
                   label={`${goal.emoji ?? "🎯"} ${goal.name}`}
-                  color={goal.color ?? "#8b5cf6"}
+                  color={goal.color ?? "var(--accent)"}
                   onChange={(color) => actions.updateGoal(goal.id, { color })}
                 />
               ))}
@@ -129,14 +129,14 @@ export default function SettingsPage({ weekState, actions }: SettingsPageProps) 
           description="Change colors for your existing companions."
         >
           {weekState.companions.length === 0 ? (
-            <p className="text-sm text-slate-500 italic">No companions created yet.</p>
+            <p className="text-sm text-text-muted italic">No companions created yet.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {weekState.companions.map((companion) => (
                 <ColorPickerRow
                   key={companion.id}
                   label={companion.name}
-                  color={companion.color ?? "#64748b"}
+                  color={companion.color ?? "var(--text-muted)"}
                   onChange={(color) => actions.updateCompanion(companion.id, { color })}
                 />
               ))}
@@ -159,12 +159,12 @@ interface SettingsSectionProps {
 
 function SettingsSection({ icon, title, description, children }: SettingsSectionProps) {
   return (
-    <section className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+    <section className="bg-bg-panel/50 border border-border rounded-xl p-5">
       <div className="flex items-start gap-3 mb-4">
         <div className="mt-0.5">{icon}</div>
         <div>
-          <h2 className="text-lg font-semibold text-slate-100">{title}</h2>
-          <p className="text-sm text-slate-400">{description}</p>
+          <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
+          <p className="text-sm text-text-muted">{description}</p>
         </div>
       </div>
       {children}
@@ -195,17 +195,17 @@ function ColorPickerRow({ label, color, onChange }: ColorPickerRowProps) {
   return (
     <div
       data-color-label={label}
-      className="flex items-center justify-between bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2"
+      className="flex items-center justify-between bg-bg-elevated/50 border border-border rounded-lg px-3 py-2"
     >
-      <span className="text-sm text-slate-200 truncate pr-2">{label}</span>
+      <span className="text-sm text-text-secondary truncate pr-2">{label}</span>
       <div className="flex items-center gap-2 flex-shrink-0">
         <input
           type="color"
           value={localColor}
           onChange={handleChange}
-          className="w-8 h-8 rounded cursor-pointer border-0 bg-transparent [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-slate-600"
+          className="w-8 h-8 rounded cursor-pointer border-0 bg-transparent [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-border"
         />
-        <span className="text-xs font-mono text-slate-400 w-16">
+        <span className="text-xs font-mono text-text-muted w-16">
           {localColor.toUpperCase()}
         </span>
       </div>
@@ -227,8 +227,8 @@ function ToggleSwitch({ checked, onChange }: ToggleSwitchProps) {
       onClick={() => onChange(!checked)}
       className={`
         relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent 
-        transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900
-        ${checked ? "bg-indigo-600" : "bg-slate-700"}
+        transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-border focus:ring-offset-2 focus:ring-offset-bg-panel
+        ${checked ? "bg-accent" : "bg-bg-elevated"}
       `}
     >
       <span

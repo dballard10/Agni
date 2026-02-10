@@ -98,7 +98,7 @@ export function CompanionSelector({
         tabIndex={0}
         role="button"
       >
-        <span className="text-slate-400 select-none">
+        <span className="text-text-muted select-none">
           {selectedCompanions.length > 0
             ? `${selectedCompanions.length} companion${
                 selectedCompanions.length === 1 ? "" : "s"
@@ -106,7 +106,7 @@ export function CompanionSelector({
             : "Add companions"}
         </span>
         <IconChevronDown
-          className={`w-4 h-4 text-slate-500 transition-transform ${
+          className={`w-4 h-4 text-text-muted transition-transform ${
             isCompanionDropdownOpen ? "rotate-180" : ""
           }`}
         />
@@ -138,16 +138,16 @@ export function CompanionSelector({
                 >
                   <Avatar
                     content={getInitials(c.name)}
-                    bgColor={c.color || "#64748b"}
+                    bgColor={c.color || "var(--text-muted)"}
                     size={20}
                   />
-                  <span className="text-sm text-slate-300 group-hover:text-slate-100 transition-colors">
+                  <span className="text-sm text-text-muted group-hover:text-text-primary transition-colors">
                     {c.name}
                   </span>
                 </button>
               ))
             ) : (
-              <div className="p-3 text-xs text-slate-500 text-center italic">
+              <div className="p-3 text-xs text-text-muted text-center italic">
                 No companions found
               </div>
             )}
@@ -171,7 +171,7 @@ export function CompanionSelector({
                     <div className="relative w-4 h-4 flex items-center justify-center">
                       <Avatar
                         content={getInitials(c.name)}
-                        bgColor={c.color || "#64748b"}
+                        bgColor={c.color || "var(--text-muted)"}
                         size={16}
                         className="absolute inset-0 transition-opacity group-hover:opacity-0"
                       />

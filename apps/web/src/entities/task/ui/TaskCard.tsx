@@ -133,7 +133,7 @@ export default function TaskCard({
   const gradientStyle = getDynamicTaskCardGradientStyle(dynamicColor);
 
   // Determine text color based on type
-  const baseTextClass = typeStyle.textColor || "text-slate-200";
+  const baseTextClass = typeStyle.textColor || "text-text-secondary";
   const highlightClass = isHighlighted
     ? "ring-2 ring-white/80 shadow-[0_0_8px_rgba(255,255,255,0.9)]"
     : "";
@@ -242,7 +242,7 @@ export default function TaskCard({
                       id: goal.id,
                       content: goal.emoji || "🎯",
                       label: goal.name,
-                      bgColor: goal.color ?? "#475569",
+                      bgColor: goal.color ?? "var(--bg-elevated)",
                     }))}
                     maxVisible={3}
                     size={22}
@@ -256,11 +256,11 @@ export default function TaskCard({
                         name={c.name}
                         color={c.color}
                         size="sm"
-                        className="border border-slate-800"
+                        className="border border-border"
                       />
                     ))}
                     {taskCompanions.length > 3 && (
-                      <div className="w-5 h-5 rounded-full bg-slate-700 border border-slate-800 flex items-center justify-center text-[8px] text-slate-400 font-medium">
+                      <div className="w-5 h-5 rounded-full bg-bg-elevated border border-border flex items-center justify-center text-[8px] text-text-muted font-medium">
                         +{taskCompanions.length - 3}
                       </div>
                     )}
@@ -272,7 +272,7 @@ export default function TaskCard({
           <div className={TASK_KIND_BADGE}>
             <span
               className={`text-xs font-semibold select-none ${
-                typeStyle.badgeText || "text-slate-400"
+                typeStyle.badgeText || "text-text-muted"
               }`}
             >
               {typeStyle.label}
@@ -303,7 +303,7 @@ export default function TaskCard({
             {onDelete && (
               <button
                 onClick={handleDelete}
-                className={`${TASK_ACTION_ITEM_BUTTON} hover:!text-red-400`}
+                className={`${TASK_ACTION_ITEM_BUTTON} hover:!text-status-error`}
                 aria-label="Delete task"
                 title="Delete task"
               >

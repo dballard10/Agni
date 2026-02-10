@@ -1712,8 +1712,8 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
                   }
 
                   ${isResizingSplit
-                    ? `bg-indigo-500/50 ${splitState.mode === "below" ? "h-1.5" : "w-1.5"}`
-                    : "bg-slate-600 hover:bg-indigo-500/30"
+                    ? `bg-accent/50 ${splitState.mode === "below" ? "h-1.5" : "w-1.5"}`
+                    : "bg-border hover:bg-accent/30"
                   }
 
                   before:absolute
@@ -1799,28 +1799,28 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
         createPortal(
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div
-              className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-bg-app/80 backdrop-blur-sm"
               onClick={handleClosePasteConflict}
             />
-            <div className="relative bg-slate-900 border border-slate-700 rounded-lg shadow-2xl max-w-md w-full overflow-hidden">
-              <div className="flex items-center justify-between p-4 border-b border-slate-800">
-                <div className="flex items-center gap-2 text-amber-400">
+            <div className="relative bg-bg-panel border border-border rounded-lg shadow-2xl max-w-md w-full overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b border-border-subtle">
+                <div className="flex items-center gap-2 text-status-warning">
                   <IconAlertTriangle size={20} />
-                  <h3 className="font-semibold text-slate-100">
+                  <h3 className="font-semibold text-text-primary">
                     {pasteConflict.kind === "note" ? "File" : "Folder"} Already Exists
                   </h3>
                 </div>
                 <button
                   onClick={handleClosePasteConflict}
-                  className="text-slate-500 hover:text-slate-300 transition-colors"
+                  className="text-text-muted hover:text-text-secondary transition-colors"
                 >
                   <IconX size={20} />
                 </button>
               </div>
 
               <div className="p-6">
-                <p className="text-slate-300 mb-6 text-sm leading-relaxed">
-                  A {pasteConflict.kind} named <span className="font-semibold text-slate-100">"{pasteConflict.name}"</span> already exists
+                <p className="text-text-secondary mb-6 text-sm leading-relaxed">
+                  A {pasteConflict.kind} named <span className="font-semibold text-text-primary">"{pasteConflict.name}"</span> already exists
                   {pasteConflict.targetFolderPath
                     ? ` in "${pasteConflict.targetFolderPath}"`
                     : " at the root level"}
@@ -1830,13 +1830,13 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={handlePasteReplace}
-                    className="w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-500 text-white font-medium rounded-md transition-colors text-sm"
+                    className="w-full py-2.5 px-4 bg-status-warning hover:opacity-90 text-white font-medium rounded-md transition-colors text-sm"
                   >
                     Replace existing {pasteConflict.kind}
                   </button>
                   <button
                     onClick={handleClosePasteConflict}
-                    className="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium rounded-md border border-slate-700 transition-colors text-sm"
+                    className="w-full py-2.5 px-4 bg-bg-elevated hover:bg-bg-hover text-text-secondary font-medium rounded-md border border-border transition-colors text-sm"
                   >
                     Cancel
                   </button>

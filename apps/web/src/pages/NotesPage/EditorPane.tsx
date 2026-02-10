@@ -127,7 +127,7 @@ export function EditorPane({
   return (
     <div
       className={`flex flex-col h-full overflow-hidden ${
-        isFocused ? "ring-1 ring-slate-600 ring-inset" : ""
+        isFocused ? "ring-1 ring-border ring-inset" : ""
       }`}
       onClick={onFocus}
     >
@@ -135,7 +135,7 @@ export function EditorPane({
       <div className="flex items-center h-8 px-3 bg-transparent shrink-0">
         {/* File path - centered */}
         <div className="flex-1 flex justify-center min-w-0">
-          <span className="text-slate-500 text-xs font-mono truncate">
+          <span className="text-text-muted text-xs font-mono truncate">
             {formatHeaderFilePath(filePath, activeNote?.title)}
           </span>
         </div>
@@ -148,7 +148,7 @@ export function EditorPane({
                 e.stopPropagation();
                 onToggleMode();
               }}
-              className="flex items-center justify-center w-6 h-6 rounded text-slate-500 hover:bg-slate-700 hover:text-slate-300 transition-colors"
+              className="flex items-center justify-center w-6 h-6 rounded text-text-muted hover:bg-bg-hover hover:text-text-secondary transition-colors"
               aria-label={mode === "preview" ? "Switch to edit mode" : "Switch to preview mode"}
               title={mode === "preview" ? "Switch to edit mode" : "Switch to preview mode"}
             >
@@ -164,8 +164,8 @@ export function EditorPane({
             disabled={!hasMenuItems}
             className={`flex items-center justify-center w-6 h-6 rounded transition-colors ${
               hasMenuItems
-                ? "text-slate-500 hover:bg-slate-700 hover:text-slate-300"
-                : "text-slate-600 cursor-not-allowed"
+                ? "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
+                : "text-text-disabled cursor-not-allowed"
             }`}
             aria-label="Open menu"
             title="Open menu"
@@ -208,7 +208,7 @@ export function EditorPane({
         createPortal(
           <div className="fixed inset-0 z-50" onClick={close}>
             <div
-              className="absolute w-40 rounded bg-slate-900 border border-slate-700 shadow-lg overflow-hidden"
+              className="absolute w-40 rounded bg-bg-panel border border-border shadow-lg overflow-hidden"
               style={{ top: position.top, left: position.left }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -218,17 +218,17 @@ export function EditorPane({
                   return (
                     <div key={item.id}>
                       {item.separatorBefore && (
-                        <div className="my-1 border-t border-slate-700" />
+                        <div className="my-1 border-t border-border" />
                       )}
                       <button
                         onClick={() => handleItemClick(item)}
                         disabled={item.disabled}
                         className={`flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors ${
                           item.disabled
-                            ? "text-slate-600 cursor-not-allowed"
+                            ? "text-text-disabled cursor-not-allowed"
                             : item.danger
-                              ? "text-red-400 hover:bg-slate-800"
-                              : "text-slate-200 hover:bg-slate-800"
+                              ? "text-status-error hover:bg-bg-hover"
+                              : "text-text-secondary hover:bg-bg-hover"
                         }`}
                       >
                         {Icon && <Icon className="w-4 h-4" />}

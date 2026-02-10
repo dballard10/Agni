@@ -85,7 +85,7 @@ export function TopBar({
 
   return (
     <div
-      className="grid items-stretch h-10 bg-slate-900 border-b border-slate-700"
+      className="grid items-stretch h-10 bg-bg-panel border-b border-border"
       style={{
         gridTemplateColumns: leftPanelOpen
           ? `calc(var(--agni-left-sidebar-width, 260px) + ${trafficLightPadding}px) 1fr auto`
@@ -104,7 +104,7 @@ export function TopBar({
         <div className="relative flex items-center">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-800 transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-bg-hover transition-colors"
             aria-label="Open Agni menu"
             title="Open Agni menu"
           >
@@ -127,8 +127,8 @@ export function TopBar({
             disabled={!canGoBack}
             className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
               canGoBack
-                ? "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-                : "text-slate-600 cursor-not-allowed"
+                ? "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
+                : "text-text-disabled cursor-not-allowed"
             }`}
             aria-label="Go back"
             title="Go back"
@@ -140,8 +140,8 @@ export function TopBar({
             disabled={!canGoForward}
             className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
               canGoForward
-                ? "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-                : "text-slate-600 cursor-not-allowed"
+                ? "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
+                : "text-text-disabled cursor-not-allowed"
             }`}
             aria-label="Go forward"
             title="Go forward"
@@ -153,8 +153,8 @@ export function TopBar({
           onClick={onToggleLeftPanel}
           className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
             leftPanelOpen
-              ? "text-slate-100 hover:bg-slate-800"
-              : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              ? "text-text-primary hover:bg-bg-hover"
+              : "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
           }`}
           aria-label={leftPanelOpen ? "Hide left panel" : "Show left panel"}
           title={leftPanelOpen ? "Hide left panel" : "Show left panel"}
@@ -163,7 +163,7 @@ export function TopBar({
         </button>
         <button
           onClick={() => onOpenUtilityTab?.("settings")}
-          className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-md text-text-muted hover:bg-bg-hover hover:text-text-secondary transition-colors"
           aria-label="Open settings"
           title="Open settings"
         >
@@ -207,8 +207,8 @@ export function TopBar({
             onClick={onToggleRightPanel}
             className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
               rightPanelOpen
-                ? "text-slate-100 hover:bg-slate-800"
-                : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                ? "text-text-primary hover:bg-bg-hover"
+                : "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
             }`}
             aria-label={rightPanelOpen ? "Hide right panel" : "Show right panel"}
             title={rightPanelOpen ? "Hide right panel" : "Show right panel"}
@@ -221,8 +221,8 @@ export function TopBar({
             onClick={() => setIsLibraryOpen(!isLibraryOpen)}
             className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
               hasUtilityTabOpen
-                ? "text-slate-100 hover:bg-slate-800"
-                : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                ? "text-text-primary hover:bg-bg-hover"
+                : "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
             }`}
             aria-label="Open library"
             title="Library (Goals & Companions)"

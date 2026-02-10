@@ -49,7 +49,7 @@ function GoalCard({
   const cardBackgroundClass = getGoalBackgroundClass(goal.color);
   const cardStyleClass = getTaskCardStyleClass({
     backgroundClass: cardBackgroundClass,
-    textClass: "text-slate-200",
+    textClass: "text-text-secondary",
     isClickable: Boolean(onSelect),
   });
 
@@ -133,7 +133,7 @@ function GoalCard({
                       />
                     ) : (
                       <h3
-                        className="font-medium text-slate-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 rounded transform transition-transform duration-200 hover:scale-105 -translate-x-2"
+                        className="font-medium text-text-secondary cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border focus-visible:ring-offset-1 rounded transform transition-transform duration-200 hover:scale-105 -translate-x-2"
                         onClick={(event) => {
                           event.stopPropagation();
                           setEditName(goal.name);
@@ -154,12 +154,12 @@ function GoalCard({
                     )}
                   </div>
                   {goal.dueDate && (
-                    <span className="text-[10px] uppercase tracking-wider text-slate-400">
+                    <span className="text-[10px] uppercase tracking-wider text-text-muted">
                       Target date: {formatDueDateLabel(goal.dueDate)}
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-slate-400 mt-0.5">
+                <div className="text-xs text-text-muted mt-0.5">
                   {goal.stats.total} linked tasks
                 </div>
               </div>

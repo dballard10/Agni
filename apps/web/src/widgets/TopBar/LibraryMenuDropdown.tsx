@@ -50,7 +50,7 @@ export function LibraryMenuDropdown({
   return (
     <div
       ref={dropdownRef}
-      className="absolute top-full right-0 mt-1 w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg z-50 py-1"
+      className="absolute top-full right-0 mt-1 w-48 bg-bg-elevated border border-border rounded-md shadow-lg z-50 py-1"
     >
       {libraryItems.map((item) => {
         const Icon = item.icon;
@@ -61,7 +61,7 @@ export function LibraryMenuDropdown({
               onSelectUtilityTab(item.id);
               onClose();
             }}
-            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-left transition-colors text-slate-300 hover:bg-slate-700/50 hover:text-slate-100"
+            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-left transition-colors text-text-secondary hover:bg-bg-hover/50 hover:text-text-primary"
           >
             <Icon className="w-4 h-4" />
             <span>{item.label}</span>

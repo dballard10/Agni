@@ -243,7 +243,7 @@ export function RightSidePanel({
           onClick={() => {
             /* We need an onOpen prop if we want this to work, but for now parent controls it */
           }}
-          className="fixed top-4 right-4 z-40 p-2 bg-slate-900 border border-slate-700 rounded-md hover:bg-slate-800 transition-colors"
+          className="fixed top-4 right-4 z-40 p-2 bg-bg-panel border border-border rounded-md hover:bg-bg-hover transition-colors"
           aria-label="Open panel"
         >
           <svg
@@ -284,7 +284,7 @@ export function RightSidePanel({
           }
         }}
         transition={panelTransition}
-        className={`fixed inset-y-0 right-0 z-40 bg-slate-900 border-l border-slate-700 shadow-2xl ${className} ${
+        className={`fixed inset-y-0 right-0 z-40 bg-bg-panel border-l border-border shadow-2xl ${className} ${
           isResizing ? "select-none" : ""
         }`}
         style={{ 
@@ -301,23 +301,23 @@ export function RightSidePanel({
             onPointerDown={handlePointerDown}
             className={`absolute left-0 top-0 bottom-0 w-1.5 cursor-col-resize z-50 group transition-all duration-300 ${
               isResizing 
-                ? "bg-indigo-500/50 opacity-100" 
-                : "bg-indigo-500/10 opacity-0 hover:opacity-100 hover:bg-indigo-500/30"
+                ? "bg-accent/50 opacity-100" 
+                : "bg-accent/10 opacity-0 hover:opacity-100 hover:bg-accent/30"
             }`}
           >
-            <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-px h-8 bg-indigo-400/50 transition-opacity opacity-0 group-hover:opacity-100" />
+            <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-px h-8 bg-accent/50 transition-opacity opacity-0 group-hover:opacity-100" />
           </div>
         )}
 
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-3.5 border-b-2 border-slate-700/80 bg-slate-800/50">
-            <h2 className="text-lg font-semibold text-slate-100">{title}</h2>
+          <div className="flex items-center justify-between p-3.5 border-b-2 border-border-subtle bg-bg-elevated/50">
+            <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
             <div className="flex items-center gap-1">
               {headerActions}
               <button
                 onClick={handleToggleExpanded}
-                className="p-1 text-slate-400 hover:text-slate-100 transition-colors rounded hover:bg-slate-800"
+                className="p-1 text-text-muted hover:text-text-primary transition-colors rounded hover:bg-bg-hover"
                 aria-label={isExpanded ? "Exit full screen" : "Full screen"}
                 title={isExpanded ? "Exit full screen" : "Full screen"}
               >
@@ -329,7 +329,7 @@ export function RightSidePanel({
               </button>
               <button
                 onClick={onClose}
-                className="p-1 text-slate-400 hover:text-slate-100 transition-colors rounded hover:bg-slate-800"
+                className="p-1 text-text-muted hover:text-text-primary transition-colors rounded hover:bg-bg-hover"
                 aria-label="Close panel"
               >
                 <IconX className="w-5 h-5" />
@@ -339,7 +339,7 @@ export function RightSidePanel({
 
           {/* Sub Header (e.g. Tabs) */}
           {subHeader && (
-            <div className="border-b border-slate-700 bg-slate-900/50">
+            <div className="border-b border-border bg-bg-panel/50">
               {subHeader}
             </div>
           )}

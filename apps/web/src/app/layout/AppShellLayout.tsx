@@ -17,7 +17,7 @@ export function AppShellLayout({
 
   return (
     <div
-      className="flex h-screen w-full bg-slate-950 text-slate-50 overflow-hidden app-shell-root"
+      className="flex h-screen w-full bg-bg-app text-text-primary overflow-hidden app-shell-root"
       style={
         {
           "--app-left-sidebar-width": isSidebarOpen ? "260px" : "60px",

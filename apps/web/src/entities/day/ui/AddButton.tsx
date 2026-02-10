@@ -12,7 +12,7 @@ const AddButton = ({ onAddTaskClick, onAddGroupClick }: AddButtonProps) => {
       <button
         type="button"
         onClick={onAddTaskClick}
-        className="p-1 text-slate-200 hover:text-slate-100 rounded transition-colors z-30"
+        className="p-1 text-text-secondary hover:text-text-primary rounded transition-colors z-30"
         aria-label="Add options"
       >
         <IconPlus className="w-5 h-5" />
@@ -20,14 +20,14 @@ const AddButton = ({ onAddTaskClick, onAddGroupClick }: AddButtonProps) => {
 
       {/* Expandable Menu Container */}
       <div
-        className={`absolute right-0 flex items-center bg-slate-800 rounded-lg border border-slate-700 shadow-xl pr-8 pl-2 py-1 gap-2 transition-all duration-300 ease-out origin-right opacity-0 translate-x-4 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto`}
+        className={`absolute right-0 flex items-center bg-bg-elevated rounded-lg border border-border shadow-xl pr-8 pl-2 py-1 gap-2 transition-all duration-300 ease-out origin-right opacity-0 translate-x-4 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto`}
       >
         {/* Add Task Button */}
         <button
           type="button"
           aria-label="Add task"
           onClick={onAddTaskClick}
-          className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded transition-colors text-slate-300 hover:bg-slate-700 hover:text-slate-100 whitespace-nowrap"
+          className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded transition-colors text-text-secondary hover:bg-bg-hover hover:text-text-primary whitespace-nowrap"
         >
           <IconCheckbox className="w-3 h-3" />
           Task
@@ -38,7 +38,7 @@ const AddButton = ({ onAddTaskClick, onAddGroupClick }: AddButtonProps) => {
           type="button"
           aria-label="Add group"
           onClick={onAddGroupClick}
-          className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded transition-colors text-slate-300 hover:bg-slate-700 hover:text-slate-100 whitespace-nowrap"
+          className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded transition-colors text-text-secondary hover:bg-bg-hover hover:text-text-primary whitespace-nowrap"
         >
           <IconFolderPlus className="w-3 h-3" />
           Group

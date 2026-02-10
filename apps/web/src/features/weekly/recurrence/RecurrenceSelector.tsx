@@ -76,9 +76,9 @@ export function RecurrenceSelector({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
-        <span className="text-slate-200 select-none font-medium">{getLabel()}</span>
+        <span className="text-text-secondary select-none font-medium">{getLabel()}</span>
         <IconChevronDown
-          className={`w-4 h-4 text-slate-500 transition-transform ${
+          className={`w-4 h-4 text-text-muted transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -98,7 +98,7 @@ export function RecurrenceSelector({
                 }`}
               >
                 <span className="flex-1">None</span>
-                {isSelected("none", 1) && <IconCheck className="w-4 h-4 text-indigo-400" />}
+                {isSelected("none", 1) && <IconCheck className="w-4 h-4 text-accent" />}
               </button>
               <button
                 type="button"
@@ -110,7 +110,7 @@ export function RecurrenceSelector({
                 }`}
               >
                 <span className="flex-1">Daily</span>
-                {isSelected("day", 1) && <IconCheck className="w-4 h-4 text-indigo-400" />}
+                {isSelected("day", 1) && <IconCheck className="w-4 h-4 text-accent" />}
               </button>
               <button
                 type="button"
@@ -122,7 +122,7 @@ export function RecurrenceSelector({
                 }`}
               >
                 <span className="flex-1">Weekly</span>
-                {isSelected("week", 1) && <IconCheck className="w-4 h-4 text-indigo-400" />}
+                {isSelected("week", 1) && <IconCheck className="w-4 h-4 text-accent" />}
               </button>
               <button
                 type="button"
@@ -134,7 +134,7 @@ export function RecurrenceSelector({
                 }`}
               >
                 <span className="flex-1">Bi-weekly</span>
-                {isSelected("week", 2) && <IconCheck className="w-4 h-4 text-indigo-400" />}
+                {isSelected("week", 2) && <IconCheck className="w-4 h-4 text-accent" />}
               </button>
               <button
                 type="button"
@@ -146,9 +146,9 @@ export function RecurrenceSelector({
                 }`}
               >
                 <span className="flex-1">Monthly</span>
-                {isSelected("month", 1) && <IconCheck className="w-4 h-4 text-indigo-400" />}
+                {isSelected("month", 1) && <IconCheck className="w-4 h-4 text-accent" />}
               </button>
-              <div className="h-px bg-slate-800 my-1 mx-2" />
+              <div className="h-px bg-border my-1 mx-2" />
               <button
                 type="button"
                 onClick={() => setMenuMode("custom")}
@@ -163,7 +163,7 @@ export function RecurrenceSelector({
                 <button
                   type="button"
                   onClick={() => setMenuMode("presets")}
-                  className={`${TASK_GOAL_BUTTON} ${TASK_GOAL_BUTTON_UNSELECTED} text-slate-400 flex items-center gap-1`}
+                  className={`${TASK_GOAL_BUTTON} ${TASK_GOAL_BUTTON_UNSELECTED} text-text-muted flex items-center gap-1`}
                 >
                   <IconChevronLeft size={16} />
                   <span>Back</span>
@@ -182,7 +182,7 @@ export function RecurrenceSelector({
                     }`}
                   >
                     <span className="flex-1 text-sm">Every {n} day{n === 1 ? "" : "s"}</span>
-                    {isSelected("day", n) && <IconCheck className="w-4 h-4 text-indigo-400" />}
+                    {isSelected("day", n) && <IconCheck className="w-4 h-4 text-accent" />}
                   </button>
                 ))}
               </div>

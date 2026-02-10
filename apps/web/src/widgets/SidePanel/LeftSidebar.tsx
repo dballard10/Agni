@@ -89,12 +89,12 @@ export function LeftSidebar({
       initial={false}
       animate={{ width: isOpen ? 260 : 60 }} // Rail width when collapsed
       transition={{ type: "spring", damping: 25, stiffness: 200 }}
-      className={`fixed md:relative flex flex-col h-screen bg-slate-900 border-r border-slate-700 flex-shrink-0 z-50 overflow-hidden ${
+      className={`fixed md:relative flex flex-col h-screen bg-bg-panel border-r border-border flex-shrink-0 z-50 overflow-hidden ${
         isDragging ? "select-none" : ""
       }`}
     >
       {/* Header / Logo */}
-      <div className="flex items-center justify-between h-14 px-3 border-b border-slate-800">
+      <div className="flex items-center justify-between h-14 px-3 border-b border-border-subtle">
         <div className="flex items-center min-w-0">
           {/* Logo - Acts as expand button when collapsed */}
           <button
@@ -103,17 +103,17 @@ export function LeftSidebar({
               if (!isOpen) onToggle();
             }}
             className={`flex items-center justify-center min-w-[36px] rounded-md py-1 px-1 transition-colors ${
-              !isOpen ? "hover:bg-slate-800 cursor-pointer" : "cursor-default"
+              !isOpen ? "hover:bg-bg-elevated cursor-pointer" : "cursor-default"
             }`}
             title={!isOpen ? "Expand sidebar" : "Agni"}
             aria-label={!isOpen ? "Expand sidebar" : "Agni"}
             tabIndex={!isOpen ? 0 : -1}
           >
-            <AgniFlameLogo className="w-6 h-6 text-slate-100" />
+            <AgniFlameLogo className="w-6 h-6 text-text-primary" />
           </button>
           <motion.span
             animate={{ opacity: isOpen ? 1 : 0, width: isOpen ? "auto" : 0 }}
-            className="ml-3 font-semibold text-slate-100 whitespace-nowrap overflow-hidden"
+            className="ml-3 font-semibold text-text-primary whitespace-nowrap overflow-hidden"
           >
             Agni
           </motion.span>
@@ -123,7 +123,7 @@ export function LeftSidebar({
         {isOpen && (
           <button
             onClick={onToggle}
-            className="flex items-center justify-center p-1.5 text-slate-400 hover:text-slate-100 rounded-md hover:bg-slate-800 transition-colors"
+            className="flex items-center justify-center p-1.5 text-text-muted hover:text-text-primary rounded-md hover:bg-bg-elevated transition-colors"
             title="Collapse sidebar"
           >
             <IconLayoutSidebarLeftCollapse className="w-5 h-5" />
@@ -145,8 +145,8 @@ export function LeftSidebar({
                 onClick={handleTabClick}
                 className={`flex items-center p-2 rounded-md transition-colors w-full ${
                   isActive
-                    ? "bg-slate-800 text-slate-100"
-                    : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
+                    ? "bg-bg-elevated text-text-primary"
+                    : "text-text-muted hover:bg-bg-elevated/50 hover:text-text-secondary"
                 }`}
                 title={!isOpen ? tab.label : undefined}
               >
@@ -174,8 +174,8 @@ export function LeftSidebar({
             onClick={() => onTabChange(settingsTab.id)}
             className={`flex items-center p-2 rounded-md transition-colors w-full ${
               activeTab === settingsTab.id
-                ? "bg-slate-800 text-slate-100"
-                : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
+                ? "bg-bg-elevated text-text-primary"
+                : "text-text-muted hover:bg-bg-elevated/50 hover:text-text-secondary"
             }`}
             title={!isOpen ? settingsTab.label : undefined}
           >
@@ -206,13 +206,13 @@ export function LeftSidebar({
         onLostPointerCapture={handlePointerUp}
         className={`absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize z-50 group transition-all duration-300 touch-none ${
           isDragging 
-            ? "bg-indigo-500/50 opacity-100" 
-            : "bg-indigo-500/10 opacity-0 hover:opacity-100 hover:bg-indigo-500/30"
+            ? "bg-accent/50 opacity-100" 
+            : "bg-accent/10 opacity-0 hover:opacity-100 hover:bg-accent/30"
         }`}
         title="Drag to toggle sidebar"
       >
         <div 
-          className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-px h-8 bg-indigo-400/50 transition-opacity ${
+          className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-px h-8 bg-accent-2/50 transition-opacity ${
             isDragging ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           }`} 
         />

@@ -72,8 +72,8 @@ function MiniMonth({
   const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
 
   return (
-    <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-800 flex flex-col h-full">
-      <h3 className="font-semibold text-slate-200 mb-3 ml-1">
+    <div className="bg-bg-panel/50 p-4 rounded-lg border border-border flex flex-col h-full">
+      <h3 className="font-semibold text-text-secondary mb-3 ml-1">
         {format(month, "MMMM")}
       </h3>
 
@@ -82,7 +82,7 @@ function MiniMonth({
         {weekDays.map((d, i) => (
           <div
             key={i}
-            className="text-center text-xs text-slate-500 font-medium"
+            className="text-center text-xs text-text-muted font-medium"
           >
             {d}
           </div>
@@ -114,15 +114,15 @@ function MiniMonth({
               onClick={() => onDateSelect(day)}
               className={`
                 relative h-8 w-8 mx-auto flex items-center justify-center text-sm rounded-full transition-colors
-                ${!isCurrentMonth ? "text-slate-700" : "text-slate-300"}
+                ${!isCurrentMonth ? "text-text-muted" : "text-text-muted"}
                 ${
                   isSelected
-                    ? "bg-indigo-600 text-white font-semibold"
-                    : "hover:bg-slate-800"
+                    ? "bg-accent text-white font-semibold"
+                    : "hover:bg-bg-hover"
                 }
                 ${
                   isTodayDate && !isSelected
-                    ? "ring-1 ring-indigo-500 text-indigo-400"
+                    ? "ring-1 ring-accent text-accent"
                     : ""
                 }
               `}

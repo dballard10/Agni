@@ -28,25 +28,25 @@ const STATUS_OPTIONS: Array<{
     value: "open",
     label: "Open",
     icon: <IconCircle className="w-6 h-6" />,
-    iconClass: "text-slate-200",
+    iconClass: "text-text-secondary",
   },
   {
     value: "completed",
     label: "Completed",
     icon: <IconCircleCheck className="w-6 h-6" />,
-    iconClass: "text-emerald-400",
+    iconClass: "text-status-success",
   },
   {
     value: "cancelled",
     label: "Cancelled",
     icon: <IconCircleMinus className="w-6 h-6" />,
-    iconClass: "text-yellow-400",
+    iconClass: "text-status-warning",
   },
   {
     value: "failed",
     label: "Failed",
     icon: <IconCircleX className="w-6 h-6" />,
-    iconClass: "text-red-400",
+    iconClass: "text-status-error",
   },
 ];
 
@@ -91,7 +91,7 @@ export default function StatusSelector({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         onClick={toggle}
-        className="flex items-center justify-center p-1 text-slate-200 hover:text-slate-100 hover:scale-105 rounded transition-colors"
+        className="flex items-center justify-center p-1 text-text-secondary hover:text-text-primary hover:scale-105 rounded transition-colors"
       >
         <span className={current.iconClass}>{current.icon}</span>
       </button>
@@ -101,7 +101,7 @@ export default function StatusSelector({
         createPortal(
           <div className="fixed inset-0 z-50" onClick={close}>
             <div
-              className="absolute w-36 rounded bg-slate-900 border border-slate-700 shadow-lg"
+              className="absolute w-36 rounded bg-bg-panel border border-border shadow-lg"
               style={{ top: position.top, left: position.left }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -113,7 +113,7 @@ export default function StatusSelector({
                     role="option"
                     aria-selected={option.value === status}
                     onClick={() => handleSelect(option.value)}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-hover"
                   >
                     <span className={option.iconClass}>{option.icon}</span>
                     <span>{option.label}</span>

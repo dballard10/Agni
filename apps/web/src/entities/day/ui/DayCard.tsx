@@ -219,10 +219,10 @@ export default function DayCard({
   }, [visibleTasks, compareTasksBy]);
 
   return (
-    <div className="flex flex-col bg-slate-1000 rounded-lg border border-slate-700 max-w-5xl transition-all duration-300 ease-in-out">
+    <div className="flex flex-col bg-bg-app rounded-lg border border-border max-w-5xl transition-all duration-300 ease-in-out">
       <div
-        className={`grid grid-cols-3 items-center gap-2 p-2 bg-slate-800 border-slate-700 z-10 relative ${
-          isCollapsed ? "rounded-lg" : "rounded-t-lg border-b-2 border-slate-700/80"
+        className={`grid grid-cols-3 items-center gap-2 p-2 bg-bg-elevated border-border z-10 relative ${
+          isCollapsed ? "rounded-lg" : "rounded-t-lg border-b-2 border-border/80"
         }`}
       >
         <div className="flex justify-start">
@@ -302,7 +302,7 @@ export default function DayCard({
           {rootTasks.map((task, idx) => (
             <div key={task.id}>
               {dropIndex === idx && (
-                <div className="h-1 bg-indigo-500 rounded-full my-1 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+                <div className="h-1 bg-accent rounded-full my-1 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
               )}
               <motion.div
                 layout
@@ -326,7 +326,7 @@ export default function DayCard({
             </div>
           ))}
           {dropIndex === rootTasks.length && (
-            <div className="h-1 bg-indigo-500 rounded-full my-1 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+            <div className="h-1 bg-accent rounded-full my-1 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
           )}
         </AnimatePresence>
       </motion.div>

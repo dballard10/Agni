@@ -95,12 +95,12 @@ export default function TimeInputWithPicker({
         placeholder={placeholder}
         className={`${className} w-full cursor-pointer caret-transparent pr-10`}
       />
-      <div className="absolute right-3 text-slate-400 flex items-center justify-center">
+      <div className="absolute right-3 text-text-muted flex items-center justify-center">
         {value ? (
           <button
             type="button"
             onClick={handleClear}
-            className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity hover:text-slate-200"
+            className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity hover:text-text-secondary"
             aria-label="Clear time"
           >
             <IconX size={16} />
@@ -116,7 +116,7 @@ export default function TimeInputWithPicker({
         createPortal(
           <div
             ref={menuRef}
-            className="fixed z-[100] bg-slate-900 border border-slate-700 rounded-lg shadow-2xl p-2 flex gap-1 h-48 overflow-hidden"
+            className="fixed z-[100] bg-bg-panel border border-border rounded-lg shadow-2xl p-2 flex gap-1 h-48 overflow-hidden"
             style={{ top: position.top, left: position.left }}
           >
             {/* Hours */}
@@ -130,8 +130,8 @@ export default function TimeInputWithPicker({
                   }}
                   className={`w-full py-1.5 text-sm rounded ${
                     h12 === h
-                      ? "bg-blue-600 text-white font-bold"
-                      : "text-slate-300 hover:bg-slate-800"
+                      ? "bg-accent text-accent-contrast font-bold"
+                      : "text-text-secondary hover:bg-bg-hover"
                   }`}
                 >
                   {h}
@@ -150,8 +150,8 @@ export default function TimeInputWithPicker({
                   }}
                   className={`w-full py-1.5 text-sm rounded ${
                     minutes === m
-                      ? "bg-blue-600 text-white font-bold"
-                      : "text-slate-300 hover:bg-slate-800"
+                      ? "bg-accent text-accent-contrast font-bold"
+                      : "text-text-secondary hover:bg-bg-hover"
                   }`}
                 >
                   {m}
@@ -170,8 +170,8 @@ export default function TimeInputWithPicker({
                   }}
                   className={`px-3 py-1.5 text-sm rounded ${
                     period === p
-                      ? "bg-blue-600 text-white font-bold"
-                      : "text-slate-300 hover:bg-slate-800"
+                      ? "bg-accent text-accent-contrast font-bold"
+                      : "text-text-secondary hover:bg-bg-hover"
                   }`}
                 >
                   {p}

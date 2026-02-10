@@ -16,13 +16,13 @@ export default function GoalColorSelect({
       <div className="mt-1 flex items-center gap-3">
         <span
           aria-hidden="true"
-          className="block h-10 w-10 rounded-lg border border-slate-700 shadow-inner"
+          className="block h-10 w-10 rounded-lg border border-border shadow-inner"
           style={{ backgroundColor: value }}
         />
         <select
           value={value}
           onChange={(event) => onChange(event.target.value as GoalAccentColor)}
-          className="flex-1 rounded-xl bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-slate-100 focus:border-indigo-500 focus:outline-none"
+          className="flex-1 rounded-xl bg-bg-panel border border-border px-3 py-2 text-sm text-text-primary focus:border-accent focus:outline-none"
         >
           {GOAL_COLOR_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>

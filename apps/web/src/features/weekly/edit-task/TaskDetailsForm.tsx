@@ -381,7 +381,7 @@ export default function TaskDetailsForm({
     <div className="flex flex-col gap-6">
       {/* Notes Section */}
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-center gap-2 text-slate-100 font-medium mb-1.5">
+        <div className="flex items-center gap-2 text-text-primary font-medium mb-1.5">
           <IconAlignLeft size={18} className="text-purple-400" />
           <h3>Notes</h3>
         </div>
@@ -390,7 +390,7 @@ export default function TaskDetailsForm({
           onChange={(e) => handleChange("notesMarkdown", e.target.value)}
           placeholder="Add notes or details..."
           rows={4}
-          className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-colors resize-y min-h-[100px]"
+          className="bg-bg-elevated border border-border rounded px-3 py-2 text-sm text-text-secondary focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-colors resize-y min-h-[100px]"
         />
       </div>
 
@@ -398,29 +398,29 @@ export default function TaskDetailsForm({
 
       {/* Schedule Section */}
       <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-slate-100 font-medium">
+        <div className="flex items-center gap-2 text-text-primary font-medium">
           <IconClock size={18} className="text-blue-400" />
           <h3>Schedule</h3>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-slate-400">Start Date</label>
+            <label className="text-xs text-text-muted">Start Date</label>
             <DateInputWithPicker
               value={startDate}
               onChange={(value) => handleChange("startDate", value)}
-              className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
+              className="bg-bg-elevated border border-border rounded px-3 py-2 text-sm text-text-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-slate-400">End Date</label>
+            <label className="text-xs text-text-muted">End Date</label>
             <DateInputWithPicker
               value={endDate}
               onChange={(value) => handleChange("endDate", value)}
-              className={`bg-slate-800 border rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 transition-colors ${
+              className={`bg-bg-elevated border rounded px-3 py-2 text-sm text-text-secondary focus:outline-none focus:ring-2 transition-colors ${
                 endDateError
                   ? "border-red-500 focus:ring-red-500/50 focus:border-red-500"
-                  : "border-slate-700 focus:ring-blue-500/50 focus:border-blue-500"
+                  : "border-border focus:ring-blue-500/50 focus:border-blue-500"
               }`}
             />
           </div>
@@ -428,36 +428,36 @@ export default function TaskDetailsForm({
 
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-slate-400">Start Time</label>
+            <label className="text-xs text-text-muted">Start Time</label>
             <TimeInputWithPicker
               value={startTime}
               onChange={(value) => handleChange("startTime", value)}
-              className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
+              className="bg-bg-elevated border border-border rounded px-3 py-2 text-sm text-text-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-slate-400">End Time</label>
+            <label className="text-xs text-text-muted">End Time</label>
             <TimeInputWithPicker
               value={endTime}
               onChange={(value) => handleChange("endTime", value)}
-              className={`bg-slate-800 border rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 transition-colors ${
+              className={`bg-bg-elevated border rounded px-3 py-2 text-sm text-text-secondary focus:outline-none focus:ring-2 transition-colors ${
                 endTimeError
                   ? "border-red-500 focus:ring-red-500/50 focus:border-red-500"
-                  : "border-slate-700 focus:ring-blue-500/50 focus:border-blue-500"
+                  : "border-border focus:ring-blue-500/50 focus:border-blue-500"
               }`}
             />
           </div>
         </div>
 
         {(endDateError || endTimeError) && (
-          <p className="text-[10px] text-red-400 font-medium">
+          <p className="text-[10px] text-status-error font-medium">
             {endDateError ? "End date can't be before start date" : "End time can't be before start time"}
           </p>
         )}
 
         {/* Repeating Section */}
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-slate-400">
+          <div className="flex items-center gap-2 text-text-muted">
             <IconRepeat size={16} />
             <span className="text-sm">Repeating</span>
           </div>
@@ -506,7 +506,7 @@ export default function TaskDetailsForm({
       <div className="flex flex-col gap-6">
         {/* Location Section */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex items-center gap-2 text-slate-100 font-medium mb-1.5">
+          <div className="flex items-center gap-2 text-text-primary font-medium mb-1.5">
             <IconMapPin size={18} className="text-rose-400" />
             <h3>Location</h3>
           </div>
@@ -530,11 +530,11 @@ export default function TaskDetailsForm({
                     ? `location-option-${highlightIndex}`
                     : undefined
                 }
-                className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400/50 focus:border-rose-400 transition-colors pr-8"
+                className="w-full bg-bg-elevated border border-border rounded px-3 py-2 text-sm text-text-secondary focus:outline-none focus:ring-2 focus:ring-rose-400/50 focus:border-rose-400 transition-colors pr-8"
               />
               {isSearching && (
                 <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                  <IconLoader2 size={16} className="text-slate-400 animate-spin" />
+                  <IconLoader2 size={16} className="text-text-muted animate-spin" />
                 </div>
               )}
 
@@ -544,7 +544,7 @@ export default function TaskDetailsForm({
                   ref={dropdownRef}
                   id="location-listbox"
                   role="listbox"
-                  className="absolute z-50 left-0 right-0 top-full mt-1 bg-slate-800 border border-slate-700 rounded-md shadow-lg max-h-60 overflow-auto"
+                  className="absolute z-50 left-0 right-0 top-full mt-1 bg-bg-elevated border border-border rounded-md shadow-lg max-h-60 overflow-auto"
                 >
                   {suggestions.map((suggestion, index) => (
                     <li
@@ -556,13 +556,13 @@ export default function TaskDetailsForm({
                       onMouseEnter={() => setHighlightIndex(index)}
                       className={`px-3 py-2 cursor-pointer text-sm transition-colors ${
                         index === highlightIndex
-                          ? "bg-rose-400/20 text-slate-100"
-                          : "text-slate-300 hover:bg-slate-700/50"
+                          ? "bg-rose-400/20 text-text-primary"
+                          : "text-text-secondary hover:bg-bg-hover"
                       }`}
                     >
                       <div className="font-medium truncate">{suggestion.label}</div>
                       {suggestion.secondaryLabel && (
-                        <div className="text-xs text-slate-500 truncate">
+                        <div className="text-xs text-text-muted truncate">
                           {suggestion.secondaryLabel}
                         </div>
                       )}
@@ -591,7 +591,7 @@ export default function TaskDetailsForm({
 
         {/* Links Section */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex items-center gap-2 text-slate-100 font-medium mb-1.5">
+          <div className="flex items-center gap-2 text-text-primary font-medium mb-1.5">
             <IconExternalLink size={18} className="text-teal-400" />
             <h3>Links</h3>
           </div>

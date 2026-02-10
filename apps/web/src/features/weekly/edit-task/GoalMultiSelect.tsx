@@ -87,7 +87,7 @@ export function GoalMultiSelect({
         tabIndex={0}
         role="button"
       >
-        <span className="text-slate-400 select-none">
+        <span className="text-text-muted select-none">
           {selectedGoals.length > 0
             ? `${selectedGoals.length} goal${
                 selectedGoals.length === 1 ? "" : "s"
@@ -95,7 +95,7 @@ export function GoalMultiSelect({
             : "Select goals"}
         </span>
         <IconChevronDown
-          className={`w-4 h-4 text-slate-500 transition-transform ${
+          className={`w-4 h-4 text-text-muted transition-transform ${
             isGoalDropdownOpen ? "rotate-180" : ""
           }`}
         />
@@ -133,13 +133,13 @@ export function GoalMultiSelect({
                     </span>
                     <span className="flex-1 truncate">{g.name}</span>
                     {isSelected && (
-                      <IconCheck className="w-4 h-4 text-indigo-400" />
+                      <IconCheck className="w-4 h-4 text-accent" />
                     )}
                   </button>
                 );
               })
             ) : (
-              <div className="p-3 text-xs text-slate-500 text-center italic">
+              <div className="p-3 text-xs text-text-muted text-center italic">
                 No goals found
               </div>
             )}
@@ -160,7 +160,7 @@ export function GoalMultiSelect({
                 <div className="relative w-5 h-5">
                   <div
                     className={TASK_GOAL_PILL_AVATAR_BORDER}
-                    style={{ backgroundColor: g.color ?? "#475569" }}
+                    style={{ backgroundColor: g.color ?? "var(--bg-elevated)" }}
                   >
                     <span className="text-[11px] leading-none">{g.emoji}</span>
                   </div>

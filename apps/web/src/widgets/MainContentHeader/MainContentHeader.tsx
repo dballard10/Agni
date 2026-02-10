@@ -98,7 +98,7 @@ export function MainContentHeader({
       {onToggleEditorMode && (
         <button
           onClick={onToggleEditorMode}
-          className="flex items-center justify-center w-7 h-7 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+          className="flex items-center justify-center w-7 h-7 rounded-md text-text-muted hover:bg-bg-hover hover:text-text-secondary transition-colors"
           aria-label={editorMode === "preview" ? "Switch to edit mode" : "Switch to preview mode"}
           title={editorMode === "preview" ? "Switch to edit mode" : "Switch to preview mode"}
         >
@@ -111,8 +111,8 @@ export function MainContentHeader({
         disabled={!hasMenuItems}
         className={`flex items-center justify-center w-7 h-7 rounded-md transition-colors ${
           hasMenuItems
-            ? "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-            : "text-slate-600 cursor-not-allowed"
+            ? "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
+            : "text-text-disabled cursor-not-allowed"
         }`}
         aria-label="Open menu"
         title="Open menu"
@@ -124,17 +124,17 @@ export function MainContentHeader({
 
   if (isSplit) {
     return (
-      <div className="relative flex items-center h-10 bg-slate-900 border-b border-slate-700">
+      <div className="relative flex items-center h-10 bg-bg-panel border-b border-border">
         {/* Primary pane header - 50% */}
         <div className="flex-1 flex items-center justify-center min-w-0 pr-8">
-          <span className="text-slate-400 text-sm font-mono truncate px-4">
+          <span className="text-text-muted text-sm font-mono truncate px-4">
             {formatHeaderFilePath(filePath)}
           </span>
         </div>
 
         {/* Secondary pane header - 50% */}
         <div className="flex-1 flex items-center justify-center min-w-0">
-          <span className="text-slate-400 text-sm font-mono truncate px-4">
+          <span className="text-text-muted text-sm font-mono truncate px-4">
             {formatHeaderFilePath(secondaryFilePath ?? "")}
           </span>
         </div>
@@ -151,7 +151,7 @@ export function MainContentHeader({
           createPortal(
             <div className="fixed inset-0 z-50" onClick={close}>
               <div
-                className="absolute w-40 rounded bg-slate-900 border border-slate-700 shadow-lg overflow-hidden"
+                className="absolute w-40 rounded bg-bg-panel border border-border shadow-lg overflow-hidden"
                 style={{ top: position.top, left: position.left }}
                 onClick={(e) => e.stopPropagation()}
               >
@@ -161,17 +161,17 @@ export function MainContentHeader({
                     return (
                       <div key={item.id}>
                         {item.separatorBefore && (
-                          <div className="my-1 border-t border-slate-700" />
+                          <div className="my-1 border-t border-border" />
                         )}
                         <button
                           onClick={() => handleItemClick(item)}
                           disabled={item.disabled}
                           className={`flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors ${
                             item.disabled
-                              ? "text-slate-600 cursor-not-allowed"
+                              ? "text-text-disabled cursor-not-allowed"
                               : item.danger
-                                ? "text-red-400 hover:bg-slate-800"
-                                : "text-slate-200 hover:bg-slate-800"
+                                ? "text-status-error hover:bg-bg-hover"
+                                : "text-text-secondary hover:bg-bg-hover"
                           }`}
                         >
                           {Icon && <Icon className="w-4 h-4" />}
@@ -190,18 +190,18 @@ export function MainContentHeader({
   }
 
   return (
-    <div className="grid grid-cols-[1fr_auto_1fr] items-center h-10 px-3 bg-slate-900 border-b border-slate-700">
+    <div className="grid grid-cols-[1fr_auto_1fr] items-center h-10 px-3 bg-bg-panel border-b border-border">
       {/* Left section: Optional title */}
       <div className="min-w-0 flex items-center">
         {title && (
-          <span className="text-slate-400 text-sm font-mono truncate">
+          <span className="text-text-muted text-sm font-mono truncate">
             {title}
           </span>
         )}
       </div>
 
       {/* Center section: File path */}
-      <span className="text-slate-400 text-sm font-mono truncate max-w-md px-4">
+      <span className="text-text-muted text-sm font-mono truncate max-w-md px-4">
         {formatHeaderFilePath(filePath)}
       </span>
 
@@ -210,7 +210,7 @@ export function MainContentHeader({
         {onToggleEditorMode && (
           <button
             onClick={onToggleEditorMode}
-            className="flex items-center justify-center w-7 h-7 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+            className="flex items-center justify-center w-7 h-7 rounded-md text-text-muted hover:bg-bg-hover hover:text-text-secondary transition-colors"
             aria-label={editorMode === "preview" ? "Switch to edit mode" : "Switch to preview mode"}
             title={editorMode === "preview" ? "Switch to edit mode" : "Switch to preview mode"}
           >
@@ -223,8 +223,8 @@ export function MainContentHeader({
           disabled={!hasMenuItems}
           className={`flex items-center justify-center w-7 h-7 rounded-md transition-colors ${
             hasMenuItems
-              ? "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-              : "text-slate-600 cursor-not-allowed"
+              ? "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
+              : "text-text-disabled cursor-not-allowed"
           }`}
           aria-label="Open menu"
           title="Open menu"
@@ -240,7 +240,7 @@ export function MainContentHeader({
         createPortal(
           <div className="fixed inset-0 z-50" onClick={close}>
             <div
-              className="absolute w-40 rounded bg-slate-900 border border-slate-700 shadow-lg overflow-hidden"
+              className="absolute w-40 rounded bg-bg-panel border border-border shadow-lg overflow-hidden"
               style={{ top: position.top, left: position.left }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -250,17 +250,17 @@ export function MainContentHeader({
                   return (
                     <div key={item.id}>
                       {item.separatorBefore && (
-                        <div className="my-1 border-t border-slate-700" />
+                        <div className="my-1 border-t border-border" />
                       )}
                       <button
                         onClick={() => handleItemClick(item)}
                         disabled={item.disabled}
                         className={`flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors ${
                           item.disabled
-                            ? "text-slate-600 cursor-not-allowed"
+                            ? "text-text-disabled cursor-not-allowed"
                             : item.danger
-                              ? "text-red-400 hover:bg-slate-800"
-                              : "text-slate-200 hover:bg-slate-800"
+                              ? "text-status-error hover:bg-bg-hover"
+                              : "text-text-secondary hover:bg-bg-hover"
                         }`}
                       >
                         {Icon && <Icon className="w-4 h-4" />}

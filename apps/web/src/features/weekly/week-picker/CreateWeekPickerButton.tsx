@@ -35,8 +35,8 @@ export function CreateWeekPickerButton({ onCreateWeek, buttonClassName }: Create
   // Use custom className if provided, otherwise use default styling
   const triggerClassName = buttonClassName
     ? buttonClassName
-    : `p-1 transition-colors rounded hover:bg-slate-800 ${
-        isOpen ? "text-slate-100 bg-slate-800" : "text-slate-400 hover:text-slate-100"
+    : `p-1 transition-colors rounded hover:bg-bg-hover ${
+        isOpen ? "text-text-primary bg-bg-elevated" : "text-text-muted hover:text-text-primary"
       }`;
 
   return (
@@ -55,11 +55,11 @@ export function CreateWeekPickerButton({ onCreateWeek, buttonClassName }: Create
         createPortal(
           <div
             ref={menuRef}
-            className="fixed z-[100] bg-slate-900 border border-slate-700 rounded-lg shadow-2xl p-4 w-[300px] flex flex-col gap-4"
+            className="fixed z-[100] bg-bg-panel border border-border rounded-lg shadow-2xl p-4 w-[300px] flex flex-col gap-4"
             style={{ top: position.top, left: position.left }}
           >
             <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-slate-200">
+              <h4 className="text-sm font-semibold text-text-secondary">
                 Create/Select Week
               </h4>
             </div>
@@ -70,17 +70,17 @@ export function CreateWeekPickerButton({ onCreateWeek, buttonClassName }: Create
               placeholder="Pick a date"
             />
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+            <div className="flex justify-end gap-2 pt-2 border-t border-border-subtle">
               <button
                 onClick={close}
-                className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-text-muted hover:text-text-secondary hover:bg-bg-hover rounded transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreate}
                 disabled={!selectedDate}
-                className="px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:hover:bg-indigo-600 text-white rounded transition-colors"
+                className="px-3 py-1.5 text-xs font-medium bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:hover:bg-accent text-white rounded transition-colors"
               >
                 Go to Week
               </button>

@@ -22,8 +22,8 @@ export function PanelToggle({
       onClick={onClick}
       className={`p-2 rounded-md transition-colors ${
         isOpen 
-          ? "bg-slate-700 text-slate-100" 
-          : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+          ? "bg-bg-elevated text-text-primary" 
+          : "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
       } ${className}`}
       aria-label={label}
       aria-expanded={isOpen}

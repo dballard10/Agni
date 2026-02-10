@@ -77,24 +77,24 @@ export function TaskDetailsModal({
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-bg-app/80 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+      <div className="relative bg-bg-panel border border-border rounded-lg shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 flex-shrink-0">
-          <h3 className="font-semibold text-slate-100">Task Details</h3>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle flex-shrink-0">
+          <h3 className="font-semibold text-text-primary">Task Details</h3>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={isDirty ? onSave : undefined}
               disabled={!isDirty}
-              className={`p-1.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 ${
+              className={`p-1.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                 isDirty
-                  ? "text-indigo-400 hover:text-indigo-300 hover:bg-slate-800"
-                  : "text-slate-500 opacity-40 cursor-default"
+                  ? "text-accent hover:text-accent/80 hover:bg-bg-hover"
+                  : "text-text-muted opacity-40 cursor-default"
               }`}
               title={isDirty ? "Save changes" : "No pending changes"}
               aria-label="Save changes"
@@ -103,7 +103,7 @@ export function TaskDetailsModal({
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-800 rounded transition-colors"
+              className="p-1.5 text-text-muted hover:text-text-secondary hover:bg-bg-hover rounded transition-colors"
               aria-label="Close"
             >
               <IconX size={18} />

@@ -167,7 +167,7 @@ export function WeeklyFolderTree({
                 <button
                   type="button"
                   onClick={() => toggleYear(year)}
-                  className="w-full flex items-center gap-1.5 px-2 py-1 rounded transition-colors group hover:bg-slate-800 text-slate-400 hover:text-slate-200"
+                  className="w-full flex items-center gap-1.5 px-2 py-1 rounded transition-colors group hover:bg-bg-hover text-text-muted hover:text-text-secondary"
                   style={{ paddingLeft: "8px" }}
                 >
                   <span className="shrink-0">
@@ -177,7 +177,7 @@ export function WeeklyFolderTree({
                       <IconChevronRight className="w-3.5 h-3.5" />
                     )}
                   </span>
-                  <IconFolder className="w-4 h-4 text-slate-500 group-hover:text-slate-400 shrink-0" />
+                  <IconFolder className="w-4 h-4 text-text-muted group-hover:text-text-muted shrink-0" />
                   <span className="text-sm font-medium truncate">{year}</span>
                 </button>
 
@@ -191,7 +191,7 @@ export function WeeklyFolderTree({
                           <button
                             type="button"
                             onClick={() => toggleMonth(monthKey)}
-                            className="w-full flex items-center gap-1.5 px-2 py-1 rounded transition-colors group hover:bg-slate-800 text-slate-400 hover:text-slate-200"
+                            className="w-full flex items-center gap-1.5 px-2 py-1 rounded transition-colors group hover:bg-bg-hover text-text-muted hover:text-text-secondary"
                             style={{ paddingLeft: "20px" }}
                           >
                             <span className="shrink-0">
@@ -201,7 +201,7 @@ export function WeeklyFolderTree({
                                 <IconChevronRight className="w-3.5 h-3.5" />
                               )}
                             </span>
-                            <IconFolder className="w-4 h-4 text-slate-500 group-hover:text-slate-400 shrink-0" />
+                            <IconFolder className="w-4 h-4 text-text-muted group-hover:text-text-muted shrink-0" />
                             <span className="text-sm font-medium truncate">
                               {month}
                             </span>
@@ -221,12 +221,12 @@ export function WeeklyFolderTree({
                                       }
                                       className={`w-full flex items-center gap-2 px-2 py-1 rounded transition-colors ${
                                         isSelected
-                                          ? "bg-slate-700 text-slate-100"
-                                          : "hover:bg-slate-800 text-slate-400 hover:text-slate-200"
+                                          ? "bg-bg-hover text-text-primary"
+                                          : "hover:bg-bg-hover text-text-muted hover:text-text-secondary"
                                       }`}
                                       style={{ paddingLeft: "52px" }}
                                     >
-                                      <IconFileText className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                                      <IconFileText className="w-3.5 h-3.5 text-text-muted shrink-0" />
                                       <span className="text-sm truncate">
                                         {week.weekLabel}
                                       </span>

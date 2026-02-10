@@ -4,56 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Notes editor + preview shared palette */
-:root {
-  /* Text colors - reference design system vars where applicable */
-  --notes-fg: #cbd5e1; /* slate-300 */
-  --notes-fg-strong: #f1f5f9; /* slate-100 */
-  --notes-fg-heading-3: #e2e8f0; /* slate-200 */
-  --notes-muted: #94a3b8; /* slate-400 */
-
-  /* Borders & surfaces */
-  --notes-border: #334155; /* slate-700 */
-  --notes-border-soft: #475569; /* slate-600 */
-  --notes-code-bg: #1e293b; /* slate-800 */
-  --notes-code-inline: #22d3ee; /* cyan-400 (inline code) */
-
-  /* Accent / interactive */
-  --notes-caret: #38bdf8; /* sky-400 */
-  --notes-link: #2563eb; /* blue-600 (navy) */
-  --notes-selection-bg: #334155; /* slate-700 */
-
-  /* Find & Replace highlights */
-  --notes-find-match-bg: rgba(245, 158, 11, 0.3); /* amber-500/30 */
-  --notes-find-match-current-bg: rgba(245, 158, 11, 0.6); /* amber-500/60 */
-
-  /* Checkbox */
-  --notes-checkbox-bg: #1e293b; /* slate-800 */
-  --notes-checkbox-border: #475569; /* slate-600 */
-  --notes-checkbox-checked-bg: #0891b2; /* cyan-600 */
-
-  /* List markers */
-  --notes-list-bullet: #64748b; /* slate-500 */
-  --notes-list-number: #64748b; /* slate-500 */
-
-  /* Placeholder */
-  --notes-placeholder: #64748b; /* slate-500 */
-
-  /* Typography (ChatGPT-like system sans stack) */
-  --notes-editor-font: ui-sans-serif, system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans",
-    "Liberation Sans", sans-serif;
-}
-
 /* Global scrollbar styles */
 @layer base {
   * {
-    /* Firefox support - we keep it simple here since not a priority */
     scrollbar-width: none;
     scrollbar-color: transparent transparent;
   }
 
-  /* WebKit support (Chrome, Edge, Safari) */
   *::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -69,17 +26,14 @@
     transition: background-color 0.2s ease;
   }
 
-  /* Reveal thumb only when the JS helper detects hover over the gutter */
   *[data-scrollbar-hover="1"]::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thumb);
   }
 
-  /* Slightly stronger color when hovering the thumb itself */
   *::-webkit-scrollbar-thumb:hover {
     background-color: var(--scrollbar-thumb-hover) !important;
   }
 
-  /* Tab strip scrollbar - overlay, visible on hover/active */
   .scrollbar-thin-hover {
     scrollbar-width: none;
     overflow-x: overlay;
@@ -94,13 +48,13 @@
   }
   .scrollbar-thin-hover:hover::-webkit-scrollbar-thumb,
   .scrollbar-thin-hover:active::-webkit-scrollbar-thumb {
-    background: rgb(100 116 139); /* slate-500 */
+    background: var(--scrollbar-thumb);
   }
 }
 
 @layer base {
   body {
-    @apply bg-slate-900 text-slate-50;
+    @apply bg-bg-app text-text-primary;
   }
 
   /* Electron drag regions - ensure interactive elements are always clickable */

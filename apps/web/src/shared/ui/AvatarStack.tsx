@@ -60,7 +60,7 @@ export default function AvatarStack({
             relative inline-flex items-center justify-center
             rounded-full
             font-semibold leading-none antialiased select-none
-            bg-slate-800 text-slate-400
+            bg-bg-elevated text-text-muted
             ring-1 ring-white/10
             shadow-[0_1px_3px_rgba(0,0,0,0.4)]
           "

@@ -14,7 +14,7 @@ const sizeStyles = {
 
 export default function CompanionAvatar({
   name,
-  color = "#64748b",
+  color = "var(--text-muted)",
   size,
   className = "",
 }: CompanionAvatarProps) {

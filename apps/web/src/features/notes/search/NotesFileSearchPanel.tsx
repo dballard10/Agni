@@ -118,7 +118,7 @@ export function NotesFileSearchPanel({
     <div className="flex flex-col h-full" onKeyDown={handleKeyDown}>
       {/* Search input */}
       <div className="relative mb-3">
-        <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+        <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
         <input
           ref={inputRef}
           type="text"
@@ -126,18 +126,18 @@ export function NotesFileSearchPanel({
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search in notes..."
           autoFocus
-          className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-slate-200 text-sm placeholder-slate-500 outline-none focus:border-slate-600 transition-colors"
+          className="w-full pl-10 pr-4 py-2 bg-bg-elevated border border-border rounded-md text-text-secondary text-sm placeholder-text-muted outline-none focus:border-border transition-colors"
         />
       </div>
 
       {/* Results list */}
       <div ref={listRef} className="flex-1 overflow-y-auto -mx-2 px-2">
         {searchQuery.trim() === "" ? (
-          <div className="text-center py-8 text-slate-500 text-sm">
+          <div className="text-center py-8 text-text-muted text-sm">
             Type to search notes
           </div>
         ) : results.length === 0 ? (
-          <div className="text-center py-8 text-slate-500 text-sm">
+          <div className="text-center py-8 text-text-muted text-sm">
             No results found
           </div>
         ) : (
@@ -166,7 +166,7 @@ export function NotesFileSearchPanel({
 
       {/* Footer with result count */}
       {searchQuery.trim() !== "" && results.length > 0 && (
-        <div className="pt-2 mt-2 border-t border-slate-800 text-xs text-slate-500">
+        <div className="pt-2 mt-2 border-t border-border-subtle text-xs text-text-muted">
           {results.length} file{results.length !== 1 ? "s" : ""} found
         </div>
       )}
@@ -218,29 +218,29 @@ function ResultItem({
       <div
         onClick={onToggleExpanded}
         className={`rounded-md cursor-pointer transition-colors px-2 py-2 ${
-          isActive ? "bg-slate-700" : "hover:bg-slate-800"
+          isActive ? "bg-bg-hover" : "hover:bg-bg-elevated"
         }`}
       >
         <div className="flex items-center gap-2">
           {/* Chevron indicator */}
-          <span className="w-4 h-4 flex items-center justify-center text-slate-500 shrink-0">
+          <span className="w-4 h-4 flex items-center justify-center text-text-muted shrink-0">
             {isExpanded ? (
               <IconChevronDown className="w-3.5 h-3.5" />
             ) : (
               <IconChevronRight className="w-3.5 h-3.5" />
             )}
           </span>
-          <IconFileText className="w-4 h-4 text-slate-500 shrink-0" />
-          <span className="text-sm font-medium text-slate-200 truncate">
+          <IconFileText className="w-4 h-4 text-text-muted shrink-0" />
+          <span className="text-sm font-medium text-text-secondary truncate">
             {result.title}
           </span>
-          <span className="text-xs text-slate-500 ml-auto shrink-0">
+          <span className="text-xs text-text-muted ml-auto shrink-0">
             {result.matchCount} match{result.matchCount !== 1 ? "es" : ""}
           </span>
         </div>
 
         {/* Path */}
-        <div className="text-[10px] font-mono text-slate-500 truncate mt-1 pl-8">
+        <div className="text-[10px] font-mono text-text-muted truncate mt-1 pl-8">
           {result.path}
         </div>
       </div>
@@ -285,7 +285,7 @@ function ResultItem({
                     e.stopPropagation();
                     onToggleShowAll();
                   }}
-                  className="text-xs text-slate-400 hover:text-slate-200 transition-colors pl-6 py-1"
+                  className="text-xs text-text-muted hover:text-text-secondary transition-colors pl-6 py-1"
                 >
                   Show more ({hiddenCount})
                 </button>
@@ -313,13 +313,13 @@ function MetaMatchItem({ kind, label, text, query, onClick }: MetaMatchItemProps
         e.stopPropagation();
         onClick();
       }}
-      className="flex items-start gap-2 text-xs cursor-pointer rounded px-1 py-0.5 hover:bg-slate-800 transition-colors"
+      className="flex items-start gap-2 text-xs cursor-pointer rounded px-1 py-0.5 hover:bg-bg-elevated transition-colors"
     >
-      <span className="text-slate-600 font-mono w-4 text-right shrink-0">
+      <span className="text-text-disabled font-mono w-4 text-right shrink-0">
         {kind}
       </span>
-      <span className="text-slate-400 truncate">
-        <span className="text-slate-500 mr-1">{label}:</span>{" "}
+      <span className="text-text-muted truncate">
+        <span className="text-text-muted mr-1">{label}:</span>{" "}
         <InlineHighlight text={text} query={query} />
       </span>
     </div>
@@ -371,12 +371,12 @@ function MatchLineItem({ match, onClick }: MatchLineItemProps) {
         e.stopPropagation();
         onClick();
       }}
-      className="flex items-start gap-2 text-xs cursor-pointer rounded px-1 py-0.5 hover:bg-slate-800 transition-colors"
+      className="flex items-start gap-2 text-xs cursor-pointer rounded px-1 py-0.5 hover:bg-bg-elevated transition-colors"
     >
-      <span className="text-slate-600 font-mono w-4 text-right shrink-0">
+      <span className="text-text-disabled font-mono w-4 text-right shrink-0">
         {lineNumber}
       </span>
-      <span className="text-slate-400 truncate">
+      <span className="text-text-muted truncate">
         <span>{before}</span>
         <span className="bg-amber-500/30 text-amber-200 rounded-sm px-0.5">
           {matchText}

@@ -93,13 +93,13 @@ export function FindReplaceBar({
   const hasMatches = matchCount > 0;
 
   return (
-    <div className="absolute top-3 right-3 z-50 w-1/2 max-w-sm min-w-[260px] bg-slate-800/85 backdrop-blur-md border border-slate-600/50 rounded-lg shadow-2xl px-2.5 py-2 flex flex-col gap-1.5">
+    <div className="absolute top-3 right-3 z-50 w-1/2 max-w-sm min-w-[260px] bg-bg-elevated/85 backdrop-blur-md border border-border/50 rounded-lg shadow-2xl px-2.5 py-2 flex flex-col gap-1.5">
       {/* Find row */}
       <div className="flex items-center gap-1.5">
         {/* Chevron toggle for replace */}
         <button
           onClick={() => setIsReplaceExpanded(!isReplaceExpanded)}
-          className="flex items-center justify-center w-5 h-5 rounded text-slate-400 hover:bg-slate-600/50 hover:text-slate-200 transition-colors"
+          className="flex items-center justify-center w-5 h-5 rounded text-text-muted hover:bg-bg-hover hover:text-text-secondary transition-colors"
           title={isReplaceExpanded ? "Hide replace" : "Show replace"}
         >
           <IconChevronRight
@@ -114,14 +114,14 @@ export function FindReplaceBar({
           onChange={(e) => onSearchChange(e.target.value)}
           onKeyDown={handleSearchKeyDown}
           placeholder="Find..."
-          className="flex-1 min-w-0 px-2 py-1 h-7 bg-slate-900/80 border border-slate-600/50 rounded text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-slate-500"
+          className="flex-1 min-w-0 px-2 py-1 h-7 bg-bg-panel/80 border border-border/50 rounded text-xs text-text-secondary placeholder-text-muted focus:outline-none focus:border-focus-ring"
         />
 
         <div className="flex items-center gap-0.5">
           <button
             onClick={onPrevMatch}
             disabled={!hasMatches}
-            className="flex items-center justify-center w-6 h-6 rounded text-slate-400 hover:bg-slate-600/50 hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-colors"
+            className="flex items-center justify-center w-6 h-6 rounded text-text-muted hover:bg-bg-hover hover:text-text-secondary disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-text-muted transition-colors"
             title="Previous match (Shift+Enter)"
           >
             <IconChevronUp className="w-3.5 h-3.5" />
@@ -129,20 +129,20 @@ export function FindReplaceBar({
           <button
             onClick={onNextMatch}
             disabled={!hasMatches}
-            className="flex items-center justify-center w-6 h-6 rounded text-slate-400 hover:bg-slate-600/50 hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-colors"
+            className="flex items-center justify-center w-6 h-6 rounded text-text-muted hover:bg-bg-hover hover:text-text-secondary disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-text-muted transition-colors"
             title="Next match (Enter)"
           >
             <IconChevronDown className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <span className="text-xs text-slate-400 min-w-[50px] text-center">
+        <span className="text-xs text-text-muted min-w-[50px] text-center">
           {matchDisplay}
         </span>
 
         <button
           onClick={onClose}
-          className="flex items-center justify-center w-6 h-6 rounded text-slate-400 hover:bg-slate-600/50 hover:text-slate-200 transition-colors"
+          className="flex items-center justify-center w-6 h-6 rounded text-text-muted hover:bg-bg-hover hover:text-text-secondary transition-colors"
           title="Close (Escape)"
         >
           <IconX className="w-3.5 h-3.5" />
@@ -158,13 +158,13 @@ export function FindReplaceBar({
             onChange={(e) => onReplaceChange(e.target.value)}
             onKeyDown={handleReplaceKeyDown}
             placeholder="Replace..."
-            className="flex-1 min-w-0 px-2 py-1 h-7 bg-slate-900/80 border border-slate-600/50 rounded text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-slate-500"
+            className="flex-1 min-w-0 px-2 py-1 h-7 bg-bg-panel/80 border border-border/50 rounded text-xs text-text-secondary placeholder-text-muted focus:outline-none focus:border-focus-ring"
           />
 
           <button
             onClick={onReplace}
             disabled={!hasMatches}
-            className="flex items-center justify-center w-6 h-6 rounded text-slate-400 hover:bg-slate-600/50 hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-colors"
+            className="flex items-center justify-center w-6 h-6 rounded text-text-muted hover:bg-bg-hover hover:text-text-secondary disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-text-muted transition-colors"
             title="Replace (Enter)"
           >
             <IconReplace className="w-3.5 h-3.5" />
@@ -173,7 +173,7 @@ export function FindReplaceBar({
           <button
             onClick={onReplaceAll}
             disabled={!hasMatches}
-            className="flex items-center justify-center w-6 h-6 rounded text-slate-400 hover:bg-slate-600/50 hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-colors"
+            className="flex items-center justify-center w-6 h-6 rounded text-text-muted hover:bg-bg-hover hover:text-text-secondary disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-text-muted transition-colors"
             title="Replace all (Shift+Enter)"
           >
             <IconTransform className="w-3.5 h-3.5" />

@@ -24,11 +24,11 @@ export function SidebarHeaderIcons({
   const showFileExplorerTab = (isNotesPage || isWeeklyPage) && onOpenFileExplorerTab;
 
   return (
-    <div className="flex items-center gap-1 px-3 py-2 border-b border-slate-700">
+    <div className="flex items-center gap-1 px-3 py-2 border-b border-border">
       {showFileExplorerTab && (
         <button
           onClick={onOpenFileExplorerTab}
-          className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-md text-text-muted hover:bg-bg-elevated hover:text-text-secondary transition-colors"
           aria-label="Open file explorer"
           title="Open file explorer"
         >
@@ -37,7 +37,7 @@ export function SidebarHeaderIcons({
       )}
       <button
         onClick={onFocusSearch}
-        className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+        className="flex items-center justify-center w-8 h-8 rounded-md text-text-muted hover:bg-bg-elevated hover:text-text-secondary transition-colors"
         aria-label="Search"
         title="Search"
       >
@@ -46,7 +46,7 @@ export function SidebarHeaderIcons({
       {showOverview && onOpenOverview && (
         <button
           onClick={onOpenOverview}
-          className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-md text-text-muted hover:bg-bg-elevated hover:text-text-secondary transition-colors"
           aria-label="Overview"
           title="Overview"
         >

@@ -21,8 +21,8 @@ export default function EmojiCircleStack({
   maxVisible = 3,
   size = 20,
   containerClassName = "-space-x-1",
-  circleClassName = "border border-slate-800 bg-slate-700 text-[10px] text-white shadow-sm",
-  overflowClassName = "border border-slate-800 bg-slate-900/70 text-[10px] text-slate-300 font-semibold",
+  circleClassName = "border border-border-subtle bg-bg-elevated text-[10px] text-text-primary shadow-sm",
+  overflowClassName = "border border-border-subtle bg-bg-panel/70 text-[10px] text-text-secondary font-semibold",
 }: EmojiCircleStackProps) {
   if (items.length === 0) {
     return null;

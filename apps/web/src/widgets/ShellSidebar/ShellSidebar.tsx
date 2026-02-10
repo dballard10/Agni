@@ -99,7 +99,7 @@ export function ShellSidebar({
       initial={false}
       animate={{ width: isOpen ? width : 0, opacity: isOpen ? 1 : 0 }}
       transition={sidebarTransition}
-      className={`relative flex flex-col h-full bg-slate-900 border-r border-slate-700 overflow-hidden flex-shrink-0 ${
+      className={`relative flex flex-col h-full bg-bg-panel border-r border-border overflow-hidden flex-shrink-0 ${
         isResizing ? "select-none" : ""
       }`}
     >
@@ -108,11 +108,11 @@ export function ShellSidebar({
         onPointerDown={handlePointerDown}
         className={`absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize z-50 group transition-all duration-300 ${
           isResizing
-            ? "bg-indigo-500/50 opacity-100"
-            : "bg-indigo-500/10 opacity-0 hover:opacity-100 hover:bg-indigo-500/30"
+            ? "bg-accent/50 opacity-100"
+            : "bg-accent/10 opacity-0 hover:opacity-100 hover:bg-accent/30"
         }`}
       >
-        <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-px h-8 bg-indigo-400/50 transition-opacity opacity-0 group-hover:opacity-100" />
+        <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-px h-8 bg-accent/50 transition-opacity opacity-0 group-hover:opacity-100" />
       </div>
 
       <SidebarHeaderIcons
@@ -123,7 +123,7 @@ export function ShellSidebar({
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-3">
         {children ?? (
-          <div className="text-slate-500 text-sm">
+          <div className="text-text-muted text-sm">
             {sidebarLabels[currentPage]}
           </div>
         )}

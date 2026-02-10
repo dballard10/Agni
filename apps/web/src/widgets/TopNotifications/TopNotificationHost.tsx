@@ -38,19 +38,19 @@ function NotificationBanner({
   const { title, message, tone = "default", actions, dismissible = true } = notification;
 
   const toneClasses: Record<NotificationTone, string> = {
-    default: "border-white/10 bg-slate-900/90",
+    default: "border-border bg-bg-panel/90",
     info: "border-blue-500/20 bg-blue-500/10",
-    success: "border-emerald-500/20 bg-emerald-500/10",
-    warning: "border-amber-500/20 bg-amber-500/10",
-    danger: "border-rose-500/20 bg-rose-500/10",
+    success: "border-status-success/20 bg-status-success/10",
+    warning: "border-status-warning/20 bg-status-warning/10",
+    danger: "border-status-error/20 bg-status-error/10",
   };
 
   const actionToneClasses: Record<NotificationTone, string> = {
-    default: "text-slate-300 hover:bg-white/5",
+    default: "text-text-secondary hover:bg-bg-hover",
     info: "text-blue-400 hover:bg-blue-400/10",
-    success: "text-emerald-400 hover:bg-emerald-400/10",
-    warning: "text-amber-400 hover:bg-amber-400/10",
-    danger: "text-rose-400 hover:bg-rose-400/10",
+    success: "text-status-success hover:bg-status-success/10",
+    warning: "text-status-warning hover:bg-status-warning/10",
+    danger: "text-status-error hover:bg-status-error/10",
   };
 
   return (
@@ -70,13 +70,13 @@ function NotificationBanner({
     >
       <div className="flex items-start justify-between p-4 gap-4">
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-slate-50 truncate">{title}</h4>
-          {message && <p className="text-sm text-slate-400 mt-0.5">{message}</p>}
+          <h4 className="font-semibold text-text-primary truncate">{title}</h4>
+          {message && <p className="text-sm text-text-muted mt-0.5">{message}</p>}
         </div>
         {dismissible && (
           <button
             onClick={onDismiss}
-            className="p-1 -mr-1 text-slate-500 hover:text-slate-300 transition-colors"
+            className="p-1 -mr-1 text-text-muted hover:text-text-secondary transition-colors"
           >
             <IconX size={18} />
           </button>

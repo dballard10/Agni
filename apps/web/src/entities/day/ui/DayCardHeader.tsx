@@ -31,7 +31,7 @@ export default function DayCardHeader({
 
   const markdownComponents = {
     p: (props: React.HTMLAttributes<HTMLSpanElement>) => (
-      <span className="font-semibold text-slate-200" {...props} />
+      <span className="font-semibold text-text-secondary" {...props} />
     ),
   };
 
@@ -39,7 +39,7 @@ export default function DayCardHeader({
     return (
       <button
         onClick={onClick}
-        className="font-semibold text-slate-200 hover:text-slate-100 focus:outline-none transition-colors"
+        className="font-semibold text-text-secondary hover:text-text-primary focus:outline-none transition-colors"
       >
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}

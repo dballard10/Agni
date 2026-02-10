@@ -58,7 +58,7 @@ export function LinksEditor({ linksMarkdown, onChange }: LinksEditorProps) {
           value={newLinkLabel}
           onChange={(e) => setNewLinkLabel(e.target.value)}
           placeholder="Label"
-          className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
+          className="bg-bg-elevated border border-border rounded px-3 py-2 text-sm text-text-secondary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
         />
         <div className="flex gap-2">
           <input
@@ -66,13 +66,13 @@ export function LinksEditor({ linksMarkdown, onChange }: LinksEditorProps) {
             value={newLinkUrl}
             onChange={(e) => setNewLinkUrl(e.target.value)}
             placeholder="https://example.com"
-            className="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
+            className="flex-1 bg-bg-elevated border border-border rounded px-3 py-2 text-sm text-text-secondary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
           />
           <button
             type="button"
             onClick={handleAddLink}
             disabled={!canAddLink}
-            className="rounded px-3 py-2 text-sm font-semibold text-white bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="rounded px-3 py-2 text-sm font-semibold text-white bg-status-success hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Add link
           </button>
@@ -83,20 +83,20 @@ export function LinksEditor({ linksMarkdown, onChange }: LinksEditorProps) {
           {linkEntries.map((entry) => (
             <div
               key={`${entry.index}-${entry.url}`}
-              className="flex items-center justify-between gap-4 rounded border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200"
+              className="flex items-center justify-between gap-4 rounded border border-border bg-bg-elevated/40 px-3 py-2 text-sm text-text-secondary"
             >
               <a
                 href={entry.url}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="truncate text-slate-100 underline-offset-4 hover:text-white hover:underline"
+                className="truncate text-text-primary underline-offset-4 hover:text-white hover:underline"
               >
                 {entry.label || entry.url}
               </a>
               <button
                 type="button"
                 onClick={() => handleRemoveLink(entry.index)}
-                className="text-xs text-rose-400 hover:text-rose-200 transition-colors"
+                className="text-xs text-status-error hover:opacity-80 transition-colors"
               >
                 Remove
               </button>

@@ -699,8 +699,8 @@ export function NotesDrawer({
                   }}
                   className={`w-full flex items-center gap-1.5 px-2 py-1 rounded transition-colors group ${
                     isDragOver
-                      ? "bg-slate-700/50 ring-1 ring-slate-500 text-slate-100"
-                      : "hover:bg-slate-800 text-slate-400 hover:text-slate-200"
+                      ? "bg-bg-hover/50 ring-1 ring-border text-text-primary"
+                      : "hover:bg-bg-elevated text-text-muted hover:text-text-secondary"
                   }`}
                   style={{ paddingLeft: `${level * 12 + 8}px` }}
                 >
@@ -711,7 +711,7 @@ export function NotesDrawer({
                       <IconChevronRight className="w-3.5 h-3.5" />
                     )}
                   </span>
-                  <IconFolder className="w-4 h-4 text-slate-500 group-hover:text-slate-400 shrink-0" />
+                  <IconFolder className="w-4 h-4 text-text-muted group-hover:text-text-muted shrink-0" />
                   {isEditing ? (
                     <input
                       ref={editInputRef}
@@ -725,7 +725,7 @@ export function NotesDrawer({
                       }}
                       onClick={(e) => e.stopPropagation()}
                       onMouseDown={(e) => e.stopPropagation()}
-                      className="flex-1 bg-transparent border-none outline-none text-sm font-medium py-0 px-0 focus:border-b focus:border-slate-500/50 text-slate-100 min-w-0"
+                      className="flex-1 bg-transparent border-none outline-none text-sm font-medium py-0 px-0 focus:border-b focus:border-border/50 text-text-primary min-w-0"
                     />
                   ) : (
                     <span className="text-sm font-medium truncate">
@@ -752,12 +752,12 @@ export function NotesDrawer({
                   }}
                   className={`w-full flex items-center gap-2 px-2 py-1 rounded transition-colors ${
                     isSelected
-                      ? "bg-slate-700 text-slate-100"
-                      : "hover:bg-slate-800 text-slate-400 hover:text-slate-200"
+                      ? "bg-bg-hover text-text-primary"
+                      : "hover:bg-bg-elevated text-text-muted hover:text-text-secondary"
                   }`}
                   style={{ paddingLeft: `${level * 12 + 28}px` }}
                 >
-                  <IconFileText className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                  <IconFileText className="w-3.5 h-3.5 text-text-muted shrink-0" />
                   {isEditing ? (
                     <input
                       ref={editInputRef}
@@ -771,7 +771,7 @@ export function NotesDrawer({
                       }}
                       onClick={(e) => e.stopPropagation()}
                       onMouseDown={(e) => e.stopPropagation()}
-                      className="flex-1 bg-transparent border-none outline-none text-sm py-0 px-0 focus:border-b focus:border-slate-500/50 text-slate-100 min-w-0"
+                      className="flex-1 bg-transparent border-none outline-none text-sm py-0 px-0 focus:border-b focus:border-border/50 text-text-primary min-w-0"
                     />
                   ) : (
                     <span className="text-sm truncate">{node.name}</span>
@@ -792,7 +792,7 @@ export function NotesDrawer({
           {/* Search tab header */}
           <div className="flex items-center gap-2 mb-3 px-2">
             <div className="relative flex-1">
-              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
                 ref={searchInputRef}
                 type="text"
@@ -800,7 +800,7 @@ export function NotesDrawer({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
                 placeholder="Search in notes..."
-                className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-slate-200 text-sm placeholder-slate-500 outline-none focus:border-slate-600 transition-colors"
+                className="w-full pl-10 pr-4 py-2 bg-bg-elevated border border-border rounded-md text-text-secondary text-sm placeholder-text-muted outline-none focus:border-border transition-colors"
               />
             </div>
           </div>
@@ -808,11 +808,11 @@ export function NotesDrawer({
           {/* Search results view */}
           <div ref={searchListRef} className="flex-1 overflow-y-auto -mx-2 px-2">
             {searchQuery.trim() === "" ? (
-              <div className="text-center py-8 text-slate-500 text-sm">
+              <div className="text-center py-8 text-text-muted text-sm">
                 Type to search notes
               </div>
             ) : searchResults.length === 0 ? (
-              <div className="text-center py-8 text-slate-500 text-sm">
+              <div className="text-center py-8 text-text-muted text-sm">
                 No results found
               </div>
             ) : (
@@ -838,7 +838,7 @@ export function NotesDrawer({
               </ul>
             )}
             {searchQuery.trim() !== "" && searchResults.length > 0 && (
-              <div className="pt-2 mt-2 border-t border-slate-800 text-xs text-slate-500">
+              <div className="pt-2 mt-2 border-t border-border-subtle text-xs text-text-muted">
                 {searchResults.length} file{searchResults.length !== 1 ? "s" : ""} found
               </div>
             )}
@@ -852,14 +852,14 @@ export function NotesDrawer({
           onDrop={(e) => handleDrop(e, null)}
           onContextMenu={handleOpenRootMenu}
           className={`flex-1 overflow-y-auto -mx-2 px-2 transition-colors ${
-            dragOverPath === "root" ? "bg-slate-800/30" : ""
+            dragOverPath === "root" ? "bg-bg-elevated/30" : ""
           }`}
         >
-          <div className="sticky top-0 z-10 mx-3 px-0 py-2 bg-slate-900">
+          <div className="sticky top-0 z-10 mx-3 px-0 py-2 bg-bg-panel">
             <div className="flex items-center gap-1 justify-end">
               <button
                 onClick={onCreateNote}
-                className="flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+                className="flex items-center justify-center w-8 h-8 rounded-md text-text-muted hover:bg-bg-elevated hover:text-text-secondary transition-colors"
                 aria-label="Create new note"
                 title="Create new note"
               >
@@ -867,7 +867,7 @@ export function NotesDrawer({
               </button>
               <button
                 onClick={onCreateFolder}
-                className="flex items-center justify-center w-6 h-6 rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+                className="flex items-center justify-center w-6 h-6 rounded-md text-text-muted hover:bg-bg-elevated hover:text-text-secondary transition-colors"
                 aria-label="New folder"
                 title="New folder"
               >
@@ -876,7 +876,7 @@ export function NotesDrawer({
             </div>
           </div>
           {tree.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 text-sm pointer-events-none">
+            <div className="text-center py-8 text-text-muted text-sm pointer-events-none">
               No notes found
             </div>
           ) : (
@@ -892,7 +892,7 @@ export function NotesDrawer({
         createPortal(
           <div className="fixed inset-0 z-50" onClick={handleCloseMenu}>
             <div
-              className="absolute w-36 rounded bg-slate-900 border border-slate-700 shadow-lg overflow-hidden"
+              className="absolute w-36 rounded bg-bg-panel border border-border shadow-lg overflow-hidden"
               style={{ top: position.top, left: position.left }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -906,8 +906,8 @@ export function NotesDrawer({
                     disabled={!canPaste}
                     className={`flex w-full items-center gap-2 px-3 py-2 text-sm ${
                       canPaste
-                        ? "text-slate-200 hover:bg-slate-800"
-                        : "text-slate-600 cursor-not-allowed"
+                        ? "text-text-secondary hover:bg-bg-elevated"
+                        : "text-text-disabled cursor-not-allowed"
                     }`}
                   >
                     <IconClipboard className="w-4 h-4" />
@@ -917,7 +917,7 @@ export function NotesDrawer({
                   <>
                     <button
                       onClick={handleMenuExpandCollapse}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                     >
                       {menuState.isExpanded ? (
                         <IconFolderOpen className="w-4 h-4" />
@@ -926,28 +926,28 @@ export function NotesDrawer({
                       )}
                       <span>{menuState.isExpanded ? "Collapse" : "Expand"}</span>
                     </button>
-                    <div className="h-px bg-slate-800 my-1" />
+                    <div className="h-px bg-bg-elevated my-1" />
                     <button
                       onClick={handleMenuCreateNote}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                     >
                       <IconFilePencil className="w-4 h-4" />
                       <span>New note</span>
                     </button>
                     <button
                       onClick={handleMenuCreateFolder}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                     >
                       <IconFolderPlus className="w-4 h-4" />
                       <span>New folder</span>
                     </button>
-                    <div className="h-px bg-slate-800 my-1" />
+                    <div className="h-px bg-bg-elevated my-1" />
                     <button
                       onClick={() => {
                         onCopyPath(menuState.nodeId);
                         handleCloseMenu();
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                     >
                       <IconLink className="w-4 h-4" />
                       <span>Copy Path</span>
@@ -957,7 +957,7 @@ export function NotesDrawer({
                         onCopyFolder(menuState.nodeId);
                         handleCloseMenu();
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                     >
                       <IconCopy className="w-4 h-4" />
                       <span>Copy</span>
@@ -970,24 +970,24 @@ export function NotesDrawer({
                       disabled={!canPaste}
                       className={`flex w-full items-center gap-2 px-3 py-2 text-sm ${
                         canPaste
-                          ? "text-slate-200 hover:bg-slate-800"
-                          : "text-slate-600 cursor-not-allowed"
+                          ? "text-text-secondary hover:bg-bg-elevated"
+                          : "text-text-disabled cursor-not-allowed"
                       }`}
                     >
                       <IconClipboard className="w-4 h-4" />
                       <span>Paste</span>
                     </button>
-                    <div className="h-px bg-slate-800 my-1" />
+                    <div className="h-px bg-bg-elevated my-1" />
                     <button
                       onClick={handleMenuRename}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                     >
                       <IconPencil className="w-4 h-4" />
                       <span>Rename</span>
                     </button>
                     <button
                       onClick={handleMenuDelete}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-status-error hover:bg-bg-elevated"
                     >
                       <IconTrash className="w-4 h-4" />
                       <span>Delete</span>
@@ -997,7 +997,7 @@ export function NotesDrawer({
                   <>
                     <button
                       onClick={handleMenuOpen}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                     >
                       <IconFile className="w-4 h-4" />
                       <span>Open</span>
@@ -1008,20 +1008,20 @@ export function NotesDrawer({
                           onOpenNoteToRight(menuState.nodeId);
                           handleCloseMenu();
                         }}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                       >
                         <IconLayoutSidebarRight className="w-4 h-4" />
                         <span>Open to Right</span>
                       </button>
                     )}
-                    <div className="h-px bg-slate-800 my-1" />
+                    <div className="h-px bg-bg-elevated my-1" />
                     <button
                       onClick={() => {
                         const note = notes.find((n) => n.id === menuState.nodeId);
                         if (note) onCopyPath(note.path);
                         handleCloseMenu();
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                     >
                       <IconLink className="w-4 h-4" />
                       <span>Copy Path</span>
@@ -1031,22 +1031,22 @@ export function NotesDrawer({
                         onCopyNote(menuState.nodeId);
                         handleCloseMenu();
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                     >
                       <IconCopy className="w-4 h-4" />
                       <span>Copy</span>
                     </button>
-                    <div className="h-px bg-slate-800 my-1" />
+                    <div className="h-px bg-bg-elevated my-1" />
                     <button
                       onClick={handleMenuRename}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-bg-elevated"
                     >
                       <IconPencil className="w-4 h-4" />
                       <span>Rename</span>
                     </button>
                     <button
                       onClick={handleMenuDelete}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-status-error hover:bg-bg-elevated"
                     >
                       <IconTrash className="w-4 h-4" />
                       <span>Delete</span>
@@ -1104,29 +1104,29 @@ function SearchResultItem({
       <div
         onClick={onToggleExpanded}
         className={`rounded-md cursor-pointer transition-colors px-2 py-2 ${
-          isActive ? "bg-slate-700" : "hover:bg-slate-800"
+          isActive ? "bg-bg-hover" : "hover:bg-bg-elevated"
         }`}
       >
         <div className="flex items-center gap-2">
           {/* Chevron indicator */}
-          <span className="w-4 h-4 flex items-center justify-center text-slate-500 shrink-0">
+          <span className="w-4 h-4 flex items-center justify-center text-text-muted shrink-0">
             {isExpanded ? (
               <IconChevronDown className="w-3.5 h-3.5" />
             ) : (
               <IconChevronRight className="w-3.5 h-3.5" />
             )}
           </span>
-          <IconFileText className="w-4 h-4 text-slate-500 shrink-0" />
-          <span className="text-sm font-medium text-slate-200 truncate">
+          <IconFileText className="w-4 h-4 text-text-muted shrink-0" />
+          <span className="text-sm font-medium text-text-secondary truncate">
             {result.title}
           </span>
-          <span className="text-xs text-slate-500 ml-auto shrink-0">
+          <span className="text-xs text-text-muted ml-auto shrink-0">
             {result.matchCount} match{result.matchCount !== 1 ? "es" : ""}
           </span>
         </div>
 
         {/* Path */}
-        <div className="text-[10px] font-mono text-slate-500 truncate mt-1 pl-8">
+        <div className="text-[10px] font-mono text-text-muted truncate mt-1 pl-8">
           {result.path}
         </div>
       </div>
@@ -1171,7 +1171,7 @@ function SearchResultItem({
                     e.stopPropagation();
                     onToggleShowAll();
                   }}
-                  className="text-xs text-slate-400 hover:text-slate-200 transition-colors pl-6 py-1"
+                  className="text-xs text-text-muted hover:text-text-secondary transition-colors pl-6 py-1"
                 >
                   Show more ({hiddenCount})
                 </button>
@@ -1199,13 +1199,13 @@ function MetaMatchItem({ kind, label, text, query, onClick }: MetaMatchItemProps
         e.stopPropagation();
         onClick();
       }}
-      className="flex items-start gap-2 text-xs cursor-pointer rounded px-1 py-0.5 hover:bg-slate-800 transition-colors"
+      className="flex items-start gap-2 text-xs cursor-pointer rounded px-1 py-0.5 hover:bg-bg-elevated transition-colors"
     >
-      <span className="text-slate-600 font-mono w-4 text-right shrink-0">
+      <span className="text-text-disabled font-mono w-4 text-right shrink-0">
         {kind}
       </span>
-      <span className="text-slate-400 truncate">
-        <span className="text-slate-500 mr-1">{label}:</span>{" "}
+      <span className="text-text-muted truncate">
+        <span className="text-text-muted mr-1">{label}:</span>{" "}
         <InlineHighlight text={text} query={query} />
       </span>
     </div>
@@ -1257,12 +1257,12 @@ function MatchLineItem({ match, onClick }: MatchLineItemProps) {
         e.stopPropagation();
         onClick();
       }}
-      className="flex items-start gap-2 text-xs cursor-pointer rounded px-1 py-0.5 hover:bg-slate-800 transition-colors"
+      className="flex items-start gap-2 text-xs cursor-pointer rounded px-1 py-0.5 hover:bg-bg-elevated transition-colors"
     >
-      <span className="text-slate-600 font-mono w-4 text-right shrink-0">
+      <span className="text-text-disabled font-mono w-4 text-right shrink-0">
         {lineNumber}
       </span>
-      <span className="text-slate-400 truncate">
+      <span className="text-text-muted truncate">
         <span>{before}</span>
         <span className="bg-amber-500/30 text-amber-200 rounded-sm px-0.5">
           {matchText}
