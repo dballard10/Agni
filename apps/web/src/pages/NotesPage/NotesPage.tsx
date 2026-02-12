@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import type { EditorView } from "@codemirror/view";
 import type { EditorMode } from "@/app/shell/types";
 import { IconAlertTriangle, IconX } from "@tabler/icons-react";
-import { mockNotes, createNewNote, type Note } from "../../mock/mockNotes";
+import { mockNotes, createNewNote, createNotePage, MAX_PAGES_PER_NOTE, type Note, type NotePage } from "../../mock/mockNotes";
 import { NotesFileExplorerPanel } from "../../features/notes/drawer/NotesFileExplorerPanel";
 import {
   FindReplaceBar,
@@ -64,12 +64,12 @@ export type NotesPageActions = {
 
 interface ClipboardNote {
   title: string;
-  content: string;
+  pages: NotePage[];
 }
 
 interface ClipboardFolder {
   folderName: string;
-  notes: { title: string; content: string; relativePath: string }[];
+  notes: { title: string; pages: NotePage[]; relativePath: string }[];
   subFolders: string[];
 }
 
@@ -216,6 +216,15 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
 
   // Paste conflict modal state
   const [pasteConflict, setPasteConflict] = useState<PasteConflict | null>(null);
+
+  // Per-note active page index (noteId -> pageIndex)
+  const [activePages, setActivePages] = useState<Record<string, number>>({});
+
+  /** Get the active page index for a note (defaults to 0). */
+  const getActivePageIndex = useCallback(
+    (noteId: string): number => activePages[noteId] ?? 0,
+    [activePages]
+  );
 
   const canGoBack = history.index > 0;
   const canGoForward = history.index < history.ids.length - 1;
@@ -396,7 +405,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
 
   // Handle opening a search result with optional jump to match
   const handleOpenSearchResult = useCallback(
-    (noteId: string, firstMatchRange: { from: number; to: number } | null) => {
+    (noteId: string, firstMatchRange: { from: number; to: number; pageIndex?: number } | null) => {
       // Select the note (using tab-based logic: focus existing or append)
       setHistory((prev) => {
         const existingIndex = prev.ids.indexOf(noteId);
@@ -410,6 +419,11 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
           index: newIds.length - 1,
         };
       });
+
+      // Navigate to the correct page if specified
+      if (firstMatchRange?.pageIndex !== undefined) {
+        setActivePages((prev) => ({ ...prev, [noteId]: firstMatchRange.pageIndex! }));
+      }
 
       // Set jump target if we have a match range
       if (firstMatchRange) {
@@ -503,7 +517,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
           id,
           title,
           path,
-          content: `# ${title}\n\n`,
+          pages: [{ id: `page-${Date.now()}-1`, title: "Page 1", content: `# ${title}\n\n` }],
           createdAt: now,
           updatedAt: now,
         };
@@ -524,34 +538,40 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
   const handleUpdateNoteContent = useCallback(
     (content: string) => {
       if (!selectedNoteId) return;
+      const pageIdx = getActivePageIndex(selectedNoteId);
       setNotes((prev) =>
-        prev.map((note) =>
-          note.id === selectedNoteId
-            ? { ...note, content, updatedAt: new Date().toISOString() }
-            : note
-        )
+        prev.map((note) => {
+          if (note.id !== selectedNoteId) return note;
+          const pages = note.pages.map((p, i) =>
+            i === pageIdx ? { ...p, content } : p
+          );
+          return { ...note, pages, updatedAt: new Date().toISOString() };
+        })
       );
     },
-    [selectedNoteId]
+    [selectedNoteId, getActivePageIndex]
   );
 
-  // Generic handler for updating any note's content by ID (used by split panes)
+  // Generic handler for updating any note's page content by ID (used by split panes)
   const handleUpdateNoteContentById = useCallback(
     (noteId: string, content: string) => {
+      const pageIdx = getActivePageIndex(noteId);
       setNotes((prev) =>
-        prev.map((note) =>
-          note.id === noteId
-            ? { ...note, content, updatedAt: new Date().toISOString() }
-            : note
-        )
+        prev.map((note) => {
+          if (note.id !== noteId) return note;
+          const pages = note.pages.map((p, i) =>
+            i === pageIdx ? { ...p, content } : p
+          );
+          return { ...note, pages, updatedAt: new Date().toISOString() };
+        })
       );
     },
-    []
+    [getActivePageIndex]
   );
 
   // Find and replace functionality
   const { state: findReplaceState, actions: findReplaceActions } = useFindReplace({
-    content: selectedNote?.content ?? "",
+    content: selectedNote?.pages[getActivePageIndex(selectedNote?.id ?? "")]?.content ?? "",
     getEditorView,
     onContentChange: handleUpdateNoteContent,
   });
@@ -597,6 +617,90 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
 
     setFolders((prev) => [...prev, folderName]);
   }, [folders, notes]);
+
+  // ── Page CRUD handlers ──────────────────────────────────────────
+
+  const handlePageChange = useCallback((noteId: string, pageIndex: number) => {
+    setActivePages((prev) => ({ ...prev, [noteId]: pageIndex }));
+  }, []);
+
+  const handleAddPage = useCallback((noteId: string) => {
+    setNotes((prev) =>
+      prev.map((note) => {
+        if (note.id !== noteId) return note;
+        if (note.pages.length >= MAX_PAGES_PER_NOTE) return note;
+        const newPage = createNotePage(note.pages.length + 1);
+        return { ...note, pages: [...note.pages, newPage], updatedAt: new Date().toISOString() };
+      })
+    );
+    // Navigate to the new page
+    setActivePages((prev) => {
+      const note = notes.find((n) => n.id === noteId);
+      if (!note) return prev;
+      return { ...prev, [noteId]: note.pages.length }; // length = index of newly added page
+    });
+  }, [notes]);
+
+  const handlePageTitleChange = useCallback((noteId: string, pageIndex: number, newTitle: string) => {
+    setNotes((prev) =>
+      prev.map((note) => {
+        if (note.id !== noteId) return note;
+        const pages = note.pages.map((p, i) =>
+          i === pageIndex ? { ...p, title: newTitle } : p
+        );
+        return { ...note, pages, updatedAt: new Date().toISOString() };
+      })
+    );
+  }, []);
+
+  const handleDeletePage = useCallback((noteId: string, pageIndex: number) => {
+    setNotes((prev) =>
+      prev.map((note) => {
+        if (note.id !== noteId) return note;
+        if (note.pages.length <= 1) return note; // Don't delete last page
+        const pages = note.pages.filter((_, i) => i !== pageIndex);
+        return { ...note, pages, updatedAt: new Date().toISOString() };
+      })
+    );
+    // Adjust active page index
+    setActivePages((prev) => {
+      const current = prev[noteId] ?? 0;
+      if (pageIndex < current) {
+        return { ...prev, [noteId]: current - 1 };
+      } else if (pageIndex === current) {
+        const note = notes.find((n) => n.id === noteId);
+        const maxIdx = (note?.pages.length ?? 1) - 2; // after deletion
+        return { ...prev, [noteId]: Math.min(current, Math.max(0, maxIdx)) };
+      }
+      return prev;
+    });
+  }, [notes]);
+
+  // Cmd+Shift+[ / ] for page navigation, Cmd+Shift+N for new page
+  useEffect(() => {
+    const handlePageKeyDown = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey) || !e.shiftKey) return;
+      const noteId = selectedNoteId;
+      if (!noteId) return;
+
+      if (e.key === "[") {
+        e.preventDefault();
+        const idx = getActivePageIndex(noteId);
+        if (idx > 0) handlePageChange(noteId, idx - 1);
+      } else if (e.key === "]") {
+        e.preventDefault();
+        const note = notes.find((n) => n.id === noteId);
+        const idx = getActivePageIndex(noteId);
+        if (note && idx < note.pages.length - 1) handlePageChange(noteId, idx + 1);
+      } else if (e.key === "N" || e.key === "n") {
+        e.preventDefault();
+        handleAddPage(noteId);
+      }
+    };
+
+    document.addEventListener("keydown", handlePageKeyDown);
+    return () => document.removeEventListener("keydown", handlePageKeyDown);
+  }, [selectedNoteId, notes, getActivePageIndex, handlePageChange, handleAddPage]);
 
   // Derive noteTabs from history.ids for TopBar
   const noteTabs = useMemo<NoteTab[]>(() => {
@@ -677,7 +781,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
         id: `note-${Date.now()}`,
         title,
         path: getPath(title),
-        content: `# ${title}\n\nStart writing here...`,
+        pages: [{ id: `page-${Date.now()}-1`, title: "Page 1", content: "" }],
         createdAt: now,
         updatedAt: now,
       };
@@ -809,7 +913,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       if (!note) return;
       setClipboard({
         kind: "note",
-        data: { title: note.title, content: note.content },
+        data: { title: note.title, pages: note.pages },
       });
     },
     [notes]
@@ -830,7 +934,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
           folderName,
           notes: folderNotes.map((n) => ({
             title: n.title,
-            content: n.content,
+            pages: n.pages,
             relativePath: n.path.slice(folderPath.length + 1),
           })),
           subFolders: nestedFolders.map((f) => f.slice(folderPath.length + 1)),
@@ -868,7 +972,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
           id: `note-${Date.now()}`,
           title: data.title,
           path: getPath(data.title),
-          content: data.content,
+          pages: data.pages,
           createdAt: now,
           updatedAt: now,
         };
@@ -915,7 +1019,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
           path: n.relativePath
             ? `${folderPath}/${n.relativePath}`
             : `${folderPath}/${n.title}.md`,
-          content: n.content,
+          pages: n.pages,
           createdAt: now,
           updatedAt: now,
         }));
@@ -934,11 +1038,11 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       const data = clipboard.data as ClipboardNote;
       const now = new Date().toISOString();
 
-      // Replace the existing note's content
+      // Replace the existing note's pages
       setNotes((prev) =>
         prev.map((note) =>
           note.id === pasteConflict.existingId
-            ? { ...note, content: data.content, updatedAt: now }
+            ? { ...note, pages: data.pages, updatedAt: now }
             : note
         )
       );
@@ -984,7 +1088,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
         path: n.relativePath
           ? `${existingPath}/${n.relativePath}`
           : `${existingPath}/${n.title}.md`,
-        content: n.content,
+        pages: n.pages,
         createdAt: now,
         updatedAt: now,
       }));
@@ -1672,6 +1776,8 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
                   const pane = splitState.primaryPane;
                   const activeNoteId = pane.noteIds[pane.activeIndex];
                   const activeNote = activeNoteId ? notes.find((n) => n.id === activeNoteId) ?? null : null;
+                  const pageIdx = activeNoteId ? getActivePageIndex(activeNoteId) : 0;
+                  const activePage = activeNote?.pages[pageIdx];
                   const menuItems: HeaderMenuItem[] = [
                     { id: "rename", label: "Rename", onSelect: handleRenameCurrentNote },
                     { id: "copy-path", label: "Copy Path", onSelect: handleCopyCurrentNotePath },
@@ -1679,12 +1785,22 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
                     { id: "split-h", label: "Split Right", onSelect: handleSplitRight, disabled: tabCount <= 1 },
                     { id: "split-v", label: "Split Below", onSelect: handleSplitBelow, disabled: tabCount <= 1 },
                     { id: "close-split", label: "Close Split", onSelect: handleCloseSplit, separatorBefore: true },
+                    { id: "add-page", label: "Add Page", onSelect: () => activeNoteId && handleAddPage(activeNoteId), disabled: (activeNote?.pages.length ?? 0) >= MAX_PAGES_PER_NOTE, separatorBefore: true },
+                    { id: "delete-page", label: "Delete Page", onSelect: () => activeNoteId && handleDeletePage(activeNoteId, pageIdx), disabled: (activeNote?.pages.length ?? 0) <= 1 },
                     { id: "delete", label: "Delete", danger: true, onSelect: handleDeleteCurrentNote, separatorBefore: true },
                   ];
                   return (
                     <EditorPane
                       paneId="primary"
                       activeNote={activeNote}
+                      content={activePage?.content ?? ""}
+                      pageTitle={activePage?.title ?? ""}
+                      onPageTitleChange={(idx, title) => activeNoteId && handlePageTitleChange(activeNoteId, idx, title)}
+                      pages={activeNote?.pages ?? []}
+                      activePageIndex={pageIdx}
+                      onPageChange={(idx) => activeNoteId && handlePageChange(activeNoteId, idx)}
+                      onAddPage={() => activeNoteId && handleAddPage(activeNoteId)}
+                      onDeletePage={(idx) => activeNoteId && handleDeletePage(activeNoteId, idx)}
                       onTitleChange={(title) => activeNoteId && handleRenameNote(activeNoteId, title)}
                       onContentChange={(content) => activeNoteId && handleUpdateNoteContentById(activeNoteId, content)}
                       mode={paneModes.primary}
@@ -1737,17 +1853,29 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
                   const pane = splitState.secondaryPane;
                   const activeNoteId = pane.noteIds[pane.activeIndex];
                   const activeNote = activeNoteId ? notes.find((n) => n.id === activeNoteId) ?? null : null;
+                  const pageIdx = activeNoteId ? getActivePageIndex(activeNoteId) : 0;
+                  const activePage = activeNote?.pages[pageIdx];
                   const menuItems: HeaderMenuItem[] = [
                     { id: "rename", label: "Rename", onSelect: handleRenameCurrentNote },
                     { id: "copy-path", label: "Copy Path", onSelect: handleCopyCurrentNotePath },
                     { id: "find", label: "Find & Replace", onSelect: findReplaceActions.open },
                     { id: "close-split", label: "Close Split", onSelect: handleCloseSplit },
+                    { id: "add-page", label: "Add Page", onSelect: () => activeNoteId && handleAddPage(activeNoteId), disabled: (activeNote?.pages.length ?? 0) >= MAX_PAGES_PER_NOTE, separatorBefore: true },
+                    { id: "delete-page", label: "Delete Page", onSelect: () => activeNoteId && handleDeletePage(activeNoteId, pageIdx), disabled: (activeNote?.pages.length ?? 0) <= 1 },
                     { id: "delete", label: "Delete", danger: true, onSelect: handleDeleteCurrentNote, separatorBefore: true },
                   ];
                   return (
                     <EditorPane
                       paneId="secondary"
                       activeNote={activeNote}
+                      content={activePage?.content ?? ""}
+                      pageTitle={activePage?.title ?? ""}
+                      onPageTitleChange={(idx, title) => activeNoteId && handlePageTitleChange(activeNoteId, idx, title)}
+                      pages={activeNote?.pages ?? []}
+                      activePageIndex={pageIdx}
+                      onPageChange={(idx) => activeNoteId && handlePageChange(activeNoteId, idx)}
+                      onAddPage={() => activeNoteId && handleAddPage(activeNoteId)}
+                      onDeletePage={(idx) => activeNoteId && handleDeletePage(activeNoteId, idx)}
                       onTitleChange={(title) => activeNoteId && handleRenameNote(activeNoteId, title)}
                       onContentChange={(content) => activeNoteId && handleUpdateNoteContentById(activeNoteId, content)}
                       mode={paneModes.secondary}
@@ -1765,18 +1893,30 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
           ) : (
             // Single pane view - tabs are in TopBar
             (() => {
+              const pageIdx = selectedNoteId ? getActivePageIndex(selectedNoteId) : 0;
+              const activePage = selectedNote?.pages[pageIdx];
               const menuItems: HeaderMenuItem[] = [
                 { id: "rename", label: "Rename", onSelect: handleRenameCurrentNote },
                 { id: "copy-path", label: "Copy Path", onSelect: handleCopyCurrentNotePath },
                 { id: "find", label: "Find & Replace", onSelect: findReplaceActions.open },
                 { id: "split-h", label: "Split Right", onSelect: handleSplitRight, disabled: history.ids.length <= 1 },
                 { id: "split-v", label: "Split Below", onSelect: handleSplitBelow, disabled: history.ids.length <= 1 },
+                { id: "add-page", label: "Add Page", onSelect: () => selectedNoteId && handleAddPage(selectedNoteId), disabled: (selectedNote?.pages.length ?? 0) >= MAX_PAGES_PER_NOTE, separatorBefore: true },
+                { id: "delete-page", label: "Delete Page", onSelect: () => selectedNoteId && handleDeletePage(selectedNoteId, pageIdx), disabled: (selectedNote?.pages.length ?? 0) <= 1 },
                 { id: "delete", label: "Delete", danger: true, onSelect: handleDeleteCurrentNote, separatorBefore: true },
               ];
               return (
                 <EditorPane
                   paneId="primary"
                   activeNote={selectedNote}
+                  content={activePage?.content ?? ""}
+                  pageTitle={activePage?.title ?? ""}
+                  onPageTitleChange={(idx, title) => selectedNoteId && handlePageTitleChange(selectedNoteId, idx, title)}
+                  pages={selectedNote?.pages ?? []}
+                  activePageIndex={pageIdx}
+                  onPageChange={(idx) => selectedNoteId && handlePageChange(selectedNoteId, idx)}
+                  onAddPage={() => selectedNoteId && handleAddPage(selectedNoteId)}
+                  onDeletePage={(idx) => selectedNoteId && handleDeletePage(selectedNoteId, idx)}
                   onTitleChange={(title) => selectedNoteId && handleRenameNote(selectedNoteId, title)}
                   onContentChange={handleUpdateNoteContent}
                   mode={paneModes.primary}

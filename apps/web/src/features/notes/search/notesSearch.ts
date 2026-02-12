@@ -5,8 +5,10 @@ export interface MatchPreview {
   text: string;
   matchStart: number; // offset within the line
   matchEnd: number;
-  rangeFrom: number; // absolute offset in content
+  rangeFrom: number; // absolute offset in page content
   rangeTo: number;
+  pageIndex: number; // which page the match is on
+  pageTitle: string; // title of the page
 }
 
 export interface NoteSearchResult {
@@ -18,11 +20,12 @@ export interface NoteSearchResult {
   pathMatchCount: number;
   contentMatchCount: number;
   contentMatches: MatchPreview[]; // one item per match occurrence
-  firstMatchRange: { from: number; to: number } | null;
+  firstMatchRange: { from: number; to: number; pageIndex: number } | null;
 }
 
 /**
  * Search notes by title, path, and content using case-insensitive substring matching.
+ * Searches across all pages of each note.
  * Returns results with match counts, preview lines, and the first match range.
  */
 export function searchNotes(notes: Note[], query: string): NoteSearchResult[] {
@@ -35,14 +38,32 @@ export function searchNotes(notes: Note[], query: string): NoteSearchResult[] {
   for (const note of notes) {
     const titleLower = note.title.toLowerCase();
     const pathLower = note.path.toLowerCase();
-    const contentLower = note.content.toLowerCase();
 
-    // Check if note matches at all
+    // Check title/path matches
     const titleMatches = titleLower.includes(lowerQuery);
     const pathMatches = pathLower.includes(lowerQuery);
-    const contentMatches = contentLower.includes(lowerQuery);
 
-    if (!titleMatches && !pathMatches && !contentMatches) {
+    // Search all pages for content matches
+    const allContentMatches: MatchPreview[] = [];
+    let totalContentMatchCount = 0;
+    let firstMatchRange: { from: number; to: number; pageIndex: number } | null = null;
+
+    for (let pageIdx = 0; pageIdx < note.pages.length; pageIdx++) {
+      const page = note.pages[pageIdx];
+      const { contentMatchCount, contentMatches: pageMatches, firstMatchRange: pageFirstMatch } =
+        findContentMatches(page.content, lowerQuery, pageIdx, page.title);
+
+      totalContentMatchCount += contentMatchCount;
+      allContentMatches.push(...pageMatches);
+
+      if (firstMatchRange === null && pageFirstMatch !== null) {
+        firstMatchRange = { ...pageFirstMatch, pageIndex: pageIdx };
+      }
+    }
+
+    const hasContentMatches = totalContentMatchCount > 0;
+
+    if (!titleMatches && !pathMatches && !hasContentMatches) {
       continue;
     }
 
@@ -52,13 +73,8 @@ export function searchNotes(notes: Note[], query: string): NoteSearchResult[] {
       : 0;
     const pathMatchCount = pathMatches ? countOccurrences(pathLower, lowerQuery) : 0;
 
-    // Find content matches with line info
-    const { contentMatchCount, contentMatches: contentMatchesList, firstMatchRange } =
-      findContentMatches(note.content, lowerQuery);
+    const matchCount = titleMatchCount + pathMatchCount + totalContentMatchCount;
 
-    const matchCount = titleMatchCount + pathMatchCount + contentMatchCount;
-
-    // If no content matches but title/path match, firstMatchRange is null
     results.push({
       noteId: note.id,
       title: note.title,
@@ -66,8 +82,8 @@ export function searchNotes(notes: Note[], query: string): NoteSearchResult[] {
       matchCount,
       titleMatchCount,
       pathMatchCount,
-      contentMatchCount,
-      contentMatches: contentMatchesList,
+      contentMatchCount: totalContentMatchCount,
+      contentMatches: allContentMatches,
       firstMatchRange,
     });
   }
@@ -99,7 +115,9 @@ interface ContentMatchResult {
 
 function findContentMatches(
   content: string,
-  lowerQuery: string
+  lowerQuery: string,
+  pageIndex: number,
+  pageTitle: string
 ): ContentMatchResult {
   const lines = content.split("\n");
   const contentMatches: MatchPreview[] = [];
@@ -130,6 +148,8 @@ function findContentMatches(
         matchEnd: pos + lowerQuery.length,
         rangeFrom,
         rangeTo,
+        pageIndex,
+        pageTitle,
       });
 
       pos += lowerQuery.length;

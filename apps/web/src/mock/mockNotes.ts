@@ -1,10 +1,32 @@
+export interface NotePage {
+  id: string;
+  title: string;
+  content: string;
+}
+
+export const MAX_PAGES_PER_NOTE = 10;
+
 export interface Note {
   id: string;
   title: string;
   path: string;
-  content: string;
+  pages: NotePage[];
   createdAt: string;
   updatedAt: string;
+}
+
+/** Helper: get the content of a specific page (defaults to first page). */
+export function getNotePageContent(note: Note, pageIndex = 0): string {
+  return note.pages[pageIndex]?.content ?? "";
+}
+
+/** Helper: create a new page with a default title. */
+export function createNotePage(pageNumber: number): NotePage {
+  return {
+    id: `page-${Date.now()}-${pageNumber}`,
+    title: `Page ${pageNumber}`,
+    content: "",
+  };
 }
 
 export const mockNotes: Note[] = [
@@ -12,7 +34,11 @@ export const mockNotes: Note[] = [
     id: "note-1",
     title: "Daily Scratchpad",
     path: "Daily/Daily Scratchpad.md",
-    content: `# Daily Scratchpad
+    pages: [
+      {
+        id: "page-1-1",
+        title: "Page 1",
+        content: `# Daily Scratchpad
 
 - [ ] One thing to do today
 - [ ] Another thing to remember
@@ -27,6 +53,8 @@ Write your thoughts here...
 - [[Project Ideas]]
 - [[Reading List]]
 `,
+      },
+    ],
     createdAt: "2025-01-14T08:00:00Z",
     updatedAt: "2025-01-14T10:30:00Z",
   },
@@ -34,7 +62,11 @@ Write your thoughts here...
     id: "note-2",
     title: "Project Ideas",
     path: "Projects/Project Ideas.md",
-    content: `# Project Ideas
+    pages: [
+      {
+        id: "page-2-1",
+        title: "Page 1",
+        content: `# Project Ideas
 
 ## App Concepts
 
@@ -52,6 +84,8 @@ Write your thoughts here...
 
 Keep brainstorming here. Link to [[Daily Scratchpad]] for daily tasks.
 `,
+      },
+    ],
     createdAt: "2025-01-10T09:00:00Z",
     updatedAt: "2025-01-13T14:00:00Z",
   },
@@ -59,7 +93,11 @@ Keep brainstorming here. Link to [[Daily Scratchpad]] for daily tasks.
     id: "note-3",
     title: "Reading List",
     path: "Personal/Reading List.md",
-    content: `# Reading List
+    pages: [
+      {
+        id: "page-3-1",
+        title: "Page 1",
+        content: `# Reading List
 
 ## Currently Reading
 
@@ -81,6 +119,8 @@ Keep brainstorming here. Link to [[Daily Scratchpad]] for daily tasks.
 
 Link detailed notes here as you read.
 `,
+      },
+    ],
     createdAt: "2025-01-05T12:00:00Z",
     updatedAt: "2025-01-12T16:00:00Z",
   },
@@ -88,7 +128,11 @@ Link detailed notes here as you read.
     id: "note-4",
     title: "Meeting Notes",
     path: "Work/Meetings/2025-01-14 Sync.md",
-    content: `# Meeting Notes
+    pages: [
+      {
+        id: "page-4-1",
+        title: "Page 1",
+        content: `# Meeting Notes
 
 ## 2025-01-14 - Weekly Sync
 
@@ -113,6 +157,8 @@ Link detailed notes here as you read.
 
 See [[Project Ideas]] for context.
 `,
+      },
+    ],
     createdAt: "2025-01-07T10:00:00Z",
     updatedAt: "2025-01-14T11:00:00Z",
   },
@@ -125,10 +171,13 @@ export function createNewNote(): Note {
     id,
     title: "Untitled Note",
     path: "Untitled Note.md",
-    content: `# Untitled Note
-
-Start writing here...
-`,
+    pages: [
+      {
+        id: `page-${Date.now()}-1`,
+        title: "Page 1",
+        content: "",
+      },
+    ],
     createdAt: now,
     updatedAt: now,
   };

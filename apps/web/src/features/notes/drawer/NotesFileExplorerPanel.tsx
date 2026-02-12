@@ -20,7 +20,7 @@ interface NotesFileExplorerPanelProps {
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
   onOpenSearchResult?: (
     noteId: string,
-    firstMatchRange: { from: number; to: number } | null
+    firstMatchRange: { from: number; to: number; pageIndex?: number } | null
   ) => void;
   sidebarTab: "explorer" | "search";
   onSidebarTabChange: (tab: "explorer" | "search") => void;

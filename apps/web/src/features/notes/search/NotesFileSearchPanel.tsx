@@ -16,7 +16,7 @@ interface NotesFileSearchPanelProps {
   notes: Note[];
   onOpenResult: (
     noteId: string,
-    firstMatchRange: { from: number; to: number } | null
+    firstMatchRange: { from: number; to: number; pageIndex?: number } | null
   ) => void;
   onRequestClose: () => void;
 }
@@ -154,7 +154,7 @@ export function NotesFileSearchPanel({
                 onToggleExpanded={() => toggleExpanded(result.noteId)}
                 onToggleShowAll={() => toggleShowAll(result.noteId)}
                 onOpenMatchLine={(range) =>
-                  openMatchLine(result.noteId, range)
+                  openMatchLine(result.noteId, { ...range })
                 }
                 onOpenNote={() => openNoteWithoutRange(result.noteId)}
                 onMouseEnter={() => setActiveIndex(index)}
@@ -185,7 +185,7 @@ interface ResultItemProps {
   query: string;
   onToggleExpanded: () => void;
   onToggleShowAll: () => void;
-  onOpenMatchLine: (range: { from: number; to: number }) => void;
+  onOpenMatchLine: (range: { from: number; to: number; pageIndex?: number }) => void;
   onOpenNote: () => void;
   onMouseEnter: () => void;
 }
@@ -274,8 +274,9 @@ function ResultItem({
                   key={idx}
                   match={match}
                   query={query}
+                  showPageLabel={result.contentMatches.some((m) => m.pageIndex !== 0)}
                   onClick={() =>
-                    onOpenMatchLine({ from: match.rangeFrom, to: match.rangeTo })
+                    onOpenMatchLine({ from: match.rangeFrom, to: match.rangeTo, pageIndex: match.pageIndex })
                   }
                 />
               ))}
@@ -329,10 +330,11 @@ function MetaMatchItem({ kind, label, text, query, onClick }: MetaMatchItemProps
 interface MatchLineItemProps {
   match: MatchPreview;
   query: string;
+  showPageLabel?: boolean;
   onClick: () => void;
 }
 
-function MatchLineItem({ match, onClick }: MatchLineItemProps) {
+function MatchLineItem({ match, showPageLabel, onClick }: MatchLineItemProps) {
   const { lineNumber, text, matchStart, matchEnd } = match;
 
   // Truncate long lines, keeping the match visible
@@ -376,6 +378,11 @@ function MatchLineItem({ match, onClick }: MatchLineItemProps) {
       <span className="text-text-disabled font-mono w-4 text-right shrink-0">
         {lineNumber}
       </span>
+      {showPageLabel && (
+        <span className="text-text-disabled font-mono text-[10px] shrink-0">
+          p{match.pageIndex + 1}
+        </span>
+      )}
       <span className="text-text-muted truncate">
         <span>{before}</span>
         <span className="bg-amber-500/30 text-amber-200 rounded-sm px-0.5">

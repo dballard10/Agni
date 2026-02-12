@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import type { Extension } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
@@ -8,8 +8,10 @@ import {
   IconDots,
 } from "@tabler/icons-react";
 import { LiveMarkdownEditor } from "../../features/notes/editor/LiveMarkdownEditor";
+import { PageNavigator } from "../../features/notes/pages/PageNavigator";
+import { PageWheel } from "../../features/notes/pages/PageWheel";
 import { useAnchoredMenu } from "@/shared/hooks/useAnchoredMenu";
-import type { Note } from "../../mock/mockNotes";
+import type { Note, NotePage } from "../../mock/mockNotes";
 
 type EditorMode = "preview" | "edit";
 
@@ -34,6 +36,18 @@ interface EditorPaneProps {
   activeNote: Note | null;
   onTitleChange: (title: string) => void;
   onContentChange: (content: string) => void;
+
+  // Page content (from active page)
+  content: string;
+  pageTitle: string;
+  onPageTitleChange: (index: number, title: string) => void;
+
+  // Page navigation
+  pages: NotePage[];
+  activePageIndex: number;
+  onPageChange: (index: number) => void;
+  onAddPage: () => void;
+  onDeletePage: (index: number) => void;
 
   // Editor mode
   mode: EditorMode;
@@ -72,11 +86,19 @@ export function EditorPane({
   activeNote,
   onTitleChange,
   onContentChange,
+  content,
+  pageTitle,
+  onPageTitleChange,
+  pages,
+  activePageIndex,
+  onPageChange,
+  onAddPage,
+  onDeletePage,
   mode,
   onToggleMode,
   filePath,
   menuItems,
-  paneId, // Reserved for future use
+  paneId,
   isFocused,
   onFocus,
   onOpenBracketLink,
@@ -86,6 +108,8 @@ export function EditorPane({
 }: EditorPaneProps) {
   void paneId; // Reserved for future use
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const [wheelOpen, setWheelOpen] = useState(false);
+  const [wheelAnchorRect, setWheelAnchorRect] = useState<DOMRect | null>(null);
   const EditorIcon = mode === "preview" ? IconBook : IconEdit;
 
   const { isOpen, position, open, close } = useAnchoredMenu({
@@ -133,6 +157,16 @@ export function EditorPane({
     >
       {/* Subtle header bar - transparent to blend with editor */}
       <div className="flex items-center h-8 px-3 bg-transparent shrink-0">
+        {/* Page navigator (left-aligned) */}
+        <PageNavigator
+          pages={pages}
+          activePageIndex={activePageIndex}
+          onPageChange={onPageChange}
+          onAddPage={onAddPage}
+          onDeletePage={onDeletePage}
+          onPageTitleChange={onPageTitleChange}
+        />
+
         {/* File path - centered */}
         <div className="flex-1 flex justify-center min-w-0">
           <span className="text-text-muted text-xs font-mono truncate">
@@ -175,8 +209,9 @@ export function EditorPane({
         </div>
       </div>
 
-      {/* Title input */}
-      <div className="px-6 pt-4 pb-2 shrink-0">
+      {/* Title area */}
+      <div className={`px-6 pt-4 pb-2 shrink-0 transition-opacity duration-200 ${wheelOpen ? "opacity-20 pointer-events-none" : ""}`}>
+        {/* Note title (h1) */}
         <input
           type="text"
           value={activeNote?.title ?? ""}
@@ -184,12 +219,36 @@ export function EditorPane({
           className="w-full bg-transparent text-2xl font-bold text-[color:var(--notes-fg-strong)] outline-none border-none placeholder:text-[color:var(--notes-placeholder)]"
           placeholder="Untitled"
         />
+        {/* Page title (h4) — only shown when note has multiple pages */}
+        {pages.length > 1 && (
+          <div className="relative mt-1">
+            <input
+              type="text"
+              value={pageTitle}
+              onChange={(e) => onPageTitleChange(activePageIndex, e.target.value)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (wheelOpen) {
+                  setWheelOpen(false);
+                } else {
+                  setWheelAnchorRect(e.currentTarget.getBoundingClientRect());
+                  setWheelOpen(true);
+                }
+              }}
+              className={`w-full bg-transparent text-sm font-semibold text-[color:var(--notes-fg)] outline-none border-none placeholder:text-[color:var(--notes-placeholder)] ${
+                wheelOpen ? "invisible" : ""
+              }`}
+              placeholder="Page title"
+            />
+          </div>
+        )}
       </div>
 
       {/* Editor */}
-      <div className="flex-1 overflow-hidden">
+      <div className={`flex-1 overflow-hidden transition-opacity duration-200 ${wheelOpen ? "opacity-20 pointer-events-none" : ""}`}>
         <LiveMarkdownEditor
-          value={activeNote?.content ?? ""}
+          value={content}
           onChange={onContentChange}
           placeholder="Start writing..."
           jumpTo={jumpTo}
@@ -200,6 +259,20 @@ export function EditorPane({
           onEditorViewReady={onEditorViewReady}
         />
       </div>
+
+      {/* Page wheel overlay */}
+      {wheelOpen && wheelAnchorRect && pages.length > 1 && (
+        <PageWheel
+          pages={pages}
+          activePageIndex={activePageIndex}
+          anchorRect={wheelAnchorRect}
+          onConfirm={(index) => {
+            onPageChange(index);
+            setWheelOpen(false);
+          }}
+          onCancel={() => setWheelOpen(false)}
+        />
+      )}
 
       {/* Dropdown menu portal */}
       {isOpen &&

@@ -42,7 +42,7 @@ interface NotesDrawerProps {
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
   onOpenSearchResult?: (
     noteId: string,
-    firstMatchRange: { from: number; to: number } | null
+    firstMatchRange: { from: number; to: number; pageIndex?: number } | null
   ) => void;
   sidebarTab: "explorer" | "search";
   onSidebarTabChange: (tab: "explorer" | "search") => void;
@@ -509,7 +509,7 @@ export function NotesDrawer({
   }, []);
 
   const openSearchMatchLine = useCallback(
-    (noteId: string, range: { from: number; to: number }) => {
+    (noteId: string, range: { from: number; to: number; pageIndex?: number }) => {
       onOpenSearchResult?.(noteId, range);
     },
     [onOpenSearchResult]
@@ -1071,7 +1071,7 @@ interface SearchResultItemProps {
   query: string;
   onToggleExpanded: () => void;
   onToggleShowAll: () => void;
-  onOpenMatchLine: (range: { from: number; to: number }) => void;
+  onOpenMatchLine: (range: { from: number; to: number; pageIndex?: number }) => void;
   onOpenNote: () => void;
   onMouseEnter: () => void;
 }
@@ -1161,7 +1161,7 @@ function SearchResultItem({
                   match={match}
                   query={query}
                   onClick={() =>
-                    onOpenMatchLine({ from: match.rangeFrom, to: match.rangeTo })
+                    onOpenMatchLine({ from: match.rangeFrom, to: match.rangeTo, pageIndex: match.pageIndex })
                   }
                 />
               ))}

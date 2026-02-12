@@ -2,11 +2,13 @@
   /* ============================================
    * PALETTE TOKENS (Raw colors - ONLY source)
    * ============================================ */
-  --agni-black: #000000;
+  --agni-black: #0B0B1E;
   --agni-white: #FFFFFF;
   --agni-silver: #C7C7C7;
-  --agni-teal: #09E5EC;
-  --agni-navy: #171DB1;
+  --agni-dark-gray: #131328;
+  --agni-darker-gray: #1A1A32;
+  --agni-teal: #00C2FF;
+  --agni-blue: #2176EB;
 
   /* ============================================
    * SEMANTIC SURFACE TOKENS
@@ -14,12 +16,12 @@
   --bg-app: var(--agni-black);
   --bg-panel: var(--agni-black);
   --bg-editor: var(--agni-black);
-  --bg-topbar: var(--agni-black);      /* TopBar (window controls bar) */
-  --bg-sidebar: var(--agni-black);     /* Side panels (notes explorer, task details) */
+  --bg-topbar: var(--agni-darker-gray);     /* TopBar — lightest surface */
+  --bg-sidebar: var(--agni-dark-gray);     /* Side panels — mid surface */
   --bg-elevated: rgba(199, 199, 199, 0.06);
   --bg-hover: rgba(199, 199, 199, 0.08);
-  --bg-selected: rgba(9, 229, 236, 0.12);
-  --bg-active: rgba(9, 229, 236, 0.18);
+  --bg-selected: rgba(0, 194, 255, 0.12);
+  --bg-active: rgba(0, 194, 255, 0.18);
 
   /* ============================================
    * SEMANTIC TEXT TOKENS
@@ -40,9 +42,9 @@
    * ACCENT & INTERACTIVE TOKENS
    * ============================================ */
   --accent: var(--agni-teal);
-  --accent-2: var(--agni-navy);
+  --accent-2: var(--agni-blue);
   --accent-contrast: var(--agni-black);
-  --focus-ring: rgba(9, 229, 236, 0.50);
+  --focus-ring: rgba(0, 194, 255, 0.50);
 
   /* ============================================
    * STATUS TOKENS
@@ -72,8 +74,8 @@
   --notes-caret: var(--accent);
   --notes-link: var(--accent-2);
   --notes-selection-bg: var(--bg-selected);
-  --notes-find-match-bg: rgba(9, 229, 236, 0.20);
-  --notes-find-match-current-bg: rgba(9, 229, 236, 0.40);
+  --notes-find-match-bg: rgba(0, 194, 255, 0.20);
+  --notes-find-match-current-bg: rgba(0, 194, 255, 0.40);
   --notes-checkbox-bg: var(--bg-app);
   --notes-checkbox-border: var(--border-default);
   --notes-checkbox-checked-bg: var(--accent);

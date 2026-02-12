@@ -94,7 +94,7 @@ export function ShellSidebar({
       initial={false}
       animate={{ width: isOpen ? width : 0, opacity: isOpen ? 1 : 0 }}
       transition={sidebarTransition}
-      className={`relative flex flex-col h-full bg-bg-panel border-r border-border overflow-hidden flex-shrink-0 ${
+      className={`relative flex flex-col h-full bg-bg-sidebar border-r border-border overflow-hidden flex-shrink-0 ${
         isResizing ? "select-none" : ""
       }`}
     >
