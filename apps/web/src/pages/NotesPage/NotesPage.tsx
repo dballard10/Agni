@@ -618,6 +618,10 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
     setFolders((prev) => [...prev, folderName]);
   }, [folders, notes]);
 
+  // Renumber pages that still have the default "Page N" title pattern
+  const renumberDefaultPageTitles = (pages: NotePage[]): NotePage[] =>
+    pages.map((p, i) => /^Page \d+$/.test(p.title) ? { ...p, title: `Page ${i + 1}` } : p);
+
   // ── Page CRUD handlers ──────────────────────────────────────────
 
   const handlePageChange = useCallback((noteId: string, pageIndex: number) => {
@@ -630,7 +634,8 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
         if (note.id !== noteId) return note;
         if (note.pages.length >= MAX_PAGES_PER_NOTE) return note;
         const newPage = createNotePage(note.pages.length + 1);
-        return { ...note, pages: [...note.pages, newPage], updatedAt: new Date().toISOString() };
+        const pages = renumberDefaultPageTitles([...note.pages, newPage]);
+        return { ...note, pages, updatedAt: new Date().toISOString() };
       })
     );
     // Navigate to the new page
@@ -658,7 +663,7 @@ export function NotesPage({ actionsRef, onShellStateChange }: NotesPageProps = {
       prev.map((note) => {
         if (note.id !== noteId) return note;
         if (note.pages.length <= 1) return note; // Don't delete last page
-        const pages = note.pages.filter((_, i) => i !== pageIndex);
+        const pages = renumberDefaultPageTitles(note.pages.filter((_, i) => i !== pageIndex));
         return { ...note, pages, updatedAt: new Date().toISOString() };
       })
     );
