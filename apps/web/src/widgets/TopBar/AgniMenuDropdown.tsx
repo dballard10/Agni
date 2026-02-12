@@ -1,8 +1,6 @@
 import { useRef, useEffect } from "react";
 import {
   IconFolder,
-  IconListCheck,
-  IconCalendarWeek,
 } from "@tabler/icons-react";
 import type { PageId } from "@/app/shell/types";
 
@@ -15,8 +13,6 @@ interface AgniMenuDropdownProps {
 
 const menuItems: { id: PageId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "notes", label: "Notes", icon: IconFolder },
-  { id: "weekly", label: "Weekly Todo", icon: IconListCheck },
-  { id: "calendar", label: "Calendar", icon: IconCalendarWeek },
 ];
 
 export function AgniMenuDropdown({

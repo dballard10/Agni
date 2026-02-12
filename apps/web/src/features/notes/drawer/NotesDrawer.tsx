@@ -855,7 +855,7 @@ export function NotesDrawer({
             dragOverPath === "root" ? "bg-bg-elevated/30" : ""
           }`}
         >
-          <div className="sticky top-0 z-10 mx-3 px-0 py-2 bg-bg-panel">
+          <div className="sticky top-0 z-10 mx-3 px-0 py-2 bg-bg-sidebar">
             <div className="flex items-center gap-1 justify-end">
               <button
                 onClick={onCreateNote}

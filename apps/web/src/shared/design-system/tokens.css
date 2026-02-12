@@ -14,6 +14,8 @@
   --bg-app: var(--agni-black);
   --bg-panel: var(--agni-black);
   --bg-editor: var(--agni-black);
+  --bg-topbar: var(--agni-black);      /* TopBar (window controls bar) */
+  --bg-sidebar: var(--agni-black);     /* Side panels (notes explorer, task details) */
   --bg-elevated: rgba(199, 199, 199, 0.06);
   --bg-hover: rgba(199, 199, 199, 0.08);
   --bg-selected: rgba(9, 229, 236, 0.12);

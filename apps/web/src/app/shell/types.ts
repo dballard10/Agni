@@ -1,6 +1,6 @@
 // Shell state types for the Agni Shell UI
 
-export type PageId = "notes" | "weekly" | "calendar" | "goals" | "companions" | "settings";
+export type PageId = "notes";
 
 export type EditorMode = "preview" | "edit";
 
@@ -42,13 +42,8 @@ export const DEFAULT_SHELL_STATE: ShellState = {
   editorMode: "preview",
   pageTabs: {
     notes: { ...DEFAULT_PAGE_TAB_STATE },
-    weekly: { ...DEFAULT_PAGE_TAB_STATE },
-    calendar: { ...DEFAULT_PAGE_TAB_STATE },
-    goals: { ...DEFAULT_PAGE_TAB_STATE },
-    companions: { ...DEFAULT_PAGE_TAB_STATE },
-    settings: { ...DEFAULT_PAGE_TAB_STATE },
   },
-  filePath: "File/Path/...",
+  filePath: "Notes",
 };
 
 // Page metadata for navigation
@@ -60,8 +55,4 @@ export interface PageMeta {
 
 export const PAGE_META: PageMeta[] = [
   { id: "notes", label: "Notes", icon: "folder" },
-  { id: "weekly", label: "Weekly Todo", icon: "list-check" },
-  { id: "calendar", label: "Calendar", icon: "calendar-week" },
-  { id: "goals", label: "Goals", icon: "target-arrow" },
-  { id: "companions", label: "Companions", icon: "users" },
 ];

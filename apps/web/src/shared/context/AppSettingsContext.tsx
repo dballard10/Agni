@@ -1,13 +1,12 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import type { WeeklyItemType } from "../types/weekly";
-import { ITEM_TYPE_STYLES } from "../../entities/task/model/itemTypeConfig";
 
-// Default item type colors derived from existing config
+// Default item type colors
 const DEFAULT_ITEM_TYPE_COLORS: Record<WeeklyItemType, string> = {
-  task: ITEM_TYPE_STYLES.task.colorHex,
-  event: ITEM_TYPE_STYLES.event.colorHex,
-  birthday: ITEM_TYPE_STYLES.birthday.colorHex,
-  holiday: ITEM_TYPE_STYLES.holiday.colorHex,
+  task: "#3b82f6",
+  event: "#8b5cf6",
+  birthday: "#ec4899",
+  holiday: "#10b981",
 };
 
 export interface AppSettings {

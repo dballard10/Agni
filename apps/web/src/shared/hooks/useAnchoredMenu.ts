@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface UseAnchoredMenuOptions {
   resolveAnchor: () => HTMLElement | null;
@@ -18,9 +18,14 @@ export function useAnchoredMenu({
 }: UseAnchoredMenuOptions) {
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState<AnchoredPosition | null>(null);
+  const resolveAnchorRef = useRef(resolveAnchor);
+
+  useEffect(() => {
+    resolveAnchorRef.current = resolveAnchor;
+  }, [resolveAnchor]);
 
   const updatePosition = useCallback(() => {
-    const anchor = resolveAnchor();
+    const anchor = resolveAnchorRef.current();
     if (!anchor) return;
     const rect = anchor.getBoundingClientRect();
     const viewportWidth = window.innerWidth;
@@ -37,7 +42,7 @@ export function useAnchoredMenu({
       top: rect.bottom + gap,
       left,
     });
-  }, [gap, menuWidth, resolveAnchor]);
+  }, [gap, menuWidth]);
 
   const open = useCallback(() => {
     updatePosition();
@@ -85,7 +90,6 @@ export function useAnchoredMenu({
 
   useEffect(() => {
     if (!isOpen) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial position sync on open
     updatePosition();
     window.addEventListener("scroll", updatePosition, true);
     window.addEventListener("resize", updatePosition);

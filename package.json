@@ -5,7 +5,6 @@
   "workspaces": [
     "apps/web",
     "apps/desktop",
-    "apps/mobile",
     "packages/shared",
     "packages/api",
     "packages/platform"
@@ -13,7 +12,6 @@
   "scripts": {
     "dev": "concurrently -n web,be -c cyan,magenta \"npm run dev:web\" \"npm run dev:backend\"",
     "dev:web": "npm run dev --workspace=@agni/web",
-    "dev:mobile": "npm run start --workspace=@agni/mobile",
     "dev:backend": "cd backend && uv run python -m uvicorn app.main:app --reload --port 8000",
     "dev:web+backend": "concurrently -n web,be -c cyan,magenta \"npm run dev:web\" \"npm run dev:backend\"",
     "dev:web:5174": "npm run dev --workspace=@agni/web -- --port 5174 --strictPort",

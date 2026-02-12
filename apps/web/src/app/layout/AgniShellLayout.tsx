@@ -1,40 +1,21 @@
 import React, { useState, useCallback } from "react";
-import { motion } from "framer-motion";
 import { TopBar, type PageTab, type TabGroup, type TabContextMenuCallbacks } from "@/widgets/TopBar";
 import { ShellSidebar } from "@/widgets/ShellSidebar";
-import { MainContentHeader, type HeaderMenuItem } from "@/widgets/MainContentHeader";
 import { TopNotificationHost } from "@/widgets/TopNotifications";
-import type { PageId, EditorMode } from "@/app/shell/types";
-import type { SplitMode } from "@/pages/NotesPage";
-
-type UtilityTabId = "goals" | "companions" | "settings";
 
 interface AgniShellLayoutProps {
   children: React.ReactNode;
-  activeTab: PageId;
-  onTabChange: (tab: PageId) => void;
-  // Navigation callbacks (passed from page components)
-  filePath?: string;
+  // Sidebar content (passed from page components)
+  sidebarContent?: React.ReactNode;
+  // Navigation callbacks
   canGoBack?: boolean;
   canGoForward?: boolean;
   onGoBack?: () => void;
   onGoForward?: () => void;
-  // Editor mode (passed from page components)
-  editorMode?: EditorMode;
-  onToggleEditorMode?: () => void;
-  // Sidebar content (passed from page components)
-  sidebarContent?: React.ReactNode;
-  // Right panel content (passed from page components)
-  rightPanelContent?: React.ReactNode;
-  // Right panel toggle visibility
-  showRightPanelToggle?: boolean;
   // Sidebar action callbacks
   onOpenFileExplorerTab?: () => void;
   onFocusSearch?: () => void;
-  onOpenOverview?: () => void;
-  // Utility tabs (Goals, Companions, Settings)
-  onOpenUtilityTab?: (tab: UtilityTabId) => void;
-  // Page tabs - single group mode (generic, used by Notes and Weekly)
+  // Page tabs - single group mode
   pageTabs?: PageTab[];
   activePageTabIndex?: number;
   onPageTabChange?: (index: number) => void;
@@ -47,14 +28,7 @@ interface AgniShellLayoutProps {
   onGroupTabClose?: (groupIndex: number, tabIndex: number) => void;
   onTabMove?: (fromGroup: number, fromIndex: number, toGroup: number, toIndex: number) => void;
   onGroupAddTab?: (groupIndex: number) => void;
-  // Optional title shown in the main content header (left side)
-  headerTitle?: string;
-  // Menu items for the header three-dots dropdown
-  headerMenuItems?: HeaderMenuItem[];
   // Split view mode
-  splitMode?: SplitMode;
-  secondaryFilePath?: string;
-  // Split ratio for resizable panes (0-1)
   splitRatio?: number;
   // Tab context menu callbacks
   tabContextMenu?: TabContextMenuCallbacks;
@@ -62,22 +36,13 @@ interface AgniShellLayoutProps {
 
 export function AgniShellLayout({
   children,
-  activeTab,
-  onTabChange,
-  filePath = "File/Path/...",
+  sidebarContent,
   canGoBack = false,
   canGoForward = false,
   onGoBack,
   onGoForward,
-  editorMode = "preview",
-  onToggleEditorMode,
-  sidebarContent,
-  rightPanelContent,
-  showRightPanelToggle = true,
   onOpenFileExplorerTab,
   onFocusSearch,
-  onOpenOverview,
-  onOpenUtilityTab,
   pageTabs,
   activePageTabIndex,
   onPageTabChange,
@@ -89,36 +54,14 @@ export function AgniShellLayout({
   onGroupTabClose,
   onTabMove,
   onGroupAddTab,
-  headerTitle,
-  headerMenuItems,
-  splitMode,
-  secondaryFilePath,
   splitRatio,
   tabContextMenu,
 }: AgniShellLayoutProps) {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
-  const [rightPanelOpen, setRightPanelOpen] = useState(false);
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [sidebarWidth, setSidebarWidth] = useState(260);
 
   const handleToggleLeftPanel = useCallback(() => {
     setLeftPanelOpen((prev) => !prev);
-  }, []);
-
-  const handleToggleRightPanel = useCallback(() => {
-    setRightPanelOpen((prev) => !prev);
-  }, []);
-
-  const handlePageChange = useCallback(
-    (page: PageId) => {
-      onTabChange(page);
-      setActiveTabIndex(0); // Reset tab index when changing pages
-    },
-    [onTabChange]
-  );
-
-  const handleTabIndexChange = useCallback((index: number) => {
-    setActiveTabIndex(index);
   }, []);
 
   const handleGoBack = useCallback(() => {
@@ -129,10 +72,6 @@ export function AgniShellLayout({
     onGoForward?.();
   }, [onGoForward]);
 
-  const handleToggleEditorMode = useCallback(() => {
-    onToggleEditorMode?.();
-  }, [onToggleEditorMode]);
-
   const handleOpenFileExplorerTab = useCallback(() => {
     onOpenFileExplorerTab?.();
   }, [onOpenFileExplorerTab]);
@@ -140,10 +79,6 @@ export function AgniShellLayout({
   const handleFocusSearch = useCallback(() => {
     onFocusSearch?.();
   }, [onFocusSearch]);
-
-  const handleOpenOverview = useCallback(() => {
-    onOpenOverview?.();
-  }, [onOpenOverview]);
 
   // CSS variable for sidebar width alignment
   const effectiveSidebarWidth = leftPanelOpen ? sidebarWidth : 0;
@@ -157,20 +92,13 @@ export function AgniShellLayout({
 
       {/* Top Bar */}
       <TopBar
-        currentPage={activeTab}
-        activeTabIndex={activeTabIndex}
+        currentPage="notes"
         canGoBack={canGoBack}
         canGoForward={canGoForward}
         leftPanelOpen={leftPanelOpen}
-        rightPanelOpen={rightPanelOpen}
-        showRightPanelToggle={showRightPanelToggle}
-        onPageChange={handlePageChange}
-        onTabChange={handleTabIndexChange}
         onGoBack={handleGoBack}
         onGoForward={handleGoForward}
         onToggleLeftPanel={handleToggleLeftPanel}
-        onToggleRightPanel={handleToggleRightPanel}
-        onOpenUtilityTab={onOpenUtilityTab}
         pageTabs={pageTabs}
         activePageTabIndex={activePageTabIndex}
         onPageTabChange={onPageTabChange}
@@ -191,10 +119,9 @@ export function AgniShellLayout({
         {/* Left Sidebar */}
         <ShellSidebar
           isOpen={leftPanelOpen}
-          currentPage={activeTab}
+          currentPage="notes"
           onOpenFileExplorerTab={handleOpenFileExplorerTab}
           onFocusSearch={handleFocusSearch}
-          onOpenOverview={handleOpenOverview}
           onClose={() => setLeftPanelOpen(false)}
           onWidthChange={setSidebarWidth}
         >
@@ -203,40 +130,11 @@ export function AgniShellLayout({
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col overflow-hidden relative">
-          {/* Main Content Header - hidden for notes page (EditorPane has its own) */}
-          {activeTab !== "notes" && (
-            <MainContentHeader
-              filePath={filePath}
-              editorMode={editorMode}
-              onToggleEditorMode={handleToggleEditorMode}
-              menuItems={headerMenuItems}
-              title={headerTitle}
-              splitMode={splitMode}
-              secondaryFilePath={secondaryFilePath}
-            />
-          )}
-
-          {/* Main Content Body */}
+          {/* Main Content Body - EditorPane has its own header */}
           <main className="flex-1 overflow-y-auto overflow-x-hidden">
             {children}
           </main>
         </div>
-
-        {/* Right Side Panel */}
-        <motion.aside
-          initial={false}
-          animate={{ width: rightPanelOpen ? 320 : 0, opacity: rightPanelOpen ? 1 : 0 }}
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="flex flex-col h-full bg-bg-panel border-l border-border overflow-hidden flex-shrink-0"
-        >
-          <div className="flex-1 overflow-y-auto overflow-x-hidden p-3">
-            {rightPanelContent ?? (
-              <div className="text-text-muted text-sm">
-                RIGHT PANEL GOES HERE
-              </div>
-            )}
-          </div>
-        </motion.aside>
       </div>
     </div>
   );

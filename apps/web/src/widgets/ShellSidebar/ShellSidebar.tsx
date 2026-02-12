@@ -21,11 +21,6 @@ interface ShellSidebarProps {
 
 const sidebarLabels: Record<PageId, string> = {
   notes: "FILE EXPLORER GOES HERE",
-  weekly: "WEEK EXPLORER GOES HERE",
-  calendar: "CALENDAR EXPLORER GOES HERE",
-  goals: "GOALS EXPLORER GOES HERE",
-  companions: "COMPANIONS EXPLORER GOES HERE",
-  settings: "SETTINGS",
 };
 
 export function ShellSidebar({
@@ -119,7 +114,7 @@ export function ShellSidebar({
         currentPage={currentPage}
         onOpenFileExplorerTab={onOpenFileExplorerTab}
         onFocusSearch={onFocusSearch}
-        onOpenOverview={currentPage === "weekly" ? onOpenOverview : undefined}
+        onOpenOverview={onOpenOverview}
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-3">
         {children ?? (

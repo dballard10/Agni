@@ -12,6 +12,8 @@ export default {
           app: 'var(--bg-app)',
           panel: 'var(--bg-panel)',
           editor: 'var(--bg-editor)',
+          topbar: 'var(--bg-topbar)',
+          sidebar: 'var(--bg-sidebar)',
           elevated: 'var(--bg-elevated)',
           hover: 'var(--bg-hover)',
           selected: 'var(--bg-selected)',

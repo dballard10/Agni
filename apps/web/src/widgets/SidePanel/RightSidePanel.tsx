@@ -284,7 +284,7 @@ export function RightSidePanel({
           }
         }}
         transition={panelTransition}
-        className={`fixed inset-y-0 right-0 z-40 bg-bg-panel border-l border-border shadow-2xl ${className} ${
+        className={`fixed inset-y-0 right-0 z-40 bg-bg-sidebar border-l border-border shadow-2xl ${className} ${
           isResizing ? "select-none" : ""
         }`}
         style={{ 

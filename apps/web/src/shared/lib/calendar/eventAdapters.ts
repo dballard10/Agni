@@ -1,7 +1,13 @@
-import type { WeekState } from "../../types/weekly";
+import type { WeekState, WeeklyItemType } from "../../types/weekly";
 import type { CalendarEvent } from "../../types/calendar";
-import { ITEM_TYPE_STYLES } from "../../../entities/task/model/itemTypeConfig";
 import { parseISODateLocal } from "../date";
+
+const ITEM_TYPE_COLORS: Record<WeeklyItemType, string> = {
+  task: "#3b82f6",
+  event: "#8b5cf6",
+  birthday: "#ec4899",
+  holiday: "#10b981",
+};
 
 export function getTaskDate(weekStartISO: string, dayIndex: number): Date {
   const base = parseISODateLocal(weekStartISO);
@@ -28,7 +34,7 @@ export function convertWeekToCalendarEvents(week: WeekState): CalendarEvent[] {
       start: dateStr,
       taskId: task.id,
       content: `Status: ${task.status}`,
-      color: ITEM_TYPE_STYLES[type]?.colorHex,
+      color: ITEM_TYPE_COLORS[type],
     });
   });
 

@@ -1,34 +1,22 @@
-import { useState } from "react";
 import {
   IconChevronLeft,
   IconChevronRight,
   IconLayoutSidebar,
   IconLayoutSidebarFilled,
-  IconSettings,
 } from "@tabler/icons-react";
-import { AgniMenuDropdown } from "./AgniMenuDropdown";
 import { PageTabs, type PageTab, type TabGroup, type TabContextMenuCallbacks } from "./PageTabs";
 import { WindowControls } from "./WindowControls";
 import { usePlatform } from "@/shared/hooks/usePlatform";
 import type { PageId } from "@/app/shell/types";
 
-type UtilityTabId = "goals" | "companions" | "settings";
-
 interface TopBarProps {
   currentPage: PageId;
-  activeTabIndex: number;
   canGoBack: boolean;
   canGoForward: boolean;
   leftPanelOpen: boolean;
-  rightPanelOpen: boolean;
-  showRightPanelToggle?: boolean;
-  onPageChange: (page: PageId) => void;
-  onTabChange: (index: number) => void;
   onGoBack: () => void;
   onGoForward: () => void;
   onToggleLeftPanel: () => void;
-  onToggleRightPanel: () => void;
-  onOpenUtilityTab?: (tab: UtilityTabId) => void;
   // Single-group mode (default)
   pageTabs?: PageTab[];
   activePageTabIndex?: number;
@@ -49,15 +37,12 @@ interface TopBarProps {
 }
 
 export function TopBar({
-  currentPage,
   canGoBack,
   canGoForward,
   leftPanelOpen,
-  onPageChange,
   onGoBack,
   onGoForward,
   onToggleLeftPanel,
-  onOpenUtilityTab,
   pageTabs,
   activePageTabIndex,
   onPageTabChange,
@@ -72,7 +57,6 @@ export function TopBar({
   splitRatio,
   tabContextMenu,
 }: TopBarProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isDesktop, isMac } = usePlatform();
 
   const LeftPanelIcon = leftPanelOpen ? IconLayoutSidebarFilled : IconLayoutSidebar;
@@ -85,7 +69,7 @@ export function TopBar({
 
   return (
     <div
-      className="grid items-stretch h-10 bg-bg-panel border-b border-border"
+      className="grid items-stretch h-10 bg-bg-topbar border-b border-border"
       style={{
         gridTemplateColumns: leftPanelOpen
           ? `calc(var(--agni-left-sidebar-width, 260px) + ${trafficLightPadding}px) 1fr auto`
@@ -101,25 +85,13 @@ export function TopBar({
           WebkitAppRegion: 'no-drag',
         } as React.CSSProperties}
       >
-        <div className="relative flex items-center">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-bg-hover transition-colors"
-            aria-label="Open Agni menu"
-            title="Open Agni menu"
-          >
-            <img
-              src="/logos/agni-flame-logo.png"
-              alt="Agni"
-              className="w-5 h-5"
-            />
-          </button>
-          <AgniMenuDropdown
-            isOpen={isMenuOpen}
-            onClose={() => setIsMenuOpen(false)}
-            onSelectPage={onPageChange}
-            currentPage={currentPage}
+        <div className="flex items-center gap-2">
+          <img
+            src="/logos/agni-flame-logo.png"
+            alt="Agni"
+            className="w-5 h-5"
           />
+          <span className="text-sm font-medium text-text-primary">Notes</span>
         </div>
         <div className="flex items-center gap-0.5">
           <button
@@ -161,14 +133,6 @@ export function TopBar({
         >
           <LeftPanelIcon className="w-5 h-5" />
         </button>
-        <button
-          onClick={() => onOpenUtilityTab?.("settings")}
-          className="flex items-center justify-center w-8 h-8 rounded-md text-text-muted hover:bg-bg-hover hover:text-text-secondary transition-colors"
-          aria-label="Open settings"
-          title="Open settings"
-        >
-          <IconSettings className="w-5 h-5" />
-        </button>
       </div>
 
       {/* Column 2: Tab strip - starts at sidebar boundary, aligned to bottom */}
@@ -196,50 +160,11 @@ export function TopBar({
         ) : null}
       </div>
 
-      {/* Column 3: Right controls (window controls only - panel toggles moved to left) */}
+      {/* Column 3: Right controls (window controls only) */}
       <div
         className="flex items-center gap-1 px-3"
         style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
       >
-        {/* Hidden for now - may use in future
-        {showRightPanelToggle && (
-          <button
-            onClick={onToggleRightPanel}
-            className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
-              rightPanelOpen
-                ? "text-text-primary hover:bg-bg-hover"
-                : "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
-            }`}
-            aria-label={rightPanelOpen ? "Hide right panel" : "Show right panel"}
-            title={rightPanelOpen ? "Hide right panel" : "Show right panel"}
-          >
-            <RightPanelIcon className="w-5 h-5" />
-          </button>
-        )}
-        <div className="relative flex items-center">
-          <button
-            onClick={() => setIsLibraryOpen(!isLibraryOpen)}
-            className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
-              hasUtilityTabOpen
-                ? "text-text-primary hover:bg-bg-hover"
-                : "text-text-muted hover:bg-bg-hover hover:text-text-secondary"
-            }`}
-            aria-label="Open library"
-            title="Library (Goals & Companions)"
-          >
-            <IconBook2 className="w-5 h-5" />
-          </button>
-          <LibraryMenuDropdown
-            isOpen={isLibraryOpen}
-            onClose={() => setIsLibraryOpen(false)}
-            onSelectUtilityTab={(tab) => {
-              onOpenUtilityTab?.(tab);
-              setIsLibraryOpen(false);
-            }}
-          />
-        </div>
-        */}
-
         {/* Windows/Linux window controls */}
         {isDesktop && !isMac && <WindowControls />}
       </div>

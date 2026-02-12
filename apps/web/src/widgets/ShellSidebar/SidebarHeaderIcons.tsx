@@ -19,9 +19,8 @@ export function SidebarHeaderIcons({
   onOpenOverview,
 }: SidebarHeaderIconsProps) {
   const isNotesPage = currentPage === "notes";
-  const isWeeklyPage = currentPage === "weekly";
-  const showOverview = isWeeklyPage;
-  const showFileExplorerTab = (isNotesPage || isWeeklyPage) && onOpenFileExplorerTab;
+  const showOverview = !!onOpenOverview;
+  const showFileExplorerTab = isNotesPage && onOpenFileExplorerTab;
 
   return (
     <div className="flex items-center gap-1 px-3 py-2 border-b border-border">
